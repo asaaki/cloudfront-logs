@@ -1,0 +1,57 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  RUSTFLAGS: -Dwarnings
+
+jobs:
+  build_and_test:
+    name: Build and test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        rust: [stable, beta, nightly]
+
+    steps:
+    - uses: actions/checkout@v4.1.1
+
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ matrix.rust }}
+
+    - uses: Swatinem/rust-cache@v2.7.1
+      with:
+        cache-all-crates: true
+
+    - run: cargo fetch
+    - run: cargo check --all-features
+    - run: cargo build --all-features
+    - run: cargo test --all-features
+    - run: cargo bench --all-features --bench real-world
+
+  check_fmt_and_docs:
+    name: Checking fmt, clippy, and docs
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4.1.1
+
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        components: rustfmt, clippy
+
+    - uses: Swatinem/rust-cache@v2.7.1
+      with:
+        cache-all-crates: true
+
+    - run: cargo check --workspace --all-features --benches --examples --tests
+    - run: cargo clippy --workspace --all-features --benches --examples --tests -- -D warnings
+    - run: cargo fmt --check
+    - run: cargo doc --workspace --all-features --no-deps

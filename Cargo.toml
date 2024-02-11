@@ -1,0 +1,76 @@
+[package]
+name = "cloudfront-logs"
+description = "AWS CloudFront logs parser"
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+homepage = "https://github.com/asaaki/cloudfront-logs"
+repository = "https://github.com/asaaki/cloudfront-logs"
+categories = [
+  "parser-implementations",
+  "data-structures",
+  "encoding",
+  "rust-patterns",
+  "value-formatting",
+]
+keywords = ["cloudfront", "log", "parser", "aws", "tsv"]
+license = "MIT OR Apache-2.0"
+exclude = [".assets/*", ".github/*"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+# docs.rs-specific configuration
+[package.metadata.docs.rs]
+# document all features
+all-features = true
+# defines the configuration attribute `docsrs`
+rustdoc-args = ["--cfg", "docsrs"]
+
+[[bench]]
+name = "borrowed"
+harness = false
+required-features = ["unsafe"]
+
+[[bench]]
+name = "owned"
+harness = false
+required-features = ["unsafe"]
+
+[[bench]]
+name = "real-world"
+path = "benches/comparison-real-world.rs"
+harness = false
+required-features = ["unsafe"]
+
+[[bench]]
+name = "single-field"
+path = "benches/comparison-single-field.rs"
+harness = false
+required-features = ["unsafe"]
+
+[[bench]]
+name = "two-fields"
+path = "benches/comparison-two-fields.rs"
+harness = false
+required-features = ["unsafe"]
+
+[features]
+default = ["alloc", "typed", "unsafe"]
+
+# when you need owned versions of the structured log data; enabled by default
+alloc = []
+
+# provides a more typed version of the structured log data (not just core/std primitives); enabled by default
+typed = ["alloc", "dep:time"]
+
+# enables some optimisations, but requires unsafe code; optional
+# note: the gains are usually too small to be worth it
+unsafe = []
+
+[dependencies]
+aho-corasick = "1.1.2"
+memchr = "2.7.1"
+regex = "1.10.3"
+time = { version = "0.3.34", features = ["parsing", "macros"], optional = true}
+
+[dev-dependencies]
+divan = "0.1.13"

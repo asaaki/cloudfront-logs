@@ -1,0 +1,25 @@
+[alias]
+b = "build"
+br = "build --release"
+c = "check"
+t = "test"
+fixit = "fix --benches --examples --tests --all-features --allow-dirty --allow-staged"
+
+t-safe = "test --no-default-features -F alloc"
+t-unsafe = "test --no-default-features -F alloc,unsafe"
+t-all = "test --all-features"
+
+bb-safe = "bench -q --no-default-features -F alloc"
+bb-unsafe = "bench -q --no-default-features -F alloc,unsafe"
+bb-all = "bench -q --all-features"
+
+[env]
+DIVAN_BYTES_FORMAT = "binary"
+DIVAN_SAMPLE_SIZE = "1000"
+DIVAN_SAMPLE_COUNT = "1000"
+
+[target.'cfg(all())']
+rustflags = [
+    "-Wclippy::all",
+    "-Wrust_2018_idioms",
+]
