@@ -25,7 +25,7 @@ jobs:
       with:
         toolchain: ${{ matrix.rust }}
 
-    - uses: Swatinem/rust-cache@v2.7.1
+    - uses: Swatinem/rust-cache@v2.7.3
       with:
         cache-all-crates: true
 
@@ -47,7 +47,7 @@ jobs:
         toolchain: stable
         components: rustfmt, clippy
 
-    - uses: Swatinem/rust-cache@v2.7.1
+    - uses: Swatinem/rust-cache@v2.7.3
       with:
         cache-all-crates: true
 
