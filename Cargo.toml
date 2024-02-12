@@ -68,9 +68,7 @@ typed = ["alloc", "dep:time"]
 unsafe = []
 
 [dependencies]
-aho-corasick = "1.1.2"
 memchr = "2.7.1"
-regex = "1.10.3"
 time = { version = "0.3.34", features = ["parsing", "macros"], optional = true}
 
 [dev-dependencies]
