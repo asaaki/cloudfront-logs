@@ -50,7 +50,7 @@ pub(crate) const FIELDS: usize = TABS + 1;
 #[inline]
 pub(crate) fn valid_line(line: &str) -> Result<(), &'static str> {
     if line.as_bytes()[..1].eq(b"#") {
-        return Err("Invalid log line (comment");
+        return Err("Invalid log line (comment)");
     }
     if memchr::memchr_iter(TAB as u8, line.as_bytes()).count() != TABS {
         return Err("Invalid log line (field count)");
