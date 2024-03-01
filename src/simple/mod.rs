@@ -1,4 +1,4 @@
-use crate::{parse_as_option, types::*, valid_line, RawLogLine, ToOptionalString, TAB};
+use crate::{shared::*, types::*, RawLogLine};
 
 pub use LogLine as SimpleLogLine;
 
@@ -65,7 +65,7 @@ impl<'a> TryFrom<&'a str> for LogLine {
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
         valid_line(line)?;
 
-        let mut iter = line.split_terminator(TAB);
+        let mut iter = split(line);
 
         let sll = LogLine {
             date: iter.next().unwrap().to_string(),

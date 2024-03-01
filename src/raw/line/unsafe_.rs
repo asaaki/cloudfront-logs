@@ -1,3 +1,5 @@
+use crate::shared::*;
+
 /// The raw and untyped log line representation,
 /// all fields are slices of the original log line.
 /// Use this struct for an efficient and low-level access to the log line fields.
@@ -60,15 +62,13 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
     type Error = &'static str;
 
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
-        crate::valid_line(line)?;
+        crate::shared::valid_line(line)?;
 
         // SAFETY: the memory layout of `LogLine` should be the same as `LogLineArray`
         // note: I don't know if those guarantees are 100 % correct
         Ok(unsafe {
             use collect_array::CollectArray;
-            std::mem::transmute::<[&'a str; crate::FIELDS], Self>(
-                line.split_terminator(crate::TAB).collect_array(),
-            )
+            std::mem::transmute::<[&'a str; crate::FIELDS], Self>(split(line).collect_array())
         })
     }
 }

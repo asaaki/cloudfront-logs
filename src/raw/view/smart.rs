@@ -1,5 +1,5 @@
-use crate::splitn;
-use std::{cell::RefCell, str::SplitTerminator};
+use crate::shared::*;
+use std::cell::RefCell;
 
 /// View into a borrowed log line
 ///
@@ -12,7 +12,7 @@ use std::{cell::RefCell, str::SplitTerminator};
 #[derive(Debug)]
 pub struct LogLineView<'a> {
     line: &'a str,
-    iter: RefCell<SplitTerminator<'a, char>>,
+    iter: RefCell<MemchrTabSplitter<'a>>,
     prev: RefCell<usize>,
     last: RefCell<&'a str>,
 }
@@ -24,8 +24,9 @@ impl<'a> LogLineView<'a> {
     /// that it's not a comment line (like the version or fields header).
     ///
     pub fn new(line: &'a str) -> Result<Self, &'static str> {
-        crate::valid_line(line)?;
-        let iter = RefCell::new(splitn(line));
+        valid_line(line)?;
+
+        let iter = RefCell::new(split(line));
         let prev = RefCell::new(0);
         let last = RefCell::new(line);
 
@@ -53,7 +54,7 @@ impl<'a> LogLineView<'a> {
             Ordering::Equal => *last,
             Ordering::Less => {
                 let mut iter = self.iter.borrow_mut();
-                *iter = splitn(self.line);
+                *iter = split(self.line);
                 *prev = index;
                 iter.nth(index).unwrap()
             }

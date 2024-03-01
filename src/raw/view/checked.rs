@@ -1,3 +1,5 @@
+use crate::shared::*;
+
 /// View into a borrowed log line
 ///
 /// Unlike [`RawLogLine`](crate::raw::RawLogLine), this struct does not compute all the fields upfront,
@@ -18,14 +20,14 @@ impl<'a> LogLineView<'a> {
     /// that it's not a comment line (like the version or fields header).
     ///
     pub fn new(line: &'a str) -> Result<Self, &'static str> {
-        crate::valid_line(line)?;
+        valid_line(line)?;
 
         Ok(LogLineView { line })
     }
 
     #[inline]
     fn field(&self, index: usize) -> &'a str {
-        crate::splitn(self.line).nth(index).unwrap()
+        split(self.line).nth(index).unwrap()
     }
 
     /// Returns the date field of the log line

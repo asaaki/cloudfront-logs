@@ -69,7 +69,7 @@ unsafe = []
 
 [dependencies]
 memchr = "2.7.1"
-time = { version = "0.3.34", features = ["parsing", "macros"], optional = true}
+time = { version = "0.3.34", features = ["parsing", "macros"], optional = true }
 
 [dev-dependencies]
 divan = "0.1.14"

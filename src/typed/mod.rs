@@ -1,4 +1,4 @@
-use crate::{parse_as_option, types::*, valid_line, RawLogLine, ToOptionalString, TAB};
+use crate::{shared::*, types::*, RawLogLine};
 
 const DATE_FMT: &[FormatItem<'_>] = format_description!("[year]-[month]-[day]");
 const TIME_FMT: &[FormatItem<'_>] = format_description!("[hour]:[minute]:[second]");
@@ -58,7 +58,7 @@ impl<'a> TryFrom<&'a str> for LogLine {
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
         valid_line(line)?;
 
-        let mut iter = line.split_terminator(TAB);
+        let mut iter = split(line);
 
         let date = Date::parse(iter.next().unwrap(), DATE_FMT).map_err(|_| "date invalid")?;
         let time = Time::parse(iter.next().unwrap(), TIME_FMT).map_err(|_| "time invalid")?;

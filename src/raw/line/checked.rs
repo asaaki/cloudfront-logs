@@ -1,3 +1,5 @@
+use crate::shared::*;
+
 #[repr(transparent)]
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct LogLine<'a>(pub(crate) super::LogLine<'a>);
@@ -20,9 +22,9 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
     type Error = &'static str;
 
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
-        crate::valid_line(line)?;
+        valid_line(line)?;
 
-        let mut iter = line.split_terminator(crate::TAB);
+        let mut iter = split(line);
 
         Ok(Self(super::LogLine {
             date: iter.next().unwrap(),
