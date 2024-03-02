@@ -87,35 +87,35 @@ this should simulate close to real-world usages.
 Timer precision: 10 ns
 real_world                   fastest       │ slowest       │ median        │ mean          │ samples │ iters
 ├─ 00 CheckedRawLogLine                    │               │               │               │         │
-│  ├─ Line A                 182.8 ns      │ 254.7 ns      │ 188.1 ns      │ 190.9 ns      │ 1000    │ 1000000
-│  ├─ Line B                 175.9 ns      │ 249.9 ns      │ 179.9 ns      │ 182.9 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              348.5 ns      │ 418.4 ns      │ 361.3 ns      │ 362.8 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            1.019 µs      │ 1.209 µs      │ 1.05 µs       │ 1.061 µs      │ 1000    │ 1000000
+│  ├─ Line A                 162.5 ns      │ 207.4 ns      │ 165.2 ns      │ 166.3 ns      │ 1000    │ 1000000
+│  ├─ Line B                 173.8 ns      │ 220 ns        │ 183 ns        │ 182.7 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B              332.6 ns      │ 392.9 ns      │ 343.2 ns      │ 344.4 ns      │ 1000    │ 1000000
+│  ╰─ Sample File            983.6 ns      │ 1.119 µs      │ 1.012 µs      │ 1.017 µs      │ 1000    │ 1000000
 ├─ 01 UnsafeRawLogLine                     │               │               │               │         │
-│  ├─ Line A                 172.4 ns      │ 250.3 ns      │ 177.3 ns      │ 180.3 ns      │ 1000    │ 1000000
-│  ├─ Line B                 174 ns        │ 256.8 ns      │ 182.8 ns      │ 186.6 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              340.4 ns      │ 558.6 ns      │ 357.9 ns      │ 360.8 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            997.9 ns      │ 1.442 µs      │ 1.043 µs      │ 1.047 µs      │ 1000    │ 1000000
+│  ├─ Line A                 167.7 ns      │ 234.9 ns      │ 175.9 ns      │ 175.9 ns      │ 1000    │ 1000000
+│  ├─ Line B                 163.5 ns      │ 218.8 ns      │ 168.4 ns      │ 168.9 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B              326.5 ns      │ 371.4 ns      │ 344 ns        │ 343.8 ns      │ 1000    │ 1000000
+│  ╰─ Sample File            962.8 ns      │ 1.095 µs      │ 993.1 ns      │ 996.4 ns      │ 1000    │ 1000000
 ├─ 10 CheckedRawLogLineView                │               │               │               │         │
-│  ├─ Line A                 377.6 ns      │ 448 ns        │ 391.9 ns      │ 393.1 ns      │ 1000    │ 1000000
-│  ├─ Line B                 378.4 ns      │ 494.2 ns      │ 395.6 ns      │ 397.2 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              749.9 ns      │ 845.1 ns      │ 782.2 ns      │ 782.7 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            2.293 µs      │ 3.49 µs       │ 2.332 µs      │ 2.349 µs      │ 1000    │ 1000000
+│  ├─ Line A                 358.7 ns      │ 413.4 ns      │ 368.2 ns      │ 370.1 ns      │ 1000    │ 1000000
+│  ├─ Line B                 360.2 ns      │ 423.3 ns      │ 373.4 ns      │ 373.6 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B              716.2 ns      │ 806.4 ns      │ 734.9 ns      │ 739.4 ns      │ 1000    │ 1000000
+│  ╰─ Sample File            2.158 µs      │ 2.486 µs      │ 2.236 µs      │ 2.241 µs      │ 1000    │ 1000000
 ├─ 11 SmartRawLogLineView                  │               │               │               │         │
-│  ├─ Line A                 294.4 ns      │ 355.8 ns      │ 304 ns        │ 305.4 ns      │ 1000    │ 1000000
-│  ├─ Line B                 293.1 ns      │ 347.8 ns      │ 298.1 ns      │ 299 ns        │ 1000    │ 1000000
-│  ├─ Lines A+B              579.7 ns      │ 661.2 ns      │ 596.4 ns      │ 599.2 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            1.752 µs      │ 1.91 µs       │ 1.801 µs      │ 1.806 µs      │ 1000    │ 1000000
+│  ├─ Line A                 281.4 ns      │ 335.5 ns      │ 289.9 ns      │ 291.3 ns      │ 1000    │ 1000000
+│  ├─ Line B                 284 ns        │ 342 ns        │ 296.6 ns      │ 296.4 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B              558 ns        │ 945.4 ns      │ 584.5 ns      │ 590.1 ns      │ 1000    │ 1000000
+│  ╰─ Sample File            1.689 µs      │ 2.478 µs      │ 1.778 µs      │ 1.779 µs      │ 1000    │ 1000000
 ├─ 20 SimpleLogLine                        │               │               │               │         │
-│  ├─ Line A                 382.5 ns      │ 579.7 ns      │ 395.2 ns      │ 398 ns        │ 1000    │ 1000000
-│  ├─ Line B                 370.1 ns      │ 428.7 ns      │ 381.2 ns      │ 383.6 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              768.2 ns      │ 1.126 µs      │ 790.3 ns      │ 793.5 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            2.334 µs      │ 2.542 µs      │ 2.406 µs      │ 2.41 µs       │ 1000    │ 1000000
+│  ├─ Line A                 364 ns        │ 439.6 ns      │ 380 ns        │ 381 ns        │ 1000    │ 1000000
+│  ├─ Line B                 352.7 ns      │ 406.9 ns      │ 363.2 ns      │ 364 ns        │ 1000    │ 1000000
+│  ├─ Lines A+B              723.8 ns      │ 815.6 ns      │ 744.2 ns      │ 746.8 ns      │ 1000    │ 1000000
+│  ╰─ Sample File            2.191 µs      │ 3.003 µs      │ 2.244 µs      │ 2.255 µs      │ 1000    │ 1000000
 ╰─ 21 TypedLogLine                         │               │               │               │         │
-   ├─ Line A                 429.2 ns      │ 699.4 ns      │ 436.2 ns      │ 439 ns        │ 1000    │ 1000000
-   ├─ Line B                 414.8 ns      │ 502.8 ns      │ 429.5 ns      │ 432.1 ns      │ 1000    │ 1000000
-   ├─ Lines A+B              836 ns        │ 1.277 µs      │ 862 ns        │ 867.3 ns      │ 1000    │ 1000000
-   ╰─ Sample File            2.52 µs       │ 3.003 µs      │ 2.578 µs      │ 2.593 µs      │ 1000    │ 1000000
+   ├─ Line A                 399 ns        │ 459.2 ns      │ 412.2 ns      │ 413.3 ns      │ 1000    │ 1000000
+   ├─ Line B                 389.9 ns      │ 465.2 ns      │ 401.6 ns      │ 402.9 ns      │ 1000    │ 1000000
+   ├─ Lines A+B              784.1 ns      │ 1.237 µs      │ 813.9 ns      │ 817.3 ns      │ 1000    │ 1000000
+   ╰─ Sample File            2.341 µs      │ 2.806 µs      │ 2.407 µs      │ 2.414 µs      │ 1000    │ 1000000
 ```
 
 There are more benches you can run, like `single-field` and `two-fields` which should highlight where the "View" parsers shine.
