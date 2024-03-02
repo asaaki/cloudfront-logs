@@ -87,46 +87,39 @@ this should simulate close to real-world usages.
 Timer precision: 10 ns
 real_world                   fastest       │ slowest       │ median        │ mean          │ samples │ iters
 ├─ 00 CheckedRawLogLine                    │               │               │               │         │
-│  ├─ Line A                 162.5 ns      │ 207.4 ns      │ 165.2 ns      │ 166.3 ns      │ 1000    │ 1000000
-│  ├─ Line B                 173.8 ns      │ 220 ns        │ 183 ns        │ 182.7 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              332.6 ns      │ 392.9 ns      │ 343.2 ns      │ 344.4 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            983.6 ns      │ 1.119 µs      │ 1.012 µs      │ 1.017 µs      │ 1000    │ 1000000
-├─ 01 UnsafeRawLogLine                     │               │               │               │         │
-│  ├─ Line A                 167.7 ns      │ 234.9 ns      │ 175.9 ns      │ 175.9 ns      │ 1000    │ 1000000
-│  ├─ Line B                 163.5 ns      │ 218.8 ns      │ 168.4 ns      │ 168.9 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              326.5 ns      │ 371.4 ns      │ 344 ns        │ 343.8 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            962.8 ns      │ 1.095 µs      │ 993.1 ns      │ 996.4 ns      │ 1000    │ 1000000
+│  ├─ Line A                 162.3 ns      │ 210.6 ns      │ 167.1 ns      │ 167.8 ns      │ 1000    │ 1000000
+│  ├─ Line B                 164.2 ns      │ 275.6 ns      │ 171.8 ns      │ 175.8 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B              325.1 ns      │ 398.2 ns      │ 337.4 ns      │ 337.5 ns      │ 1000    │ 1000000
+│  ╰─ Sample File            994 ns        │ 1.1 µs        │ 1.024 µs      │ 1.029 µs      │ 1000    │ 1000000
 ├─ 10 CheckedRawLogLineView                │               │               │               │         │
-│  ├─ Line A                 358.7 ns      │ 413.4 ns      │ 368.2 ns      │ 370.1 ns      │ 1000    │ 1000000
-│  ├─ Line B                 360.2 ns      │ 423.3 ns      │ 373.4 ns      │ 373.6 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              716.2 ns      │ 806.4 ns      │ 734.9 ns      │ 739.4 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            2.158 µs      │ 2.486 µs      │ 2.236 µs      │ 2.241 µs      │ 1000    │ 1000000
+│  ├─ Line A                 366.6 ns      │ 422.9 ns      │ 376.8 ns      │ 378 ns        │ 1000    │ 1000000
+│  ├─ Line B                 358.8 ns      │ 412.5 ns      │ 369 ns        │ 370 ns        │ 1000    │ 1000000
+│  ├─ Lines A+B              716.5 ns      │ 888.4 ns      │ 748.2 ns      │ 749.7 ns      │ 1000    │ 1000000
+│  ╰─ Sample File            2.178 µs      │ 2.784 µs      │ 2.279 µs      │ 2.279 µs      │ 1000    │ 1000000
 ├─ 11 SmartRawLogLineView                  │               │               │               │         │
-│  ├─ Line A                 281.4 ns      │ 335.5 ns      │ 289.9 ns      │ 291.3 ns      │ 1000    │ 1000000
-│  ├─ Line B                 284 ns        │ 342 ns        │ 296.6 ns      │ 296.4 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              558 ns        │ 945.4 ns      │ 584.5 ns      │ 590.1 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            1.689 µs      │ 2.478 µs      │ 1.778 µs      │ 1.779 µs      │ 1000    │ 1000000
+│  ├─ Line A                 287.5 ns      │ 385 ns        │ 298.9 ns      │ 301.3 ns      │ 1000    │ 1000000
+│  ├─ Line B                 285.2 ns      │ 401.5 ns      │ 301.5 ns      │ 303 ns        │ 1000    │ 1000000
+│  ├─ Lines A+B              556.7 ns      │ 680.3 ns      │ 594.7 ns      │ 595.8 ns      │ 1000    │ 1000000
+│  ╰─ Sample File            1.694 µs      │ 2.671 µs      │ 1.789 µs      │ 1.796 µs      │ 1000    │ 1000000
 ├─ 20 SimpleLogLine                        │               │               │               │         │
-│  ├─ Line A                 364 ns        │ 439.6 ns      │ 380 ns        │ 381 ns        │ 1000    │ 1000000
-│  ├─ Line B                 352.7 ns      │ 406.9 ns      │ 363.2 ns      │ 364 ns        │ 1000    │ 1000000
-│  ├─ Lines A+B              723.8 ns      │ 815.6 ns      │ 744.2 ns      │ 746.8 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            2.191 µs      │ 3.003 µs      │ 2.244 µs      │ 2.255 µs      │ 1000    │ 1000000
+│  ├─ Line A                 355.2 ns      │ 432 ns        │ 370.8 ns      │ 372.9 ns      │ 1000    │ 1000000
+│  ├─ Line B                 347.8 ns      │ 533.7 ns      │ 370.7 ns      │ 373.5 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B              715.5 ns      │ 883.4 ns      │ 752 ns        │ 753.9 ns      │ 1000    │ 1000000
+│  ╰─ Sample File            2.136 µs      │ 3.085 µs      │ 2.236 µs      │ 2.247 µs      │ 1000    │ 1000000
 ╰─ 21 TypedLogLine                         │               │               │               │         │
-   ├─ Line A                 399 ns        │ 459.2 ns      │ 412.2 ns      │ 413.3 ns      │ 1000    │ 1000000
-   ├─ Line B                 389.9 ns      │ 465.2 ns      │ 401.6 ns      │ 402.9 ns      │ 1000    │ 1000000
-   ├─ Lines A+B              784.1 ns      │ 1.237 µs      │ 813.9 ns      │ 817.3 ns      │ 1000    │ 1000000
-   ╰─ Sample File            2.341 µs      │ 2.806 µs      │ 2.407 µs      │ 2.414 µs      │ 1000    │ 1000000
+   ├─ Line A                 395.5 ns      │ 467.9 ns      │ 407.9 ns      │ 409.6 ns      │ 1000    │ 1000000
+   ├─ Line B                 387.8 ns      │ 512.7 ns      │ 397.1 ns      │ 399.5 ns      │ 1000    │ 1000000
+   ├─ Lines A+B              781 ns        │ 1.164 µs      │ 812.2 ns      │ 813.6 ns      │ 1000    │ 1000000
+   ╰─ Sample File            2.317 µs      │ 3.551 µs      │ 2.384 µs      │ 2.409 µs      │ 1000    │ 1000000
 ```
 
 There are more benches you can run, like `single-field` and `two-fields` which should highlight where the "View" parsers shine.
 
 ## Safety
 
-This crate includes optional features which utilise `unsafe` Rust code.
+This crate uses ``#![forbid(unsafe_code)]`` to ensure everything is implemented in 100% Safe Rust.
 
-Those parts are usually for performance reasons and implementing features not present in the standard library.
-
-The crate is generally usable without those unsafe features.
+<sup>(See `[lints.rust]` section in `Cargo.toml`)</sup>
 
 ## License
 

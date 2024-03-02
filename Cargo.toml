@@ -140,7 +140,7 @@ zero_sized_map_values = "warn"
 
 [lints.rust]
 # transformed from https://github.com/EmbarkStudios/rust-ecosystem/blob/main/lints.rs
-unsafe_code = "deny"
+unsafe_code = "forbid"
 future_incompatible = "warn"
 nonstandard_style = "warn"
 rust_2018_idioms = "warn"
