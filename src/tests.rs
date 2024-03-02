@@ -59,23 +59,10 @@ fn readme_examples_owned_simple() {
 }
 
 #[test]
-fn checked_equals_unsafe() {
-    let checked_line = CheckedRawLogLine::try_from(SINGLE_LOG_LINE).unwrap();
-    let unsafe_line = UnsafeRawLogLine::try_from(SINGLE_LOG_LINE).unwrap();
-    assert_eq!(checked_line.time, unsafe_line.time);
-    assert_eq!(checked_line.sc_content_len, unsafe_line.sc_content_len);
-    assert_eq!(checked_line.c_ip, unsafe_line.c_ip);
-
-    eprintln!("checked_line: {:#?}", checked_line);
-    eprintln!("unsafe_line:  {:#?}", unsafe_line);
-}
-
-#[test]
 fn transformation_roundtrip() {
     let checked_line = CheckedRawLogLine::try_from(SINGLE_LOG_LINE).unwrap();
-    let unsafe_line = UnsafeRawLogLine::try_from(SINGLE_LOG_LINE).unwrap();
     let simple_line = SimpleLogLine::try_from(checked_line).unwrap();
-    let typed_line = TypedLogLine::try_from(unsafe_line).unwrap();
+    let typed_line = TypedLogLine::try_from(checked_line).unwrap();
 
     assert_eq!(simple_line.sc_bytes, typed_line.sc_bytes);
     assert_eq!(simple_line.cs_host, typed_line.cs_host);

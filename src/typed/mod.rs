@@ -249,12 +249,3 @@ impl TryFrom<crate::CheckedRawLogLine<'_>> for LogLine {
         Self::try_from(raw.0)
     }
 }
-
-#[cfg(feature = "unsafe")]
-impl TryFrom<crate::UnsafeRawLogLine<'_>> for LogLine {
-    type Error = &'static str;
-
-    fn try_from(raw: crate::UnsafeRawLogLine<'_>) -> Result<Self, Self::Error> {
-        Self::try_from(raw.0)
-    }
-}

@@ -1,9 +1,5 @@
 pub(crate) mod checked;
 
-// SAFETY: the line has been checked for the correct number of fields
-#[cfg(feature = "unsafe")]
-pub(crate) mod unsafe_;
-
 /// The raw and untyped log line representation,
 /// all fields are slices of the original log line.
 /// Use this struct for an efficient and low-level access to the log line fields.

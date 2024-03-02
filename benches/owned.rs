@@ -91,7 +91,7 @@ mod simple {
         #[divan::bench]
         fn a_single_field() -> u64 {
             fn parse(line: &str) -> u64 {
-                let raw = UnsafeRawLogLine::try_from(line).unwrap();
+                let raw = CheckedRawLogLine::try_from(line).unwrap();
                 let item = SimpleLogLine::try_from(raw).unwrap();
                 item.sc_bytes
             }
@@ -102,7 +102,7 @@ mod simple {
         #[divan::bench]
         fn b_two_fields() -> (u64, String) {
             fn parse(line: &str) -> (u64, String) {
-                let raw = UnsafeRawLogLine::try_from(line).unwrap();
+                let raw = CheckedRawLogLine::try_from(line).unwrap();
                 let item = SimpleLogLine::try_from(raw).unwrap();
                 (item.sc_bytes, item.cs_uri_stem)
             }
@@ -113,7 +113,7 @@ mod simple {
         #[divan::bench]
         fn c_three_fields() -> [u64; 3] {
             fn parse(line: &str) -> [u64; 3] {
-                let raw = UnsafeRawLogLine::try_from(line).unwrap();
+                let raw = CheckedRawLogLine::try_from(line).unwrap();
                 let item = SimpleLogLine::try_from(raw).unwrap();
                 [item.sc_bytes, item.cs_bytes, item.sc_content_len]
             }
@@ -148,7 +148,7 @@ mod simple {
                 String,
                 IpAddr,
             ) {
-                let raw = UnsafeRawLogLine::try_from(line).unwrap();
+                let raw = CheckedRawLogLine::try_from(line).unwrap();
                 let item = SimpleLogLine::try_from(raw).unwrap();
                 (
                     item.date,
@@ -229,85 +229,6 @@ mod simple {
                 IpAddr,
             ) {
                 let item = SimpleLogLine::try_from_with_raw(line).unwrap();
-                (
-                    item.date,
-                    item.time,
-                    item.sc_bytes,
-                    item.cs_bytes,
-                    item.sc_content_len,
-                    item.cs_uri_stem,
-                    item.cs_uri_query,
-                    item.cs_referer,
-                    item.cs_user_agent,
-                    item.c_ip,
-                )
-            }
-
-            parse(divan::black_box(LOG_LINE_A))
-        }
-    }
-
-    mod try_from_with_raw_unsafe {
-        use crate::*;
-
-        #[divan::bench]
-        fn a_single_field() -> u64 {
-            fn parse(line: &str) -> u64 {
-                let item = SimpleLogLine::try_from_with_raw_unsafe(line).unwrap();
-                item.sc_bytes
-            }
-
-            parse(divan::black_box(LOG_LINE_A))
-        }
-
-        #[divan::bench]
-        fn b_two_fields() -> (u64, String) {
-            fn parse(line: &str) -> (u64, String) {
-                let item = SimpleLogLine::try_from_with_raw_unsafe(line).unwrap();
-                (item.sc_bytes, item.cs_uri_stem)
-            }
-
-            parse(divan::black_box(LOG_LINE_A))
-        }
-
-        #[divan::bench]
-        fn c_three_fields() -> [u64; 3] {
-            fn parse(line: &str) -> [u64; 3] {
-                let item = SimpleLogLine::try_from_with_raw_unsafe(line).unwrap();
-                [item.sc_bytes, item.cs_bytes, item.sc_content_len]
-            }
-
-            parse(divan::black_box(LOG_LINE_A))
-        }
-
-        #[divan::bench]
-        fn d_ten_fields() -> (
-            String,
-            String,
-            u64,
-            u64,
-            u64,
-            String,
-            String,
-            String,
-            String,
-            IpAddr,
-        ) {
-            fn parse(
-                line: &str,
-            ) -> (
-                String,
-                String,
-                u64,
-                u64,
-                u64,
-                String,
-                String,
-                String,
-                String,
-                IpAddr,
-            ) {
-                let item = SimpleLogLine::try_from_with_raw_unsafe(line).unwrap();
                 (
                     item.date,
                     item.time,
@@ -413,7 +334,7 @@ mod typed {
         #[divan::bench]
         fn a_single_field() -> u64 {
             fn parse(line: &str) -> u64 {
-                let raw = UnsafeRawLogLine::try_from(line).unwrap();
+                let raw = CheckedRawLogLine::try_from(line).unwrap();
                 let item = TypedLogLine::try_from(raw).unwrap();
                 item.sc_bytes
             }
@@ -424,7 +345,7 @@ mod typed {
         #[divan::bench]
         fn b_two_fields() -> (u64, String) {
             fn parse(line: &str) -> (u64, String) {
-                let raw = UnsafeRawLogLine::try_from(line).unwrap();
+                let raw = CheckedRawLogLine::try_from(line).unwrap();
                 let item = TypedLogLine::try_from(raw).unwrap();
                 (item.sc_bytes, item.cs_uri_stem)
             }
@@ -435,7 +356,7 @@ mod typed {
         #[divan::bench]
         fn c_three_fields() -> [u64; 3] {
             fn parse(line: &str) -> [u64; 3] {
-                let raw = UnsafeRawLogLine::try_from(line).unwrap();
+                let raw = CheckedRawLogLine::try_from(line).unwrap();
                 let item = TypedLogLine::try_from(raw).unwrap();
                 [item.sc_bytes, item.cs_bytes, item.sc_content_len]
             }
@@ -470,7 +391,7 @@ mod typed {
                 String,
                 IpAddr,
             ) {
-                let raw = UnsafeRawLogLine::try_from(line).unwrap();
+                let raw = CheckedRawLogLine::try_from(line).unwrap();
                 let item = TypedLogLine::try_from(raw).unwrap();
                 (
                     item.date,

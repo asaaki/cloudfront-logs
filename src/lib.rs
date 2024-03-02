@@ -61,9 +61,6 @@ pub use types::*;
 
 pub use raw::{CheckedRawLogLine, CheckedRawLogLineView, RawLogLine, SmartRawLogLineView};
 
-#[cfg(feature = "unsafe")]
-pub use raw::UnsafeRawLogLine;
-
 #[cfg(feature = "alloc")]
 pub use simple::SimpleLogLine;
 

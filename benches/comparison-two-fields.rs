@@ -23,22 +23,6 @@ fn raw_line_checked(inputs: Inputs) -> usize {
         .sum()
 }
 
-#[divan::bench(name = "01 UnsafeRawLogLine", args = ARGS)]
-fn raw_line_unsafe(inputs: Inputs) -> usize {
-    fn parse(line: &str) -> Option<usize> {
-        UnsafeRawLogLine::try_from(line).ok().map(|item| {
-            let result = &[Data::S0(item.cs_uri_stem), Data::S0(item.sc_bytes)];
-            result.len()
-        })
-    }
-
-    inputs
-        .data()
-        .iter()
-        .map(|line| parse(divan::black_box(*line)).unwrap_or_default())
-        .sum()
-}
-
 #[divan::bench(name = "10 CheckedRawLogLineView", args = ARGS)]
 fn raw_view_checked(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
