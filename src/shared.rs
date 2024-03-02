@@ -87,7 +87,7 @@ impl ToOptionalString for &str {
         if self == &"-" {
             None
         } else {
-            Some(self.to_string())
+            Some((*self).to_string())
         }
     }
 }
