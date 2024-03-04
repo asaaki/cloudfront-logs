@@ -43,8 +43,7 @@ impl Inputs {
     #[allow(unused)]
     pub fn data(&self) -> &[&'static str] {
         match self {
-            Inputs::A(d) => d.as_slice(),
-            Inputs::B(d) => d.as_slice(),
+            Inputs::A(d) | Inputs::B(d) => d.as_slice(),
             Inputs::AB(d) => d.as_slice(),
             Inputs::F(d) => d.as_slice(),
         }
