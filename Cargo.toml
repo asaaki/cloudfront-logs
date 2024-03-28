@@ -59,7 +59,7 @@ alloc = []
 typed = ["alloc", "dep:time"]
 
 [dependencies]
-memchr = "2.7.1"
+memchr = "2.7.2"
 time = { version = "0.3.34", features = ["parsing", "macros"], optional = true }
 
 [dev-dependencies]
