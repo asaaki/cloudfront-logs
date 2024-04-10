@@ -5,7 +5,7 @@ use std::str::FromStr;
 
 #[cfg(feature = "typed")]
 pub use time::{
-    format_description::FormatItem, macros::format_description, Date, OffsetDateTime, Time,
+    format_description::BorrowedFormatItem, macros::format_description, Date, OffsetDateTime, Time,
     UtcOffset,
 };
 

@@ -1,7 +1,7 @@
 use crate::{shared::*, types::*, RawLogLine};
 
-const DATE_FMT: &[FormatItem<'_>] = format_description!("[year]-[month]-[day]");
-const TIME_FMT: &[FormatItem<'_>] = format_description!("[hour]:[minute]:[second]");
+const DATE_FMT: &[BorrowedFormatItem<'_>] = format_description!("[year]-[month]-[day]");
+const TIME_FMT: &[BorrowedFormatItem<'_>] = format_description!("[hour]:[minute]:[second]");
 
 pub use LogLine as TypedLogLine;
 
