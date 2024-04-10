@@ -11,7 +11,7 @@ fn main() {
 fn raw_line_checked(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
         CheckedRawLogLine::try_from(line).ok().map(|item| {
-            let result = &[Data::S0(item.cs_uri_stem), Data::S0(item.sc_bytes)];
+            let result = &[Data::S0(item.sc_bytes), Data::S0(item.cs_uri_stem)];
             result.len()
         })
     }
@@ -27,7 +27,7 @@ fn raw_line_checked(inputs: Inputs) -> usize {
 fn raw_view_checked(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
         CheckedRawLogLineView::new(line).ok().map(|item| {
-            let result = &[Data::S0(item.cs_uri_stem()), Data::S0(item.sc_bytes())];
+            let result = &[Data::S0(item.sc_bytes()), Data::S0(item.cs_uri_stem())];
             result.len()
         })
     }
@@ -43,7 +43,7 @@ fn raw_view_checked(inputs: Inputs) -> usize {
 fn raw_view_smart(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
         SmartRawLogLineView::new(line).ok().map(|item| {
-            let result = &[Data::S0(item.cs_uri_stem()), Data::S0(item.sc_bytes())];
+            let result = &[Data::S0(item.sc_bytes()), Data::S0(item.cs_uri_stem())];
             result.len()
         })
     }
@@ -59,7 +59,7 @@ fn raw_view_smart(inputs: Inputs) -> usize {
 fn owned_simple(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
         SimpleLogLine::try_from(line).ok().map(|item| {
-            let result = &[Data::S(item.cs_uri_stem), Data::N(item.sc_bytes)];
+            let result = &[Data::N(item.sc_bytes), Data::S(item.cs_uri_stem)];
             result.len()
         })
     }
@@ -75,7 +75,7 @@ fn owned_simple(inputs: Inputs) -> usize {
 fn owned_typed(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
         TypedLogLine::try_from(line).ok().map(|item| {
-            let result = &[Data::S(item.cs_uri_stem), Data::N(item.sc_bytes)];
+            let result = &[Data::N(item.sc_bytes), Data::S(item.cs_uri_stem)];
             result.len()
         })
     }

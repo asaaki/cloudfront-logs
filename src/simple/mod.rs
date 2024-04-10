@@ -1,4 +1,4 @@
-use crate::{shared::*, types::*, RawLogLine};
+use crate::{shared::*, types::*, CheckedRawLogLine};
 
 pub use LogLine as SimpleLogLine;
 
@@ -48,8 +48,8 @@ pub struct LogLine {
 
 impl LogLine {
     pub fn try_from_with_raw(line: &str) -> Result<Self, &'static str> {
-        let raw = crate::CheckedRawLogLine::try_from(line)?;
-        Self::try_from(raw.0)
+        let raw = CheckedRawLogLine::try_from(line)?;
+        Self::try_from(raw)
     }
 }
 
@@ -59,7 +59,7 @@ impl<'a> TryFrom<&'a str> for LogLine {
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
         valid_line(line)?;
 
-        let mut iter = split(line);
+        let mut iter = MemchrTabSplitter::new(line);
 
         let sll = LogLine {
             date: iter.next().unwrap().to_string(),
@@ -155,10 +155,10 @@ impl<'a> TryFrom<&'a str> for LogLine {
     }
 }
 
-impl TryFrom<RawLogLine<'_>> for LogLine {
+impl TryFrom<CheckedRawLogLine<'_>> for LogLine {
     type Error = &'static str;
 
-    fn try_from(raw: RawLogLine<'_>) -> Result<Self, Self::Error> {
+    fn try_from(raw: CheckedRawLogLine<'_>) -> Result<Self, Self::Error> {
         let sll = LogLine {
             date: raw.date.to_string(),
             time: raw.time.to_string(),
@@ -230,13 +230,5 @@ impl TryFrom<RawLogLine<'_>> for LogLine {
             sc_range_end: parse_as_option(raw.sc_range_end).map_err(|_| "sc_range_end invalid")?,
         };
         Ok(sll)
-    }
-}
-
-impl TryFrom<crate::CheckedRawLogLine<'_>> for LogLine {
-    type Error = &'static str;
-
-    fn try_from(raw: crate::CheckedRawLogLine<'_>) -> Result<Self, Self::Error> {
-        Self::try_from(raw.0)
     }
 }

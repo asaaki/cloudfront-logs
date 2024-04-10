@@ -21,6 +21,7 @@ pub const LOG_LINE_B: &str = "2019-12-13	22:37:02	SEA19-C2	900	192.0.2.200	GET	d
 // Data container to unify the result sets for the different parsers
 #[allow(unused)]
 pub enum Data<'a> {
+    B(&'a [u8]),
     S0(&'a str),
     S(String),
     N(u64),
