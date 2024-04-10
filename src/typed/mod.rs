@@ -1,4 +1,4 @@
-use crate::{shared::*, types::*, RawLogLine};
+use crate::{shared::*, types::*, CheckedRawLogLine};
 
 const DATE_FMT: &[FormatItem<'_>] = format_description!("[year]-[month]-[day]");
 const TIME_FMT: &[FormatItem<'_>] = format_description!("[hour]:[minute]:[second]");
@@ -58,7 +58,7 @@ impl<'a> TryFrom<&'a str> for LogLine {
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
         valid_line(line)?;
 
-        let mut iter = split(line);
+        let mut iter = MemchrTabSplitter::new(line);
 
         let date = Date::parse(iter.next().unwrap(), DATE_FMT).map_err(|_| "date invalid")?;
         let time = Time::parse(iter.next().unwrap(), TIME_FMT).map_err(|_| "time invalid")?;
@@ -159,10 +159,10 @@ impl<'a> TryFrom<&'a str> for LogLine {
     }
 }
 
-impl TryFrom<RawLogLine<'_>> for LogLine {
+impl TryFrom<CheckedRawLogLine<'_>> for LogLine {
     type Error = &'static str;
 
-    fn try_from(raw: RawLogLine<'_>) -> Result<Self, Self::Error> {
+    fn try_from(raw: CheckedRawLogLine<'_>) -> Result<Self, Self::Error> {
         let date = Date::parse(raw.date, DATE_FMT).map_err(|_| "date invalid")?;
         let time = Time::parse(raw.time, TIME_FMT).map_err(|_| "time invalid")?;
         let datetime = OffsetDateTime::new_utc(date, time);
@@ -239,13 +239,5 @@ impl TryFrom<RawLogLine<'_>> for LogLine {
             sc_range_end: parse_as_option(raw.sc_range_end).map_err(|_| "sc_range_end invalid")?,
         };
         Ok(sll)
-    }
-}
-
-impl TryFrom<crate::CheckedRawLogLine<'_>> for LogLine {
-    type Error = &'static str;
-
-    fn try_from(raw: crate::CheckedRawLogLine<'_>) -> Result<Self, Self::Error> {
-        Self::try_from(raw.0)
     }
 }

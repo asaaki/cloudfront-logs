@@ -1,21 +1,40 @@
 use crate::shared::*;
 
-#[repr(transparent)]
 #[derive(Debug, PartialEq, Clone, Copy)]
-pub struct LogLine<'a>(pub(crate) super::LogLine<'a>);
-
-impl<'a> std::ops::Deref for LogLine<'a> {
-    type Target = super::LogLine<'a>;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-impl LogLine<'_> {
-    pub fn inner(&self) -> &super::LogLine<'_> {
-        &self.0
-    }
+pub struct LogLine<'a> {
+    pub date: &'a str,
+    pub time: &'a str,
+    pub x_edge_location: &'a str,
+    pub sc_bytes: &'a str,
+    pub c_ip: &'a str,
+    pub cs_method: &'a str,
+    pub cs_host: &'a str,
+    pub cs_uri_stem: &'a str,
+    pub sc_status: &'a str,
+    pub cs_referer: &'a str,
+    pub cs_user_agent: &'a str,
+    pub cs_uri_query: &'a str,
+    pub cs_cookie: &'a str,
+    pub x_edge_result_type: &'a str,
+    pub x_edge_request_id: &'a str,
+    pub x_host_header: &'a str,
+    pub cs_protocol: &'a str,
+    pub cs_bytes: &'a str,
+    pub time_taken: &'a str,
+    pub x_forwarded_for: &'a str,
+    pub ssl_protocol: &'a str,
+    pub ssl_cipher: &'a str,
+    pub x_edge_response_result_type: &'a str,
+    pub cs_protocol_version: &'a str,
+    pub fle_status: &'a str,
+    pub fle_encrypted_fields: &'a str,
+    pub c_port: &'a str,
+    pub time_to_first_byte: &'a str,
+    pub x_edge_detailed_result_type: &'a str,
+    pub sc_content_type: &'a str,
+    pub sc_content_len: &'a str,
+    pub sc_range_start: &'a str,
+    pub sc_range_end: &'a str,
 }
 
 impl<'a> TryFrom<&'a str> for LogLine<'a> {
@@ -24,9 +43,9 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
         valid_line(line)?;
 
-        let mut iter = split(line);
+        let mut iter = MemchrTabSplitter::new(line);
 
-        Ok(Self(super::LogLine {
+        Ok(Self {
             date: iter.next().unwrap(),
             time: iter.next().unwrap(),
             x_edge_location: iter.next().unwrap(),
@@ -60,6 +79,6 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
             sc_content_len: iter.next().unwrap(),
             sc_range_start: iter.next().unwrap(),
             sc_range_end: iter.next().unwrap(),
-        }))
+        })
     }
 }

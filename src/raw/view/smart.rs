@@ -26,7 +26,7 @@ impl<'a> LogLineView<'a> {
     pub fn new(line: &'a str) -> Result<Self, &'static str> {
         valid_line(line)?;
 
-        let iter = RefCell::new(split(line));
+        let iter = RefCell::new(MemchrTabSplitter::new(line));
         let prev = RefCell::new(0);
         let last = RefCell::new(line);
 

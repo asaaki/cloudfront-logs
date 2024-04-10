@@ -59,7 +59,7 @@ pub(crate) const FIELDS: usize = TABS + 1;
 // top-level re-exports
 pub use types::*;
 
-pub use raw::{CheckedRawLogLine, CheckedRawLogLineView, RawLogLine, SmartRawLogLineView};
+pub use raw::{CheckedRawLogLine, CheckedRawLogLineView, SmartRawLogLineView};
 
 #[cfg(feature = "alloc")]
 pub use simple::SimpleLogLine;
