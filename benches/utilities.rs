@@ -51,6 +51,7 @@ impl Inputs {
     }
 }
 
+#[allow(clippy::to_string_trait_impl)]
 impl ToString for Inputs {
     fn to_string(&self) -> String {
         match self {
