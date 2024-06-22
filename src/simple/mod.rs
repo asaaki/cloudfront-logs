@@ -17,9 +17,9 @@ pub struct LogLine {
     pub cs_host: String,
     pub cs_uri_stem: String,
     pub sc_status: u16,
-    pub cs_referer: String,
+    pub cs_referer: Option<String>,
     pub cs_user_agent: String,
-    pub cs_uri_query: String,
+    pub cs_uri_query: Option<String>,
     pub cs_cookie: Option<String>,
     pub x_edge_result_type: EdgeResultType,
     pub x_edge_request_id: String,
@@ -79,9 +79,9 @@ impl<'a> TryFrom<&'a str> for LogLine {
                 .unwrap()
                 .parse::<u16>()
                 .map_err(|_| "sc_status invalid")?,
-            cs_referer: iter.next().unwrap().to_string(),
+            cs_referer: iter.next().unwrap().to_optional_string(),
             cs_user_agent: iter.next().unwrap().to_string(),
-            cs_uri_query: iter.next().unwrap().to_string(),
+            cs_uri_query: iter.next().unwrap().to_optional_string(),
             cs_cookie: iter.next().unwrap().to_optional_string(),
             x_edge_result_type: iter
                 .next()
@@ -175,9 +175,9 @@ impl TryFrom<CheckedRawLogLine<'_>> for LogLine {
                 .sc_status
                 .parse::<u16>()
                 .map_err(|_| "sc_status invalid")?,
-            cs_referer: raw.cs_referer.to_string(),
+            cs_referer: raw.cs_referer.to_optional_string(),
             cs_user_agent: raw.cs_user_agent.to_string(),
-            cs_uri_query: raw.cs_uri_query.to_string(),
+            cs_uri_query: raw.cs_uri_query.to_optional_string(),
             cs_cookie: raw.cs_cookie.to_optional_string(),
             x_edge_result_type: raw
                 .x_edge_result_type

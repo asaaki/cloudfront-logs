@@ -24,6 +24,7 @@ pub enum Data<'a> {
     B(&'a [u8]),
     S0(&'a str),
     S(String),
+    OS(Option<String>),
     N(u64),
     M(u16),
     I(IpAddr),
