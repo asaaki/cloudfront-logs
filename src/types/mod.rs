@@ -43,6 +43,22 @@ impl FromStr for EdgeResultType {
     }
 }
 
+impl ToString for EdgeResultType {
+    fn to_string(&self) -> String {
+        match self {
+            EdgeResultType::Hit => "Hit",
+            EdgeResultType::RefreshHit => "RefreshHit",
+            EdgeResultType::Miss => "Miss",
+            EdgeResultType::LimitExceeded => "LimitExceeded",
+            EdgeResultType::CapacityExceeded => "CapacityExceeded",
+            EdgeResultType::Error => "Error",
+            EdgeResultType::Redirect => "Redirect",
+            EdgeResultType::Other(s) => s,
+        }
+        .into()
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum DetailedEdgeResultType {
     // same as EdgeResultType
@@ -127,6 +143,46 @@ impl FromStr for DetailedEdgeResultType {
     }
 }
 
+impl ToString for DetailedEdgeResultType {
+    fn to_string(&self) -> String {
+        match self {
+            DetailedEdgeResultType::Hit => "Hit",
+            DetailedEdgeResultType::RefreshHit => "RefreshHit",
+            DetailedEdgeResultType::Miss => "Miss",
+            DetailedEdgeResultType::LimitExceeded => "LimitExceeded",
+            DetailedEdgeResultType::CapacityExceeded => "CapacityExceeded",
+            DetailedEdgeResultType::Error => "Error",
+            DetailedEdgeResultType::Redirect => "Redirect",
+            DetailedEdgeResultType::OriginShieldHit => "OriginShieldHit",
+            DetailedEdgeResultType::MissGeneratedResponse => "MissGeneratedResponse",
+            DetailedEdgeResultType::AbortedOrigin => "AbortedOrigin",
+            DetailedEdgeResultType::ClientCommError => "ClientCommError",
+            DetailedEdgeResultType::ClientGeoBlocked => "ClientGeoBlocked",
+            DetailedEdgeResultType::ClientHungUpRequest => "ClientHungUpRequest",
+            DetailedEdgeResultType::InvalidRequest => "InvalidRequest",
+            DetailedEdgeResultType::InvalidRequestBlocked => "InvalidRequestBlocked",
+            DetailedEdgeResultType::InvalidRequestCertificate => "InvalidRequestCertificate",
+            DetailedEdgeResultType::InvalidRequestHeader => "InvalidRequestHeader",
+            DetailedEdgeResultType::InvalidRequestMethod => "InvalidRequestMethod",
+            DetailedEdgeResultType::OriginCommError => "OriginCommError",
+            DetailedEdgeResultType::OriginConnectError => "OriginConnectError",
+            DetailedEdgeResultType::OriginContentRangeLengthError => {
+                "OriginContentRangeLengthError"
+            }
+            DetailedEdgeResultType::OriginDnsError => "OriginDnsError",
+            DetailedEdgeResultType::OriginError => "OriginError",
+            DetailedEdgeResultType::OriginHeaderTooBigError => "OriginHeaderTooBigError",
+            DetailedEdgeResultType::OriginInvalidResponseError => "OriginInvalidResponseError",
+            DetailedEdgeResultType::OriginReadError => "OriginReadError",
+            DetailedEdgeResultType::OriginWriteError => "OriginWriteError",
+            DetailedEdgeResultType::OriginZeroSizeObjectError => "OriginZeroSizeObjectError",
+            DetailedEdgeResultType::SlowReaderOriginError => "SlowReaderOriginError",
+            DetailedEdgeResultType::Other(s) => s,
+        }
+        .into()
+    }
+}
+
 #[derive(Debug, PartialEq)]
 pub enum CsProtocol {
     Http,
@@ -146,6 +202,18 @@ impl FromStr for CsProtocol {
             "wss" => CsProtocol::Wss,
             _ => return Err(()),
         })
+    }
+}
+
+impl ToString for CsProtocol {
+    fn to_string(&self) -> String {
+        match self {
+            CsProtocol::Http => "http",
+            CsProtocol::Https => "https",
+            CsProtocol::Ws => "ws",
+            CsProtocol::Wss => "wss",
+        }
+        .into()
     }
 }
 
@@ -173,6 +241,19 @@ impl FromStr for CsProtocolVersion {
     }
 }
 
+impl ToString for CsProtocolVersion {
+    fn to_string(&self) -> String {
+        match self {
+            CsProtocolVersion::HTTP3_0 => "HTTP/3.0",
+            CsProtocolVersion::HTTP2_0 => "HTTP/2.0",
+            CsProtocolVersion::HTTP1_1 => "HTTP/1.1",
+            CsProtocolVersion::HTTP1_0 => "HTTP/1.0",
+            CsProtocolVersion::HTTP0_9 => "HTTP/0.9",
+        }
+        .into()
+    }
+}
+
 // <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html>
 
 #[derive(Debug, PartialEq)]
@@ -196,5 +277,18 @@ impl FromStr for SslProtocol {
             "SSLv3" => SslProtocol::SSLv3,
             _ => return Err(()),
         })
+    }
+}
+
+impl ToString for SslProtocol {
+    fn to_string(&self) -> String {
+        match self {
+            SslProtocol::TLSv1_3 => "TLSv1.3",
+            SslProtocol::TLSv1_2 => "TLSv1.2",
+            SslProtocol::TLSv1_1 => "TLSv1.1",
+            SslProtocol::TLSv1_0 => "TLSv1",
+            SslProtocol::SSLv3 => "SSLv3",
+        }
+        .into()
     }
 }
