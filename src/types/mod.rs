@@ -1,8 +1,6 @@
 pub use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 pub use std::time::Duration;
 
-use std::str::FromStr;
-
 #[cfg(feature = "typed")]
 pub use time::{
     format_description::BorrowedFormatItem, macros::format_description, Date, OffsetDateTime, Time,
@@ -12,7 +10,7 @@ pub use time::{
 #[cfg(feature = "typed")]
 pub use time::macros as time_macros;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
 pub enum EdgeResultType {
     Hit,
     RefreshHit,
@@ -26,40 +24,7 @@ pub enum EdgeResultType {
     Other(String),
 }
 
-impl FromStr for EdgeResultType {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
-            "Hit" => EdgeResultType::Hit,
-            "RefreshHit" => EdgeResultType::RefreshHit,
-            "Miss" => EdgeResultType::Miss,
-            "LimitExceeded" => EdgeResultType::LimitExceeded,
-            "CapacityExceeded" => EdgeResultType::CapacityExceeded,
-            "Error" => EdgeResultType::Error,
-            "Redirect" => EdgeResultType::Redirect,
-            _ => EdgeResultType::Other(s.to_string()),
-        })
-    }
-}
-
-impl ToString for EdgeResultType {
-    fn to_string(&self) -> String {
-        match self {
-            EdgeResultType::Hit => "Hit",
-            EdgeResultType::RefreshHit => "RefreshHit",
-            EdgeResultType::Miss => "Miss",
-            EdgeResultType::LimitExceeded => "LimitExceeded",
-            EdgeResultType::CapacityExceeded => "CapacityExceeded",
-            EdgeResultType::Error => "Error",
-            EdgeResultType::Redirect => "Redirect",
-            EdgeResultType::Other(s) => s,
-        }
-        .into()
-    }
-}
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
 pub enum DetailedEdgeResultType {
     // same as EdgeResultType
     Hit,
@@ -102,193 +67,44 @@ pub enum DetailedEdgeResultType {
     Other(String),
 }
 
-impl FromStr for DetailedEdgeResultType {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
-            "Hit" => DetailedEdgeResultType::Hit,
-            "RefreshHit" => DetailedEdgeResultType::RefreshHit,
-            "Miss" => DetailedEdgeResultType::Miss,
-            "LimitExceeded" => DetailedEdgeResultType::LimitExceeded,
-            "CapacityExceeded" => DetailedEdgeResultType::CapacityExceeded,
-            "Error" => DetailedEdgeResultType::Error,
-            "Redirect" => DetailedEdgeResultType::Redirect,
-            "OriginShieldHit" => DetailedEdgeResultType::OriginShieldHit,
-            "MissGeneratedResponse" => DetailedEdgeResultType::MissGeneratedResponse,
-            "AbortedOrigin" => DetailedEdgeResultType::AbortedOrigin,
-            "ClientCommError" => DetailedEdgeResultType::ClientCommError,
-            "ClientGeoBlocked" => DetailedEdgeResultType::ClientGeoBlocked,
-            "ClientHungUpRequest" => DetailedEdgeResultType::ClientHungUpRequest,
-            "InvalidRequest" => DetailedEdgeResultType::InvalidRequest,
-            "InvalidRequestBlocked" => DetailedEdgeResultType::InvalidRequestBlocked,
-            "InvalidRequestCertificate" => DetailedEdgeResultType::InvalidRequestCertificate,
-            "InvalidRequestHeader" => DetailedEdgeResultType::InvalidRequestHeader,
-            "InvalidRequestMethod" => DetailedEdgeResultType::InvalidRequestMethod,
-            "OriginCommError" => DetailedEdgeResultType::OriginCommError,
-            "OriginConnectError" => DetailedEdgeResultType::OriginConnectError,
-            "OriginContentRangeLengthError" => {
-                DetailedEdgeResultType::OriginContentRangeLengthError
-            }
-            "OriginDnsError" => DetailedEdgeResultType::OriginDnsError,
-            "OriginError" => DetailedEdgeResultType::OriginError,
-            "OriginHeaderTooBigError" => DetailedEdgeResultType::OriginHeaderTooBigError,
-            "OriginInvalidResponseError" => DetailedEdgeResultType::OriginInvalidResponseError,
-            "OriginReadError" => DetailedEdgeResultType::OriginReadError,
-            "OriginWriteError" => DetailedEdgeResultType::OriginWriteError,
-            "OriginZeroSizeObjectError" => DetailedEdgeResultType::OriginZeroSizeObjectError,
-            "SlowReaderOriginError" => DetailedEdgeResultType::SlowReaderOriginError,
-            _ => DetailedEdgeResultType::Other(s.to_string()),
-        })
-    }
-}
-
-impl ToString for DetailedEdgeResultType {
-    fn to_string(&self) -> String {
-        match self {
-            DetailedEdgeResultType::Hit => "Hit",
-            DetailedEdgeResultType::RefreshHit => "RefreshHit",
-            DetailedEdgeResultType::Miss => "Miss",
-            DetailedEdgeResultType::LimitExceeded => "LimitExceeded",
-            DetailedEdgeResultType::CapacityExceeded => "CapacityExceeded",
-            DetailedEdgeResultType::Error => "Error",
-            DetailedEdgeResultType::Redirect => "Redirect",
-            DetailedEdgeResultType::OriginShieldHit => "OriginShieldHit",
-            DetailedEdgeResultType::MissGeneratedResponse => "MissGeneratedResponse",
-            DetailedEdgeResultType::AbortedOrigin => "AbortedOrigin",
-            DetailedEdgeResultType::ClientCommError => "ClientCommError",
-            DetailedEdgeResultType::ClientGeoBlocked => "ClientGeoBlocked",
-            DetailedEdgeResultType::ClientHungUpRequest => "ClientHungUpRequest",
-            DetailedEdgeResultType::InvalidRequest => "InvalidRequest",
-            DetailedEdgeResultType::InvalidRequestBlocked => "InvalidRequestBlocked",
-            DetailedEdgeResultType::InvalidRequestCertificate => "InvalidRequestCertificate",
-            DetailedEdgeResultType::InvalidRequestHeader => "InvalidRequestHeader",
-            DetailedEdgeResultType::InvalidRequestMethod => "InvalidRequestMethod",
-            DetailedEdgeResultType::OriginCommError => "OriginCommError",
-            DetailedEdgeResultType::OriginConnectError => "OriginConnectError",
-            DetailedEdgeResultType::OriginContentRangeLengthError => {
-                "OriginContentRangeLengthError"
-            }
-            DetailedEdgeResultType::OriginDnsError => "OriginDnsError",
-            DetailedEdgeResultType::OriginError => "OriginError",
-            DetailedEdgeResultType::OriginHeaderTooBigError => "OriginHeaderTooBigError",
-            DetailedEdgeResultType::OriginInvalidResponseError => "OriginInvalidResponseError",
-            DetailedEdgeResultType::OriginReadError => "OriginReadError",
-            DetailedEdgeResultType::OriginWriteError => "OriginWriteError",
-            DetailedEdgeResultType::OriginZeroSizeObjectError => "OriginZeroSizeObjectError",
-            DetailedEdgeResultType::SlowReaderOriginError => "SlowReaderOriginError",
-            DetailedEdgeResultType::Other(s) => s,
-        }
-        .into()
-    }
-}
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
 pub enum CsProtocol {
+    #[strum(serialize = "http")]
     Http,
+    #[strum(serialize = "https")]
     Https,
+    #[strum(serialize = "ws")]
     Ws,
+    #[strum(serialize = "wss")]
     Wss,
 }
 
-impl FromStr for CsProtocol {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
-            "http" => CsProtocol::Http,
-            "https" => CsProtocol::Https,
-            "ws" => CsProtocol::Ws,
-            "wss" => CsProtocol::Wss,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl ToString for CsProtocol {
-    fn to_string(&self) -> String {
-        match self {
-            CsProtocol::Http => "http",
-            CsProtocol::Https => "https",
-            CsProtocol::Ws => "ws",
-            CsProtocol::Wss => "wss",
-        }
-        .into()
-    }
-}
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
 pub enum CsProtocolVersion {
+    #[strum(serialize = "HTTP/3.0")]
     HTTP3_0,
+    #[strum(serialize = "HTTP/2.0")]
     HTTP2_0,
+    #[strum(serialize = "HTTP/1.1")]
     HTTP1_1,
+    #[strum(serialize = "HTTP/1.0")]
     HTTP1_0,
+    #[strum(serialize = "HTTP/0.9")]
     HTTP0_9,
-}
-
-impl FromStr for CsProtocolVersion {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
-            "HTTP/3.0" => CsProtocolVersion::HTTP3_0,
-            "HTTP/2.0" => CsProtocolVersion::HTTP2_0,
-            "HTTP/1.1" => CsProtocolVersion::HTTP1_1,
-            "HTTP/1.0" => CsProtocolVersion::HTTP1_0,
-            "HTTP/0.9" => CsProtocolVersion::HTTP0_9,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl ToString for CsProtocolVersion {
-    fn to_string(&self) -> String {
-        match self {
-            CsProtocolVersion::HTTP3_0 => "HTTP/3.0",
-            CsProtocolVersion::HTTP2_0 => "HTTP/2.0",
-            CsProtocolVersion::HTTP1_1 => "HTTP/1.1",
-            CsProtocolVersion::HTTP1_0 => "HTTP/1.0",
-            CsProtocolVersion::HTTP0_9 => "HTTP/0.9",
-        }
-        .into()
-    }
 }
 
 // <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html>
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
 pub enum SslProtocol {
+    #[strum(serialize = "TLSv1.3")]
     TLSv1_3,
+    #[strum(serialize = "TLSv1.2")]
     TLSv1_2,
+    #[strum(serialize = "TLSv1.1")]
     TLSv1_1,
+    #[strum(serialize = "TLSv1")]
     TLSv1_0,
+    #[strum(serialize = "SSLv3")]
     SSLv3,
-}
-
-impl FromStr for SslProtocol {
-    type Err = ();
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
-            "TLSv1.3" => SslProtocol::TLSv1_3,
-            "TLSv1.2" => SslProtocol::TLSv1_2,
-            "TLSv1.1" => SslProtocol::TLSv1_1,
-            "TLSv1" => SslProtocol::TLSv1_0,
-            "SSLv3" => SslProtocol::SSLv3,
-            _ => return Err(()),
-        })
-    }
-}
-
-impl ToString for SslProtocol {
-    fn to_string(&self) -> String {
-        match self {
-            SslProtocol::TLSv1_3 => "TLSv1.3",
-            SslProtocol::TLSv1_2 => "TLSv1.2",
-            SslProtocol::TLSv1_1 => "TLSv1.1",
-            SslProtocol::TLSv1_0 => "TLSv1",
-            SslProtocol::SSLv3 => "SSLv3",
-        }
-        .into()
-    }
 }

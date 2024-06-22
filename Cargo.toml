@@ -61,6 +61,7 @@ typed = ["alloc", "dep:time"]
 [dependencies]
 memchr = "2.7.4"
 time = { version = "0.3.36", features = ["parsing", "macros"], optional = true }
+strum = { version = "0.26.2", features = ["derive"] }
 
 [dev-dependencies]
 divan = "0.1.14"
