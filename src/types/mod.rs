@@ -128,29 +128,29 @@ impl FromStr for DetailedEdgeResultType {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CsProtcol {
+pub enum CsProtocol {
     Http,
     Https,
     Ws,
     Wss,
 }
 
-impl FromStr for CsProtcol {
+impl FromStr for CsProtocol {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(match s {
-            "http" => CsProtcol::Http,
-            "https" => CsProtcol::Https,
-            "ws" => CsProtcol::Ws,
-            "wss" => CsProtcol::Wss,
+            "http" => CsProtocol::Http,
+            "https" => CsProtocol::Https,
+            "ws" => CsProtocol::Ws,
+            "wss" => CsProtocol::Wss,
             _ => return Err(()),
         })
     }
 }
 
 #[derive(Debug, PartialEq)]
-pub enum CsProtcolVersion {
+pub enum CsProtocolVersion {
     HTTP3_0,
     HTTP2_0,
     HTTP1_1,
@@ -158,16 +158,16 @@ pub enum CsProtcolVersion {
     HTTP0_9,
 }
 
-impl FromStr for CsProtcolVersion {
+impl FromStr for CsProtocolVersion {
     type Err = ();
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(match s {
-            "HTTP/3.0" => CsProtcolVersion::HTTP3_0,
-            "HTTP/2.0" => CsProtcolVersion::HTTP2_0,
-            "HTTP/1.1" => CsProtcolVersion::HTTP1_1,
-            "HTTP/1.0" => CsProtcolVersion::HTTP1_0,
-            "HTTP/0.9" => CsProtcolVersion::HTTP0_9,
+            "HTTP/3.0" => CsProtocolVersion::HTTP3_0,
+            "HTTP/2.0" => CsProtocolVersion::HTTP2_0,
+            "HTTP/1.1" => CsProtocolVersion::HTTP1_1,
+            "HTTP/1.0" => CsProtocolVersion::HTTP1_0,
+            "HTTP/0.9" => CsProtocolVersion::HTTP0_9,
             _ => return Err(()),
         })
     }

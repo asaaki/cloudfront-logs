@@ -24,14 +24,14 @@ pub struct LogLine {
     pub x_edge_result_type: EdgeResultType,
     pub x_edge_request_id: String,
     pub x_host_header: String,
-    pub cs_protocol: CsProtcol,
+    pub cs_protocol: CsProtocol,
     pub cs_bytes: u64,
     pub time_taken: Duration,
     pub x_forwarded_for: Option<IpAddr>,
     pub ssl_protocol: Option<SslProtocol>,
     pub ssl_cipher: Option<String>, // *1
     pub x_edge_response_result_type: EdgeResultType,
-    pub cs_protocol_version: CsProtcolVersion,
+    pub cs_protocol_version: CsProtocolVersion,
     pub fle_status: Option<String>, // *1
     pub fle_encrypted_fields: Option<u64>,
     pub c_port: u16,
