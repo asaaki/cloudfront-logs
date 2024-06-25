@@ -1,6 +1,9 @@
 pub use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
 pub use std::time::Duration;
 
+#[cfg(feature = "parquet")]
+pub use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+
 #[cfg(feature = "typed")]
 pub use time::{
     format_description::BorrowedFormatItem, macros::format_description, Date, OffsetDateTime, Time,

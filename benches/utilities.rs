@@ -1,6 +1,7 @@
+#![allow(unused)]
+
 pub use cloudfront_logs::*;
 
-#[allow(unused)]
 pub const AWS_DOCS_EXAMPLE_LINES: [&str; 8] = [
     "#Version: 1.0",
     "#Fields: date time x-edge-location sc-bytes c-ip cs-method cs(Host) cs-uri-stem sc-status cs(Referer) cs(User-Agent) cs-uri-query cs(Cookie) x-edge-result-type x-edge-request-id x-host-header cs-protocol cs-bytes time-taken x-forwarded-for ssl-protocol ssl-cipher x-edge-response-result-type cs-protocol-version fle-status fle-encrypted-fields c-port time-to-first-byte x-edge-detailed-result-type sc-content-type sc-content-len sc-range-start sc-range-end",
@@ -12,14 +13,11 @@ pub const AWS_DOCS_EXAMPLE_LINES: [&str; 8] = [
     "2019-12-13	22:37:02	SEA19-C2	900	192.0.2.200	GET	d111111abcdef8.cloudfront.net	/	502	-	curl/7.55.1	-	-	Error	kBkDzGnceVtWHqSCqBUqtA_cEs2T3tFUBbnBNkB9El_uVRhHgcZfcw==	www.example.com	http	387	0.103	-	-	-	Error	HTTP/1.1	-	-	12644	0.103	OriginDnsError	text/html	507	-	-"
 ];
 
-#[allow(unused)]
 pub const LOG_LINE_A: &str = "2019-12-04	21:02:31	LAX1	392	192.0.2.100	GET	d111111abcdef8.cloudfront.net	/index.html	200	-	Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/78.0.3904.108%20Safari/537.36	-	-	Hit	SOX4xwn4XV6Q4rgb7XiVGOHms_BGlTAC4KyHmureZmBNrjGdRLiNIQ==	d111111abcdef8.cloudfront.net	https	23	0.001	-	TLSv1.2	ECDHE-RSA-AES128-GCM-SHA256	Hit	HTTP/2.0	-	-	11040	0.001	Hit	text/html	78	-	-";
 
-#[allow(unused)]
 pub const LOG_LINE_B: &str = "2019-12-13	22:37:02	SEA19-C2	900	192.0.2.200	GET	d111111abcdef8.cloudfront.net	/	502	-	curl/7.55.1	-	-	Error	kBkDzGnceVtWHqSCqBUqtA_cEs2T3tFUBbnBNkB9El_uVRhHgcZfcw==	www.example.com	http	387	0.103	-	-	-	Error	HTTP/1.1	-	-	12644	0.103	OriginDnsError	text/html	507	-	-";
 
 // Data container to unify the result sets for the different parsers
-#[allow(unused)]
 pub enum Data<'a> {
     B(&'a [u8]),
     S0(&'a str),
@@ -29,10 +27,11 @@ pub enum Data<'a> {
     M(u16),
     I(IpAddr),
     D(Date),
+    ND(NaiveDate),
     T(Time),
+    // NDT(NaiveDateTime),
 }
 
-#[allow(unused)]
 #[derive(Debug, Clone, Copy)]
 pub enum Inputs {
     A([&'static str; 1]),
@@ -65,7 +64,6 @@ impl ToString for Inputs {
     }
 }
 
-#[allow(unused)]
 pub const ARGS: [Inputs; 4] = [
     Inputs::A([LOG_LINE_A]),
     Inputs::B([LOG_LINE_B]),

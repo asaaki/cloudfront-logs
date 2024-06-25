@@ -67,12 +67,24 @@ impl<'a> Iterator for MemchrTabSplitter<'a> {
     }
 }
 
-// if the input is "-", return Ok(None), otherwise parse the input as T
+// if the input is "-", return Ok(None), otherwise parse the input as T;
+// -> parse_as_option(iter.next().unwrap()).map_err(|_| "…")?
+// -> parse_as_option(str_input).map_err(|_| "…")?
 pub(crate) fn parse_as_option<T: std::str::FromStr>(s: &str) -> Result<Option<T>, T::Err> {
     if s == "-" {
         Ok(None)
     } else {
         s.parse().map(|v| Some(v))
+    }
+}
+
+// better chainable version of parse_as_option;
+// -> iter.next().and_then(as_optional_t).transpose().map_err(|_| "…")?
+pub(crate) fn as_optional_t<T: std::str::FromStr>(s: &str) -> Option<Result<T, T::Err>> {
+    if s == "-" {
+        None
+    } else {
+        Some(s.parse())
     }
 }
 
@@ -88,6 +100,24 @@ impl ToOptionalString for &str {
             None
         } else {
             Some((*self).to_string())
+        }
+    }
+}
+
+// str type extension trait;
+// returns None if the input is "-", otherwise Some(&str)
+#[cfg(feature = "parquet")]
+pub(crate) trait AsOptionalStr {
+    fn as_optional_str(&self) -> Option<&str>;
+}
+
+#[cfg(feature = "parquet")]
+impl AsOptionalStr for str {
+    fn as_optional_str(&self) -> Option<&str> {
+        if self == "-" {
+            None
+        } else {
+            Some(self)
         }
     }
 }

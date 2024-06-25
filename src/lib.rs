@@ -19,6 +19,9 @@ pub mod simple;
 #[cfg(feature = "typed")]
 pub mod typed;
 
+#[cfg(feature = "parquet")]
+pub mod parquet;
+
 // common types used in simple and typed modules
 #[cfg(any(feature = "alloc", feature = "typed"))]
 pub mod types;
@@ -66,3 +69,6 @@ pub use simple::SimpleLogLine;
 
 #[cfg(feature = "typed")]
 pub use typed::TypedLogLine;
+
+#[cfg(feature = "parquet")]
+pub use parquet::ParquetLogLine;

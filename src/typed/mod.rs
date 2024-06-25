@@ -64,7 +64,7 @@ impl<'a> TryFrom<&'a str> for LogLine {
         let time = Time::parse(iter.next().unwrap(), TIME_FMT).map_err(|_| "time invalid")?;
         let datetime = OffsetDateTime::new_utc(date, time);
 
-        let sll = LogLine {
+        let line = LogLine {
             date,
             time,
             datetime,
@@ -110,9 +110,15 @@ impl<'a> TryFrom<&'a str> for LogLine {
                 .parse::<f64>()
                 .map(Duration::from_secs_f64)
                 .map_err(|_| "time_taken invalid")?,
-            x_forwarded_for: parse_as_option(iter.next().unwrap())
+            x_forwarded_for: iter
+                .next()
+                .and_then(as_optional_t)
+                .transpose()
                 .map_err(|_| "x_forwarded_for invalid")?,
-            ssl_protocol: parse_as_option(iter.next().unwrap())
+            ssl_protocol: iter
+                .next()
+                .and_then(as_optional_t)
+                .transpose()
                 .map_err(|_| "ssl_protocol invalid")?,
             ssl_cipher: iter.next().unwrap().to_optional_string(),
             x_edge_response_result_type: iter
@@ -126,7 +132,10 @@ impl<'a> TryFrom<&'a str> for LogLine {
                 .parse()
                 .map_err(|_| "cs_protocol_version invalid")?,
             fle_status: iter.next().unwrap().to_optional_string(),
-            fle_encrypted_fields: parse_as_option(iter.next().unwrap())
+            fle_encrypted_fields: iter
+                .next()
+                .and_then(as_optional_t)
+                .transpose()
                 .map_err(|_| "fle_encrypted_fields invalid")?,
             c_port: iter
                 .next()
@@ -150,12 +159,18 @@ impl<'a> TryFrom<&'a str> for LogLine {
                 .unwrap()
                 .parse::<u64>()
                 .map_err(|_| "sc_content_len invalid")?,
-            sc_range_start: parse_as_option(iter.next().unwrap())
+            sc_range_start: iter
+                .next()
+                .and_then(as_optional_t)
+                .transpose()
                 .map_err(|_| "sc_range_start invalid")?,
-            sc_range_end: parse_as_option(iter.next().unwrap())
+            sc_range_end: iter
+                .next()
+                .and_then(as_optional_t)
+                .transpose()
                 .map_err(|_| "sc_range_end invalid")?,
         };
-        Ok(sll)
+        Ok(line)
     }
 }
 

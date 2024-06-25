@@ -127,3 +127,27 @@ fn owned_typed(inputs: Inputs) -> usize {
         .map(|line| parse(divan::black_box(*line)).unwrap_or_default())
         .sum()
 }
+
+#[divan::bench(name = "30 ParquetLogLine", args = ARGS)]
+fn parquet_line(inputs: Inputs) -> usize {
+    fn parse(line: &str) -> Option<usize> {
+        ParquetLogLine::try_from(line).ok().map(|item| {
+            let result = &[
+                Data::ND(item.date),
+                Data::S0(item.time),
+                Data::S0(item.c_ip),
+                Data::M(item.c_port),
+                Data::S0(item.cs_uri_stem),
+                Data::N(item.sc_content_len),
+                Data::N(item.sc_bytes),
+            ];
+            result.len()
+        })
+    }
+
+    inputs
+        .data()
+        .iter()
+        .map(|line| parse(divan::black_box(*line)).unwrap_or_default())
+        .sum()
+}

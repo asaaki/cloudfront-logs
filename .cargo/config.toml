@@ -8,6 +8,10 @@ fixit = "fix --benches --examples --tests --all-features --allow-dirty --allow-s
 t-all = "test --all-features"
 bb-all = "bench -q --all-features"
 
+ci-clippy = "clippy --workspace --all-features --benches --examples --tests -- -D warnings"
+ci-fmt = "fmt --check"
+ci-doc = "doc --workspace --all-features --no-deps"
+
 [env]
 DIVAN_BYTES_FORMAT = "binary"
 DIVAN_SAMPLE_SIZE = "1000"
