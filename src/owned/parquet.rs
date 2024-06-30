@@ -42,44 +42,44 @@ pub use crate::types::{Datelike, Timelike};
 /// ```
 #[must_use]
 #[derive(Debug, Clone, PartialEq, parquet_derive::ParquetRecordWriter)]
-pub struct ValidatedLogline<'a> {
+pub struct ValidatedLogline {
     pub date: NaiveDate,
-    pub time: &'a str, // not supported: NaiveTime
+    pub time: String, // not supported: NaiveTime
     pub datetime: NaiveDateTime,
-    pub x_edge_location: &'a str,
+    pub x_edge_location: String,
     pub sc_bytes: u64,
-    pub c_ip: &'a str,
-    pub cs_method: &'a str,
-    pub cs_host: &'a str,
-    pub cs_uri_stem: &'a str,
+    pub c_ip: String,
+    pub cs_method: String,
+    pub cs_host: String,
+    pub cs_uri_stem: String,
     pub sc_status: u16,
-    pub cs_referer: Option<&'a str>,
-    pub cs_user_agent: &'a str,
-    pub cs_uri_query: Option<&'a str>,
-    pub cs_cookie: Option<&'a str>,
-    pub x_edge_result_type: &'a str,
-    pub x_edge_request_id: &'a str,
-    pub x_host_header: &'a str,
-    pub cs_protocol: &'a str,
+    pub cs_referer: Option<String>,
+    pub cs_user_agent: String,
+    pub cs_uri_query: Option<String>,
+    pub cs_cookie: Option<String>,
+    pub x_edge_result_type: String,
+    pub x_edge_request_id: String,
+    pub x_host_header: String,
+    pub cs_protocol: String,
     pub cs_bytes: u64,
     pub time_taken: f64,
-    pub x_forwarded_for: Option<&'a str>,
-    pub ssl_protocol: Option<&'a str>,
-    pub ssl_cipher: Option<&'a str>,
-    pub x_edge_response_result_type: &'a str,
-    pub cs_protocol_version: &'a str,
-    pub fle_status: Option<&'a str>,
+    pub x_forwarded_for: Option<String>,
+    pub ssl_protocol: Option<String>,
+    pub ssl_cipher: Option<String>,
+    pub x_edge_response_result_type: String,
+    pub cs_protocol_version: String,
+    pub fle_status: Option<String>,
     pub fle_encrypted_fields: Option<u64>,
     pub c_port: u16,
     pub time_to_first_byte: f64,
-    pub x_edge_detailed_result_type: &'a str,
-    pub sc_content_type: &'a str,
+    pub x_edge_detailed_result_type: String,
+    pub sc_content_type: String,
     pub sc_content_len: u64,
     pub sc_range_start: Option<u64>,
     pub sc_range_end: Option<u64>,
 }
 
-impl<'a> ValidatedLogline<'a> {
+impl ValidatedLogline {
     pub fn schema() -> &'static str {
         crate::consts::parquet_schemata::V1
     }
@@ -89,11 +89,11 @@ impl<'a> ValidatedLogline<'a> {
     }
 }
 
-impl<'a> TryFrom<&'a str> for ValidatedLogline<'a> {
+impl TryFrom<&str> for ValidatedLogline {
     type Error = &'static str;
 
     #[must_use]
-    fn try_from(line: &'a str) -> Result<Self, Self::Error> {
+    fn try_from(line: &str) -> Result<Self, Self::Error> {
         validate_line(line)?;
         let mut iter = MemchrTabSplitter::new(line);
 
@@ -106,31 +106,31 @@ impl<'a> TryFrom<&'a str> for ValidatedLogline<'a> {
 
         let line = Self {
             date,
-            time: raw_time,
+            time: raw_time.to_string(),
             datetime,
-            x_edge_location: iter.next().unwrap(),
+            x_edge_location: iter.next().unwrap().to_string(),
             sc_bytes: iter
                 .next()
                 .unwrap()
                 .parse::<u64>()
                 .map_err(|_| "sc_bytes invalid")?,
-            c_ip: iter.next().unwrap(),
-            cs_method: iter.next().unwrap(),
-            cs_host: iter.next().unwrap(),
-            cs_uri_stem: iter.next().unwrap(),
+            c_ip: iter.next().unwrap().to_string(),
+            cs_method: iter.next().unwrap().to_string(),
+            cs_host: iter.next().unwrap().to_string(),
+            cs_uri_stem: iter.next().unwrap().to_string(),
             sc_status: iter
                 .next()
                 .unwrap()
                 .parse::<u16>()
                 .map_err(|_| "sc_status invalid")?,
-            cs_referer: iter.next().and_then(str::as_optional_str),
-            cs_user_agent: iter.next().unwrap(),
-            cs_uri_query: iter.next().and_then(str::as_optional_str),
-            cs_cookie: iter.next().and_then(str::as_optional_str),
-            x_edge_result_type: iter.next().unwrap(),
-            x_edge_request_id: iter.next().unwrap(),
-            x_host_header: iter.next().unwrap(),
-            cs_protocol: iter.next().unwrap(),
+            cs_referer: iter.next().unwrap().to_optional_string(),
+            cs_user_agent: iter.next().unwrap().to_string(),
+            cs_uri_query: iter.next().unwrap().to_optional_string(),
+            cs_cookie: iter.next().unwrap().to_optional_string(),
+            x_edge_result_type: iter.next().unwrap().to_string(),
+            x_edge_request_id: iter.next().unwrap().to_string(),
+            x_host_header: iter.next().unwrap().to_string(),
+            cs_protocol: iter.next().unwrap().to_string(),
             cs_bytes: iter
                 .next()
                 .unwrap()
@@ -141,12 +141,12 @@ impl<'a> TryFrom<&'a str> for ValidatedLogline<'a> {
                 .unwrap()
                 .parse::<f64>()
                 .map_err(|_| "time_taken invalid")?,
-            x_forwarded_for: iter.next().and_then(str::as_optional_str),
-            ssl_protocol: iter.next().and_then(str::as_optional_str),
-            ssl_cipher: iter.next().and_then(str::as_optional_str),
-            x_edge_response_result_type: iter.next().unwrap(),
-            cs_protocol_version: iter.next().unwrap(),
-            fle_status: iter.next().and_then(str::as_optional_str),
+            x_forwarded_for: iter.next().unwrap().to_optional_string(),
+            ssl_protocol: iter.next().unwrap().to_optional_string(),
+            ssl_cipher: iter.next().unwrap().to_optional_string(),
+            x_edge_response_result_type: iter.next().unwrap().to_string(),
+            cs_protocol_version: iter.next().unwrap().to_string(),
+            fle_status: iter.next().unwrap().to_optional_string(),
             fle_encrypted_fields: iter
                 .next()
                 .and_then(as_optional_t)
@@ -162,8 +162,8 @@ impl<'a> TryFrom<&'a str> for ValidatedLogline<'a> {
                 .unwrap()
                 .parse::<f64>()
                 .map_err(|_| "time_to_first_byte invalid")?,
-            x_edge_detailed_result_type: iter.next().unwrap(),
-            sc_content_type: iter.next().unwrap(),
+            x_edge_detailed_result_type: iter.next().unwrap().to_string(),
+            sc_content_type: iter.next().unwrap().to_string(),
             sc_content_len: iter
                 .next()
                 .unwrap()
@@ -184,11 +184,11 @@ impl<'a> TryFrom<&'a str> for ValidatedLogline<'a> {
     }
 }
 
-impl<'a> TryFrom<ValidatedRaw<'a>> for ValidatedLogline<'a> {
+impl TryFrom<ValidatedRaw<'_>> for ValidatedLogline {
     type Error = &'static str;
 
     #[must_use]
-    fn try_from(raw: ValidatedRaw<'a>) -> Result<Self, Self::Error> {
+    fn try_from(raw: ValidatedRaw<'_>) -> Result<Self, Self::Error> {
         let date =
             NaiveDate::parse_from_str(raw.date, CHRONO_DATE_FMT).map_err(|_| "date invalid")?;
         let time =
@@ -197,29 +197,29 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for ValidatedLogline<'a> {
 
         let line = Self {
             date,
-            time: raw.time,
+            time: raw.time.to_string(),
             datetime,
-            x_edge_location: raw.x_edge_location,
+            x_edge_location: raw.x_edge_location.to_string(),
             sc_bytes: raw
                 .sc_bytes
                 .parse::<u64>()
                 .map_err(|_| "sc_bytes invalid")?,
-            c_ip: raw.c_ip,
-            cs_method: raw.cs_method,
-            cs_host: raw.cs_host,
-            cs_uri_stem: raw.cs_uri_stem,
+            c_ip: raw.c_ip.to_string(),
+            cs_method: raw.cs_method.to_string(),
+            cs_host: raw.cs_host.to_string(),
+            cs_uri_stem: raw.cs_uri_stem.to_string(),
             sc_status: raw
                 .sc_status
                 .parse::<u16>()
                 .map_err(|_| "sc_status invalid")?,
-            cs_referer: raw.cs_referer.as_optional_str(),
-            cs_user_agent: raw.cs_user_agent,
-            cs_uri_query: raw.cs_uri_query.as_optional_str(),
-            cs_cookie: raw.cs_cookie.as_optional_str(),
-            x_edge_result_type: raw.x_edge_result_type,
-            x_edge_request_id: raw.x_edge_request_id,
-            x_host_header: raw.x_host_header,
-            cs_protocol: raw.cs_protocol,
+            cs_referer: raw.cs_referer.to_optional_string(),
+            cs_user_agent: raw.cs_user_agent.to_string(),
+            cs_uri_query: raw.cs_uri_query.to_optional_string(),
+            cs_cookie: raw.cs_cookie.to_optional_string(),
+            x_edge_result_type: raw.x_edge_result_type.to_string(),
+            x_edge_request_id: raw.x_edge_request_id.to_string(),
+            x_host_header: raw.x_host_header.to_string(),
+            cs_protocol: raw.cs_protocol.to_string(),
             cs_bytes: raw
                 .cs_bytes
                 .parse::<u64>()
@@ -228,12 +228,12 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for ValidatedLogline<'a> {
                 .time_taken
                 .parse::<f64>()
                 .map_err(|_| "time_taken invalid")?,
-            x_forwarded_for: raw.x_forwarded_for.as_optional_str(),
-            ssl_protocol: raw.ssl_protocol.as_optional_str(),
-            ssl_cipher: raw.ssl_cipher.as_optional_str(),
-            x_edge_response_result_type: raw.x_edge_response_result_type,
-            cs_protocol_version: raw.cs_protocol_version,
-            fle_status: raw.fle_status.as_optional_str(),
+            x_forwarded_for: raw.x_forwarded_for.to_optional_string(),
+            ssl_protocol: raw.ssl_protocol.to_optional_string(),
+            ssl_cipher: raw.ssl_cipher.to_optional_string(),
+            x_edge_response_result_type: raw.x_edge_response_result_type.to_string(),
+            cs_protocol_version: raw.cs_protocol_version.to_string(),
+            fle_status: raw.fle_status.to_optional_string(),
             fle_encrypted_fields: parse_as_option(raw.fle_encrypted_fields)
                 .map_err(|_| "fle_encrypted_fields invalid")?,
             c_port: raw.c_port.parse::<u16>().map_err(|_| "c_port invalid")?,
@@ -241,8 +241,8 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for ValidatedLogline<'a> {
                 .time_to_first_byte
                 .parse::<f64>()
                 .map_err(|_| "time_to_first_byte invalid")?,
-            x_edge_detailed_result_type: raw.x_edge_detailed_result_type,
-            sc_content_type: raw.sc_content_type,
+            x_edge_detailed_result_type: raw.x_edge_detailed_result_type.to_string(),
+            sc_content_type: raw.sc_content_type.to_string(),
             sc_content_len: raw
                 .sc_content_len
                 .parse::<u64>()
@@ -289,44 +289,44 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for ValidatedLogline<'a> {
 /// ```
 #[must_use]
 #[derive(Debug, Clone, PartialEq, parquet_derive::ParquetRecordWriter)]
-pub struct UnvalidatedLogline<'a> {
+pub struct UnvalidatedLogline {
     pub date: NaiveDate,
-    pub time: &'a str, // not supported: NaiveTime
+    pub time: String, // not supported: NaiveTime
     pub datetime: NaiveDateTime,
-    pub x_edge_location: &'a str,
+    pub x_edge_location: String,
     pub sc_bytes: u64,
-    pub c_ip: &'a str,
-    pub cs_method: &'a str,
-    pub cs_host: &'a str,
-    pub cs_uri_stem: &'a str,
+    pub c_ip: String,
+    pub cs_method: String,
+    pub cs_host: String,
+    pub cs_uri_stem: String,
     pub sc_status: u16,
-    pub cs_referer: Option<&'a str>,
-    pub cs_user_agent: &'a str,
-    pub cs_uri_query: Option<&'a str>,
-    pub cs_cookie: Option<&'a str>,
-    pub x_edge_result_type: &'a str,
-    pub x_edge_request_id: &'a str,
-    pub x_host_header: &'a str,
-    pub cs_protocol: &'a str,
+    pub cs_referer: Option<String>,
+    pub cs_user_agent: String,
+    pub cs_uri_query: Option<String>,
+    pub cs_cookie: Option<String>,
+    pub x_edge_result_type: String,
+    pub x_edge_request_id: String,
+    pub x_host_header: String,
+    pub cs_protocol: String,
     pub cs_bytes: u64,
     pub time_taken: f64,
-    pub x_forwarded_for: Option<&'a str>,
-    pub ssl_protocol: Option<&'a str>,
-    pub ssl_cipher: Option<&'a str>,
-    pub x_edge_response_result_type: &'a str,
-    pub cs_protocol_version: &'a str,
-    pub fle_status: Option<&'a str>,
+    pub x_forwarded_for: Option<String>,
+    pub ssl_protocol: Option<String>,
+    pub ssl_cipher: Option<String>,
+    pub x_edge_response_result_type: String,
+    pub cs_protocol_version: String,
+    pub fle_status: Option<String>,
     pub fle_encrypted_fields: Option<u64>,
     pub c_port: u16,
     pub time_to_first_byte: f64,
-    pub x_edge_detailed_result_type: &'a str,
-    pub sc_content_type: &'a str,
+    pub x_edge_detailed_result_type: String,
+    pub sc_content_type: String,
     pub sc_content_len: u64,
     pub sc_range_start: Option<u64>,
     pub sc_range_end: Option<u64>,
 }
 
-impl<'a> UnvalidatedLogline<'a> {
+impl UnvalidatedLogline {
     pub fn schema() -> &'static str {
         crate::consts::parquet_schemata::V1
     }
@@ -336,11 +336,11 @@ impl<'a> UnvalidatedLogline<'a> {
     }
 }
 
-impl<'a> TryFrom<&'a str> for UnvalidatedLogline<'a> {
+impl TryFrom<&str> for UnvalidatedLogline {
     type Error = &'static str;
 
     #[must_use]
-    fn try_from(line: &'a str) -> Result<Self, Self::Error> {
+    fn try_from(line: &str) -> Result<Self, Self::Error> {
         let mut iter = MemchrTabSplitter::new(line);
 
         let date = NaiveDate::parse_from_str(iter.next().unwrap(), "%Y-%m-%d")
@@ -351,31 +351,31 @@ impl<'a> TryFrom<&'a str> for UnvalidatedLogline<'a> {
 
         let line = Self {
             date,
-            time: raw_time,
+            time: raw_time.to_string(),
             datetime,
-            x_edge_location: iter.next().unwrap(),
+            x_edge_location: iter.next().unwrap().to_string(),
             sc_bytes: iter
                 .next()
                 .unwrap()
                 .parse::<u64>()
                 .map_err(|_| "sc_bytes invalid")?,
-            c_ip: iter.next().unwrap(),
-            cs_method: iter.next().unwrap(),
-            cs_host: iter.next().unwrap(),
-            cs_uri_stem: iter.next().unwrap(),
+            c_ip: iter.next().unwrap().to_string(),
+            cs_method: iter.next().unwrap().to_string(),
+            cs_host: iter.next().unwrap().to_string(),
+            cs_uri_stem: iter.next().unwrap().to_string(),
             sc_status: iter
                 .next()
                 .unwrap()
                 .parse::<u16>()
                 .map_err(|_| "sc_status invalid")?,
-            cs_referer: iter.next().and_then(str::as_optional_str),
-            cs_user_agent: iter.next().unwrap(),
-            cs_uri_query: iter.next().and_then(str::as_optional_str),
-            cs_cookie: iter.next().and_then(str::as_optional_str),
-            x_edge_result_type: iter.next().unwrap(),
-            x_edge_request_id: iter.next().unwrap(),
-            x_host_header: iter.next().unwrap(),
-            cs_protocol: iter.next().unwrap(),
+            cs_referer: iter.next().unwrap().to_optional_string(),
+            cs_user_agent: iter.next().unwrap().to_string(),
+            cs_uri_query: iter.next().unwrap().to_optional_string(),
+            cs_cookie: iter.next().unwrap().to_optional_string(),
+            x_edge_result_type: iter.next().unwrap().to_string(),
+            x_edge_request_id: iter.next().unwrap().to_string(),
+            x_host_header: iter.next().unwrap().to_string(),
+            cs_protocol: iter.next().unwrap().to_string(),
             cs_bytes: iter
                 .next()
                 .unwrap()
@@ -386,12 +386,12 @@ impl<'a> TryFrom<&'a str> for UnvalidatedLogline<'a> {
                 .unwrap()
                 .parse::<f64>()
                 .map_err(|_| "time_taken invalid")?,
-            x_forwarded_for: iter.next().and_then(str::as_optional_str),
-            ssl_protocol: iter.next().and_then(str::as_optional_str),
-            ssl_cipher: iter.next().and_then(str::as_optional_str),
-            x_edge_response_result_type: iter.next().unwrap(),
-            cs_protocol_version: iter.next().unwrap(),
-            fle_status: iter.next().and_then(str::as_optional_str),
+            x_forwarded_for: iter.next().unwrap().to_optional_string(),
+            ssl_protocol: iter.next().unwrap().to_optional_string(),
+            ssl_cipher: iter.next().unwrap().to_optional_string(),
+            x_edge_response_result_type: iter.next().unwrap().to_string(),
+            cs_protocol_version: iter.next().unwrap().to_string(),
+            fle_status: iter.next().unwrap().to_optional_string(),
             fle_encrypted_fields: iter
                 .next()
                 .and_then(as_optional_t)
@@ -407,8 +407,8 @@ impl<'a> TryFrom<&'a str> for UnvalidatedLogline<'a> {
                 .unwrap()
                 .parse::<f64>()
                 .map_err(|_| "time_to_first_byte invalid")?,
-            x_edge_detailed_result_type: iter.next().unwrap(),
-            sc_content_type: iter.next().unwrap(),
+            x_edge_detailed_result_type: iter.next().unwrap().to_string(),
+            sc_content_type: iter.next().unwrap().to_string(),
             sc_content_len: iter
                 .next()
                 .unwrap()
@@ -429,11 +429,11 @@ impl<'a> TryFrom<&'a str> for UnvalidatedLogline<'a> {
     }
 }
 
-impl<'a> TryFrom<UnvalidatedRaw<'a>> for UnvalidatedLogline<'a> {
+impl TryFrom<UnvalidatedRaw<'_>> for UnvalidatedLogline {
     type Error = &'static str;
 
     #[must_use]
-    fn try_from(raw: UnvalidatedRaw<'a>) -> Result<Self, Self::Error> {
+    fn try_from(raw: UnvalidatedRaw<'_>) -> Result<Self, Self::Error> {
         let date =
             NaiveDate::parse_from_str(raw.date, CHRONO_DATE_FMT).map_err(|_| "date invalid")?;
         let time =
@@ -442,29 +442,29 @@ impl<'a> TryFrom<UnvalidatedRaw<'a>> for UnvalidatedLogline<'a> {
 
         let line = Self {
             date,
-            time: raw.time,
+            time: raw.time.to_string(),
             datetime,
-            x_edge_location: raw.x_edge_location,
+            x_edge_location: raw.x_edge_location.to_string(),
             sc_bytes: raw
                 .sc_bytes
                 .parse::<u64>()
                 .map_err(|_| "sc_bytes invalid")?,
-            c_ip: raw.c_ip,
-            cs_method: raw.cs_method,
-            cs_host: raw.cs_host,
-            cs_uri_stem: raw.cs_uri_stem,
+            c_ip: raw.c_ip.to_string(),
+            cs_method: raw.cs_method.to_string(),
+            cs_host: raw.cs_host.to_string(),
+            cs_uri_stem: raw.cs_uri_stem.to_string(),
             sc_status: raw
                 .sc_status
                 .parse::<u16>()
                 .map_err(|_| "sc_status invalid")?,
-            cs_referer: raw.cs_referer.as_optional_str(),
-            cs_user_agent: raw.cs_user_agent,
-            cs_uri_query: raw.cs_uri_query.as_optional_str(),
-            cs_cookie: raw.cs_cookie.as_optional_str(),
-            x_edge_result_type: raw.x_edge_result_type,
-            x_edge_request_id: raw.x_edge_request_id,
-            x_host_header: raw.x_host_header,
-            cs_protocol: raw.cs_protocol,
+            cs_referer: raw.cs_referer.to_optional_string(),
+            cs_user_agent: raw.cs_user_agent.to_string(),
+            cs_uri_query: raw.cs_uri_query.to_optional_string(),
+            cs_cookie: raw.cs_cookie.to_optional_string(),
+            x_edge_result_type: raw.x_edge_result_type.to_string(),
+            x_edge_request_id: raw.x_edge_request_id.to_string(),
+            x_host_header: raw.x_host_header.to_string(),
+            cs_protocol: raw.cs_protocol.to_string(),
             cs_bytes: raw
                 .cs_bytes
                 .parse::<u64>()
@@ -473,12 +473,12 @@ impl<'a> TryFrom<UnvalidatedRaw<'a>> for UnvalidatedLogline<'a> {
                 .time_taken
                 .parse::<f64>()
                 .map_err(|_| "time_taken invalid")?,
-            x_forwarded_for: raw.x_forwarded_for.as_optional_str(),
-            ssl_protocol: raw.ssl_protocol.as_optional_str(),
-            ssl_cipher: raw.ssl_cipher.as_optional_str(),
-            x_edge_response_result_type: raw.x_edge_response_result_type,
-            cs_protocol_version: raw.cs_protocol_version,
-            fle_status: raw.fle_status.as_optional_str(),
+            x_forwarded_for: raw.x_forwarded_for.to_optional_string(),
+            ssl_protocol: raw.ssl_protocol.to_optional_string(),
+            ssl_cipher: raw.ssl_cipher.to_optional_string(),
+            x_edge_response_result_type: raw.x_edge_response_result_type.to_string(),
+            cs_protocol_version: raw.cs_protocol_version.to_string(),
+            fle_status: raw.fle_status.to_optional_string(),
             fle_encrypted_fields: parse_as_option(raw.fle_encrypted_fields)
                 .map_err(|_| "fle_encrypted_fields invalid")?,
             c_port: raw.c_port.parse::<u16>().map_err(|_| "c_port invalid")?,
@@ -486,8 +486,8 @@ impl<'a> TryFrom<UnvalidatedRaw<'a>> for UnvalidatedLogline<'a> {
                 .time_to_first_byte
                 .parse::<f64>()
                 .map_err(|_| "time_to_first_byte invalid")?,
-            x_edge_detailed_result_type: raw.x_edge_detailed_result_type,
-            sc_content_type: raw.sc_content_type,
+            x_edge_detailed_result_type: raw.x_edge_detailed_result_type.to_string(),
+            sc_content_type: raw.sc_content_type.to_string(),
             sc_content_len: raw
                 .sc_content_len
                 .parse::<u64>()
@@ -500,11 +500,11 @@ impl<'a> TryFrom<UnvalidatedRaw<'a>> for UnvalidatedLogline<'a> {
     }
 }
 
-impl<'a> TryFrom<ValidatedRaw<'a>> for UnvalidatedLogline<'a> {
+impl TryFrom<ValidatedRaw<'_>> for UnvalidatedLogline {
     type Error = &'static str;
 
     #[must_use]
-    fn try_from(raw: ValidatedRaw<'a>) -> Result<Self, Self::Error> {
+    fn try_from(raw: ValidatedRaw<'_>) -> Result<Self, Self::Error> {
         let date =
             NaiveDate::parse_from_str(raw.date, CHRONO_DATE_FMT).map_err(|_| "date invalid")?;
         let time =
@@ -513,29 +513,29 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for UnvalidatedLogline<'a> {
 
         let line = Self {
             date,
-            time: raw.time,
+            time: raw.time.to_string(),
             datetime,
-            x_edge_location: raw.x_edge_location,
+            x_edge_location: raw.x_edge_location.to_string(),
             sc_bytes: raw
                 .sc_bytes
                 .parse::<u64>()
                 .map_err(|_| "sc_bytes invalid")?,
-            c_ip: raw.c_ip,
-            cs_method: raw.cs_method,
-            cs_host: raw.cs_host,
-            cs_uri_stem: raw.cs_uri_stem,
+            c_ip: raw.c_ip.to_string(),
+            cs_method: raw.cs_method.to_string(),
+            cs_host: raw.cs_host.to_string(),
+            cs_uri_stem: raw.cs_uri_stem.to_string(),
             sc_status: raw
                 .sc_status
                 .parse::<u16>()
                 .map_err(|_| "sc_status invalid")?,
-            cs_referer: raw.cs_referer.as_optional_str(),
-            cs_user_agent: raw.cs_user_agent,
-            cs_uri_query: raw.cs_uri_query.as_optional_str(),
-            cs_cookie: raw.cs_cookie.as_optional_str(),
-            x_edge_result_type: raw.x_edge_result_type,
-            x_edge_request_id: raw.x_edge_request_id,
-            x_host_header: raw.x_host_header,
-            cs_protocol: raw.cs_protocol,
+            cs_referer: raw.cs_referer.to_optional_string(),
+            cs_user_agent: raw.cs_user_agent.to_string(),
+            cs_uri_query: raw.cs_uri_query.to_optional_string(),
+            cs_cookie: raw.cs_cookie.to_optional_string(),
+            x_edge_result_type: raw.x_edge_result_type.to_string(),
+            x_edge_request_id: raw.x_edge_request_id.to_string(),
+            x_host_header: raw.x_host_header.to_string(),
+            cs_protocol: raw.cs_protocol.to_string(),
             cs_bytes: raw
                 .cs_bytes
                 .parse::<u64>()
@@ -544,12 +544,12 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for UnvalidatedLogline<'a> {
                 .time_taken
                 .parse::<f64>()
                 .map_err(|_| "time_taken invalid")?,
-            x_forwarded_for: raw.x_forwarded_for.as_optional_str(),
-            ssl_protocol: raw.ssl_protocol.as_optional_str(),
-            ssl_cipher: raw.ssl_cipher.as_optional_str(),
-            x_edge_response_result_type: raw.x_edge_response_result_type,
-            cs_protocol_version: raw.cs_protocol_version,
-            fle_status: raw.fle_status.as_optional_str(),
+            x_forwarded_for: raw.x_forwarded_for.to_optional_string(),
+            ssl_protocol: raw.ssl_protocol.to_optional_string(),
+            ssl_cipher: raw.ssl_cipher.to_optional_string(),
+            x_edge_response_result_type: raw.x_edge_response_result_type.to_string(),
+            cs_protocol_version: raw.cs_protocol_version.to_string(),
+            fle_status: raw.fle_status.to_optional_string(),
             fle_encrypted_fields: parse_as_option(raw.fle_encrypted_fields)
                 .map_err(|_| "fle_encrypted_fields invalid")?,
             c_port: raw.c_port.parse::<u16>().map_err(|_| "c_port invalid")?,
@@ -557,8 +557,8 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for UnvalidatedLogline<'a> {
                 .time_to_first_byte
                 .parse::<f64>()
                 .map_err(|_| "time_to_first_byte invalid")?,
-            x_edge_detailed_result_type: raw.x_edge_detailed_result_type,
-            sc_content_type: raw.sc_content_type,
+            x_edge_detailed_result_type: raw.x_edge_detailed_result_type.to_string(),
+            sc_content_type: raw.sc_content_type.to_string(),
             sc_content_len: raw
                 .sc_content_len
                 .parse::<u64>()
@@ -571,9 +571,9 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for UnvalidatedLogline<'a> {
     }
 }
 
-impl<'a> From<ValidatedLogline<'a>> for UnvalidatedLogline<'a> {
+impl From<ValidatedLogline> for UnvalidatedLogline {
     #[must_use]
-    fn from(validated: ValidatedLogline<'a>) -> Self {
+    fn from(validated: ValidatedLogline) -> Self {
         UnvalidatedLogline {
             date: validated.date,
             time: validated.time,
@@ -613,9 +613,9 @@ impl<'a> From<ValidatedLogline<'a>> for UnvalidatedLogline<'a> {
     }
 }
 
-impl<'a> From<UnvalidatedLogline<'a>> for ValidatedLogline<'a> {
+impl From<UnvalidatedLogline> for ValidatedLogline {
     #[must_use]
-    fn from(unvalidated: UnvalidatedLogline<'a>) -> Self {
+    fn from(unvalidated: UnvalidatedLogline) -> Self {
         ValidatedLogline {
             date: unvalidated.date,
             time: unvalidated.time,

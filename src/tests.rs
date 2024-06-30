@@ -1,4 +1,5 @@
 use crate::*;
+use ::parquet::{record::RecordWriter, schema::parser::parse_message_type};
 use std::net::Ipv4Addr;
 use time::macros::{date, time};
 
@@ -75,4 +76,43 @@ fn self_referentially_owned_types() {
     assert_eq!(view.sc_bytes, 392u64);
     assert_eq!(view.cs_protocol, "https");
     assert_eq!(view.x_forwarded_for, None);
+}
+
+#[test]
+fn owned_types() {
+    let logline: &str = SINGLE_LOG_LINE;
+    let item = OwnedValidatedParquetLogline::try_from(logline).unwrap();
+
+    assert_eq!(item.date, NaiveDate::from_ymd_opt(2019, 12, 4).unwrap());
+    assert_eq!(item.time, "21:02:31");
+    assert_eq!(item.time_taken, 0.001f64);
+    assert_eq!(item.sc_bytes, 392u64);
+    assert_eq!(item.cs_protocol, "https");
+    assert_eq!(item.x_forwarded_for, None);
+}
+
+#[test]
+fn derived_parquet_schema() {
+    let sample: &str = AWS_DOCS_EXAMPLE;
+    let rows = sample
+        .lines()
+        .filter_map(|l| OwnedValidatedParquetLogline::try_from(l).ok())
+        .collect::<Vec<_>>();
+    let schema = (&rows.as_slice()).schema().unwrap();
+    // print_schema(&mut std::io::stdout(), &schema);
+    assert_eq!(schema.name(), "rust_schema");
+}
+
+#[test]
+fn validate_parquet_schema_v0() {
+    let schema = parquet_schemata::V0;
+    let schema_t = parse_message_type(schema).unwrap();
+    assert_eq!(schema_t.name(), "rust_schema");
+}
+
+#[test]
+fn validate_parquet_schema_v1() {
+    let schema = parquet_schemata::V1;
+    let schema_t = parse_message_type(schema).unwrap();
+    assert_eq!(schema_t.name(), "rust_schema");
 }

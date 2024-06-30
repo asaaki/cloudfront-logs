@@ -54,6 +54,14 @@ impl<V> Logline<V> {
     pub fn into_raw(self) -> LineStr {
         self.inner.into_owner()
     }
+
+    pub fn schema() -> &'static str {
+        crate::consts::parquet_schemata::V1
+    }
+
+    pub fn schema_as_type() -> parquet::schema::types::Type {
+        parquet::schema::parser::parse_message_type(crate::consts::parquet_schemata::V1).unwrap()
+    }
 }
 
 macro_rules! impl_try_from {

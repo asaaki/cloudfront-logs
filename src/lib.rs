@@ -68,6 +68,16 @@ pub use referential::{
     ValidatedParquetLogline as OwningValidatedParquetLogline,
 };
 
+#[cfg(feature = "parquet")]
+#[doc(inline)]
+pub use owned::{
+    UnvalidatedParquetLogline as OwnedUnvalidatedParquetLogline,
+    ValidatedParquetLogline as OwnedValidatedParquetLogline,
+};
+
+// #[cfg(feature = "parquet")]
+// pub use crate::types::{Datelike, Timelike};
+
 // === tests ===
 
 #[cfg(test)]
