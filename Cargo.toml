@@ -1,7 +1,7 @@
 [package]
 name = "cloudfront-logs"
 description = "AWS CloudFront log line parser"
-version = "0.7.1"
+version = "0.8.0"
 edition = "2021"
 readme = "README.md"
 homepage = "https://github.com/asaaki/cloudfront-logs"
@@ -13,7 +13,7 @@ categories = [
   "rust-patterns",
   "value-formatting",
 ]
-keywords = ["cloudfront", "log", "parser", "aws", "tsv"]
+keywords = ["cloudfront", "log", "parser", "aws", "parquet"]
 license = "MIT OR Apache-2.0"
 exclude = [".assets/*", ".github/*"]
 
