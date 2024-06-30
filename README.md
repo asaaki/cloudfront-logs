@@ -40,7 +40,7 @@ let logline: &str = "2019-12-04	21:02:31	LAX1	392	192.0.2.100	GET	d111111abcdef8
 // -- borrowing the input --
 
 // reasonable default parser
-let item = CheckedRawLogLine::try_from(logline).unwrap();
+let item = ValidatedRawLogline::try_from(logline).unwrap();
 
 // fields are only sub-slices from the input and therefore all return &str
 assert_eq!(item.date, "2019-12-04");
@@ -51,7 +51,7 @@ assert_eq!(item.c_ip, "192.0.2.100");
 
 // parser which only uses types accessible without external dependencies,
 // only Rust's core and std library is allowed
-let item = SimpleLogLine::try_from(logline).unwrap();
+let item = ValidatedSimpleLogline::try_from(logline).unwrap();
 
 assert_eq!(item.date, "2019-12-04");
 assert_eq!(item.sc_content_len, 78);
@@ -60,7 +60,7 @@ assert_eq!(item.c_ip, IpAddr::V4(Ipv4Addr::new(192, 0, 2, 100)));
 // -- get an owned and typed version --
 
 // parser which also converts some fields via external dependencies,
-let item = TypedLogLine::try_from(logline).unwrap();
+let item = ValidatedTimeLogline::try_from(logline).unwrap();
 
 // here: date and time from the `time` crate
 assert_eq!(item.date, time_macros::date!(2019-12-04));

@@ -57,11 +57,11 @@ impl<'a> TryFrom<&'a str> for LogLine {
     type Error = &'static str;
 
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
-        valid_line(line)?;
+        validate_line(line)?;
 
         let mut iter = MemchrTabSplitter::new(line);
 
-        let line = LogLine {
+        let line = Self {
             date: iter.next().unwrap().to_string(),
             time: iter.next().unwrap().to_string(),
             x_edge_location: iter.next().unwrap().to_string(),
@@ -174,7 +174,7 @@ impl TryFrom<CheckedRawLogLine<'_>> for LogLine {
     type Error = &'static str;
 
     fn try_from(raw: CheckedRawLogLine<'_>) -> Result<Self, Self::Error> {
-        let line = LogLine {
+        let line = Self {
             date: raw.date.to_string(),
             time: raw.time.to_string(),
             x_edge_location: raw.x_edge_location.to_string(),

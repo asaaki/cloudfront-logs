@@ -17,7 +17,7 @@ const SINGLE_LOG_LINE: &str = "2019-12-04	21:02:31	LAX1	392	192.0.2.100	GET	d111
 #[test]
 fn readme_examples_borrow() {
     let logline: &str = SINGLE_LOG_LINE;
-    let item = CheckedRawLogLine::try_from(logline).unwrap();
+    let item = ValidatedRawLogline::try_from(logline).unwrap();
 
     assert_eq!(item.date, "2019-12-04");
     assert_eq!(item.sc_bytes, "392");
@@ -27,7 +27,7 @@ fn readme_examples_borrow() {
 #[test]
 fn readme_examples_simple() {
     let logline: &str = SINGLE_LOG_LINE;
-    let item = SimpleLogLine::try_from(logline).unwrap();
+    let item = ValidatedSimpleLogline::try_from(logline).unwrap();
 
     assert_eq!(item.date, "2019-12-04");
     assert_eq!(item.sc_content_len, 78);
@@ -39,23 +39,11 @@ fn readme_examples_typed() {
     use time::macros::{date, time}; // just for the example
 
     let logline: &str = SINGLE_LOG_LINE;
-    let item = TypedLogLine::try_from(logline).unwrap();
+    let item = ValidatedTimeLogline::try_from(logline).unwrap();
 
     assert_eq!(item.date, date!(2019 - 12 - 04));
     assert_eq!(item.time, time!(21:02:31));
     assert_eq!(item.time_taken, Duration::from_millis(1));
-}
-
-#[test]
-fn readme_examples_owned_simple() {
-    let logline: &str = SINGLE_LOG_LINE;
-
-    // reasonable default parser, only borrowing the line
-    let item = CheckedRawLogLine::try_from(logline).unwrap();
-    // fields are only sub-slices from the input and therefore all return &str
-    assert_eq!(item.date, "2019-12-04");
-    assert_eq!(item.sc_bytes, "392");
-    assert_eq!(item.c_ip, "192.0.2.100");
 }
 
 #[test]
@@ -70,4 +58,21 @@ fn transformation_roundtrip() {
 
     eprintln!("simple_line:  {:#?}", simple_line);
     eprintln!("typed_line:   {:#?}", typed_line);
+}
+
+// === new structure ===
+
+// note: this also tests the underlying borrowed types
+#[test]
+fn self_referentially_owned_types() {
+    let logline: &str = SINGLE_LOG_LINE;
+    let item = OwningValidatedParquetLogline::try_from(logline).unwrap();
+    let view = item.view();
+
+    assert_eq!(view.date, NaiveDate::from_ymd_opt(2019, 12, 4).unwrap());
+    assert_eq!(view.time, "21:02:31");
+    assert_eq!(view.time_taken, 0.001f64);
+    assert_eq!(view.sc_bytes, 392u64);
+    assert_eq!(view.cs_protocol, "https");
+    assert_eq!(view.x_forwarded_for, None);
 }

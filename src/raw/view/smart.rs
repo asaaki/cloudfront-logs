@@ -3,12 +3,12 @@ use std::cell::RefCell;
 
 /// View into a borrowed log line
 ///
-/// Unlike [`RawLogLine`](crate::raw::RawLogLine), this struct does not compute all the fields upfront,
+/// Unlike [`CheckedRawLogLine`](crate::raw::CheckedRawLogLine), this struct does not compute all the fields upfront,
 /// but instead provides methods to access the fields on demand.
 ///
 /// This can be useful when you need to access only one or two fields from a log line.
 /// Performance gets worse if you need to access many fields;
-/// cloning the iterator becomes more expensive compared to a pre-computed struct like [`RawLogLine`](crate::raw::RawLogLine).
+/// cloning the iterator becomes more expensive compared to a pre-computed struct like [`CheckedRawLogLine`](crate::raw::CheckedRawLogLine).
 #[derive(Debug)]
 pub struct LogLineView<'a> {
     line: &'a str,
@@ -24,7 +24,7 @@ impl<'a> LogLineView<'a> {
     /// that it's not a comment line (like the version or fields header).
     ///
     pub fn new(line: &'a str) -> Result<Self, &'static str> {
-        valid_line(line)?;
+        validate_line(line)?;
 
         let iter = RefCell::new(MemchrTabSplitter::new(line));
         let prev = RefCell::new(0);

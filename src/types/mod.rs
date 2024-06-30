@@ -1,19 +1,28 @@
-pub use std::net::{IpAddr, Ipv4Addr, Ipv6Addr};
-pub use std::time::Duration;
+pub mod std {
+    pub use std::{
+        marker::PhantomData,
+        net::{IpAddr, Ipv4Addr, Ipv6Addr},
+        sync::Arc,
+        time::Duration,
+    };
+}
+pub(crate) use self::std::*;
 
-#[cfg(feature = "parquet")]
+/// Marker for which validate the log line before parsing
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Validated;
+
+/// Marker for which does not validate the log line before parsing
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Unvalidated;
+
+#[cfg(feature = "chrono")]
 pub use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
-#[cfg(feature = "typed")]
-pub use time::{
-    format_description::BorrowedFormatItem, macros::format_description, Date, OffsetDateTime, Time,
-    UtcOffset,
-};
+#[cfg(feature = "time")]
+pub use time::{Date, OffsetDateTime, Time, UtcOffset};
 
-#[cfg(feature = "typed")]
-pub use time::macros as time_macros;
-
-#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
+#[derive(Debug, Clone, PartialEq, strum::Display, strum::EnumString)]
 pub enum EdgeResultType {
     Hit,
     RefreshHit,
@@ -27,7 +36,7 @@ pub enum EdgeResultType {
     Other(String),
 }
 
-#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
+#[derive(Debug, Clone, PartialEq, strum::Display, strum::EnumString)]
 pub enum DetailedEdgeResultType {
     // same as EdgeResultType
     Hit,
@@ -70,7 +79,7 @@ pub enum DetailedEdgeResultType {
     Other(String),
 }
 
-#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
+#[derive(Debug, Clone, Copy, PartialEq, strum::Display, strum::EnumString)]
 pub enum CsProtocol {
     #[strum(serialize = "http")]
     Http,
@@ -82,7 +91,7 @@ pub enum CsProtocol {
     Wss,
 }
 
-#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
+#[derive(Debug, Clone, Copy, PartialEq, strum::Display, strum::EnumString)]
 pub enum CsProtocolVersion {
     #[strum(serialize = "HTTP/3.0")]
     HTTP3_0,
@@ -98,7 +107,7 @@ pub enum CsProtocolVersion {
 
 // <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/secure-connections-supported-viewer-protocols-ciphers.html>
 
-#[derive(Debug, PartialEq, strum::Display, strum::EnumString)]
+#[derive(Debug, Clone, Copy, PartialEq, strum::Display, strum::EnumString)]
 pub enum SslProtocol {
     #[strum(serialize = "TLSv1.3")]
     TLSv1_3,

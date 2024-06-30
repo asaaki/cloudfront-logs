@@ -4,7 +4,7 @@ pub use LogLine as ParquetLogLine;
 
 /// A mostly borrowed version suitable for writing into parquet files
 ///
-/// It's similar to [`CheckedRawLogLine`](crate::raw::CheckedRawLogLine),
+/// It's similar to [`CheckedRawLogLine`],
 /// but with some fields slightly more typed (time, numbers, options)
 #[derive(Debug, PartialEq, parquet_derive::ParquetRecordWriter)]
 pub struct LogLine<'a> {
@@ -48,7 +48,7 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
     type Error = &'static str;
 
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
-        valid_line(line)?;
+        validate_line(line)?;
 
         let mut iter = MemchrTabSplitter::new(line);
 
@@ -58,7 +58,7 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
         let time = NaiveTime::parse_from_str(raw_time, "%H:%M:%S").map_err(|_| "time invalid")?;
         let datetime = NaiveDateTime::new(date, time);
 
-        let line = LogLine {
+        let line = Self {
             date,
             time: raw_time,
             datetime,
@@ -146,7 +146,7 @@ impl<'a> TryFrom<CheckedRawLogLine<'a>> for LogLine<'a> {
         let time = NaiveTime::parse_from_str(raw.time, "%H:%M:%S").map_err(|_| "time invalid")?;
         let datetime = NaiveDateTime::new(date, time);
 
-        let line = LogLine {
+        let line = Self {
             date,
             time: raw.time,
             datetime,

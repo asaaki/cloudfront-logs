@@ -41,7 +41,7 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
     type Error = &'static str;
 
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
-        valid_line(line)?;
+        validate_line(line)?;
 
         let mut iter = MemchrTabSplitter::new(line);
 
