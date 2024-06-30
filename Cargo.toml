@@ -37,15 +37,21 @@ path = "benches/borrowed-real-world-unvalidated.rs"
 harness = false
 
 [features]
+# for now we enable all features by default;
+# this might change in the future.
+# use default-features = false + features = ["..."] to narrow it to your needs
 default = ["alloc", "time", "chrono", "parquet"]
 
 # when you need owned versions of the structured log data; enabled by default
 alloc = []
 
+# use typed variants with time's date and time types
 time = ["alloc", "dep:time"]
+# use typed variants with chrono's date and time types;
+# also needed for parquet support as well
 chrono = ["alloc", "dep:chrono"]
 
-# provides parquet support
+# provides parquet (record writer) support
 parquet = [
   "dep:parquet",
   "dep:parquet_derive",
