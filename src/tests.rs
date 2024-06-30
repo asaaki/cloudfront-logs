@@ -1,6 +1,6 @@
+use crate::*;
 use std::net::Ipv4Addr;
 use time::macros::{date, time};
-use crate::*;
 
 #[allow(unused)]
 const AWS_DOCS_EXAMPLE: &str = r#"#Version: 1.0

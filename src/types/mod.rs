@@ -1,9 +1,4 @@
-pub(crate) use std::{
-    marker::PhantomData,
-    net::IpAddr,
-    sync::Arc,
-    time::Duration,
-};
+pub(crate) use std::{marker::PhantomData, net::IpAddr, sync::Arc, time::Duration};
 
 /// Marker for which validate the log line before parsing
 #[derive(Debug, Clone, Copy, PartialEq)]
