@@ -1,12 +1,9 @@
-pub mod std {
-    pub use std::{
-        marker::PhantomData,
-        net::{IpAddr, Ipv4Addr, Ipv6Addr},
-        sync::Arc,
-        time::Duration,
-    };
-}
-pub(crate) use self::std::*;
+pub(crate) use std::{
+    marker::PhantomData,
+    net::IpAddr,
+    sync::Arc,
+    time::Duration,
+};
 
 /// Marker for which validate the log line before parsing
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -17,7 +14,7 @@ pub struct Validated;
 pub struct Unvalidated;
 
 #[cfg(feature = "chrono")]
-pub use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+pub use chrono::{Datelike, NaiveDate, NaiveDateTime, NaiveTime, Timelike};
 
 #[cfg(feature = "time")]
 pub use time::{Date, OffsetDateTime, Time, UtcOffset};

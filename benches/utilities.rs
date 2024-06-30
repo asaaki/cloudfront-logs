@@ -1,6 +1,7 @@
 #![allow(unused)]
 
-pub use cloudfront_logs::{types::std::*, *};
+pub use cloudfront_logs::{types::*, *};
+pub use std::net::IpAddr;
 
 pub const AWS_DOCS_EXAMPLE_LINES: [&str; 8] = [
     "#Version: 1.0",

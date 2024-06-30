@@ -8,6 +8,8 @@ use crate::{
     CHRONO_DATE_FMT, CHRONO_TIME_FMT,
 };
 
+pub use crate::types::{Datelike, Timelike};
+
 /// The validated typed log line, using [`chrono`] crate for date and time
 ///
 /// Most fields are parsed into more meaningful types.

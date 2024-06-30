@@ -5,6 +5,8 @@ use crate::{
     CHRONO_DATE_FMT, CHRONO_TIME_FMT,
 };
 
+pub use crate::types::{Datelike, Timelike};
+
 // todo: write correct schema!
 pub const SCHEMA: &str = r#"message rust_schema {
     REQUIRED boolean         a_bool;

@@ -1,5 +1,7 @@
 use crate::{borrowed::UnvalidatedParquetLogline as BorrowedLine, shared::validate_line, types::*};
 
+pub use crate::types::{Datelike, Timelike};
+
 /// A (thread safe) line string
 ///
 /// We use a [`Arc<str>`] over [`String`] to communicate its immutability and fixedness.
