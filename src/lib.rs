@@ -75,9 +75,6 @@ pub use owned::{
     ValidatedParquetLogline as OwnedValidatedParquetLogline,
 };
 
-// #[cfg(feature = "parquet")]
-// pub use crate::types::{Datelike, Timelike};
-
 // === tests ===
 
 #[cfg(test)]
