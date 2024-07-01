@@ -1,3 +1,4 @@
+.envrc
 .markdownlint.jsonc
 /target
 /tmp
