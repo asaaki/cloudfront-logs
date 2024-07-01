@@ -3,7 +3,7 @@ b = "build"
 br = "build --release"
 c = "check"
 t = "test"
-fixit = "fix --benches --examples --tests --all-features --allow-dirty --allow-staged"
+fixit = "fix --workspace --all-features --benches --examples --tests --allow-dirty --allow-staged"
 
 t-all = "test --all-features"
 bb-all = "bench -q --all-features"

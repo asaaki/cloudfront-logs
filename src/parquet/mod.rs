@@ -53,9 +53,9 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
         let mut iter = MemchrTabSplitter::new(line);
 
         let date = NaiveDate::parse_from_str(iter.next().unwrap(), "%Y-%m-%d")
-            .map_err(|_| "date invalid")?;
+            .map_err(|_e| "date invalid")?;
         let raw_time = iter.next().unwrap();
-        let time = NaiveTime::parse_from_str(raw_time, "%H:%M:%S").map_err(|_| "time invalid")?;
+        let time = NaiveTime::parse_from_str(raw_time, "%H:%M:%S").map_err(|_e| "time invalid")?;
         let datetime = NaiveDateTime::new(date, time);
 
         let line = Self {
@@ -67,7 +67,7 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
                 .next()
                 .unwrap()
                 .parse::<u64>()
-                .map_err(|_| "sc_bytes invalid")?,
+                .map_err(|_e| "sc_bytes invalid")?,
             c_ip: iter.next().unwrap(),
             cs_method: iter.next().unwrap(),
             cs_host: iter.next().unwrap(),
@@ -76,7 +76,7 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
                 .next()
                 .unwrap()
                 .parse::<u16>()
-                .map_err(|_| "sc_status invalid")?,
+                .map_err(|_e| "sc_status invalid")?,
             cs_referer: iter.next().and_then(str::as_optional_str),
             cs_user_agent: iter.next().unwrap(),
             cs_uri_query: iter.next().and_then(str::as_optional_str),
@@ -89,12 +89,12 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
                 .next()
                 .unwrap()
                 .parse::<u64>()
-                .map_err(|_| "cs_bytes invalid")?,
+                .map_err(|_e| "cs_bytes invalid")?,
             time_taken: iter
                 .next()
                 .unwrap()
                 .parse::<f64>()
-                .map_err(|_| "time_taken invalid")?,
+                .map_err(|_e| "time_taken invalid")?,
             x_forwarded_for: iter.next().and_then(str::as_optional_str),
             ssl_protocol: iter.next().and_then(str::as_optional_str),
             ssl_cipher: iter.next().and_then(str::as_optional_str),
@@ -105,34 +105,34 @@ impl<'a> TryFrom<&'a str> for LogLine<'a> {
                 .next()
                 .and_then(as_optional_t)
                 .transpose()
-                .map_err(|_| "fle_encrypted_fields invalid")?,
+                .map_err(|_e| "fle_encrypted_fields invalid")?,
             c_port: iter
                 .next()
                 .unwrap()
                 .parse::<u16>()
-                .map_err(|_| "c_port invalid")?,
+                .map_err(|_e| "c_port invalid")?,
             time_to_first_byte: iter
                 .next()
                 .unwrap()
                 .parse::<f64>()
-                .map_err(|_| "time_to_first_byte invalid")?,
+                .map_err(|_e| "time_to_first_byte invalid")?,
             x_edge_detailed_result_type: iter.next().unwrap(),
             sc_content_type: iter.next().unwrap(),
             sc_content_len: iter
                 .next()
                 .unwrap()
                 .parse::<u64>()
-                .map_err(|_| "sc_content_len invalid")?,
+                .map_err(|_e| "sc_content_len invalid")?,
             sc_range_start: iter
                 .next()
                 .and_then(as_optional_t)
                 .transpose()
-                .map_err(|_| "sc_range_start invalid")?,
+                .map_err(|_e| "sc_range_start invalid")?,
             sc_range_end: iter
                 .next()
                 .and_then(as_optional_t)
                 .transpose()
-                .map_err(|_| "sc_range_end invalid")?,
+                .map_err(|_e| "sc_range_end invalid")?,
         };
         Ok(line)
     }
@@ -142,8 +142,8 @@ impl<'a> TryFrom<CheckedRawLogLine<'a>> for LogLine<'a> {
     type Error = &'static str;
 
     fn try_from(raw: CheckedRawLogLine<'a>) -> Result<Self, Self::Error> {
-        let date = NaiveDate::parse_from_str(raw.date, "%Y-%m-%d").map_err(|_| "date invalid")?;
-        let time = NaiveTime::parse_from_str(raw.time, "%H:%M:%S").map_err(|_| "time invalid")?;
+        let date = NaiveDate::parse_from_str(raw.date, "%Y-%m-%d").map_err(|_e| "date invalid")?;
+        let time = NaiveTime::parse_from_str(raw.time, "%H:%M:%S").map_err(|_e| "time invalid")?;
         let datetime = NaiveDateTime::new(date, time);
 
         let line = Self {
@@ -154,7 +154,7 @@ impl<'a> TryFrom<CheckedRawLogLine<'a>> for LogLine<'a> {
             sc_bytes: raw
                 .sc_bytes
                 .parse::<u64>()
-                .map_err(|_| "sc_bytes invalid")?,
+                .map_err(|_e| "sc_bytes invalid")?,
             c_ip: raw.c_ip,
             cs_method: raw.cs_method,
             cs_host: raw.cs_host,
@@ -162,7 +162,7 @@ impl<'a> TryFrom<CheckedRawLogLine<'a>> for LogLine<'a> {
             sc_status: raw
                 .sc_status
                 .parse::<u16>()
-                .map_err(|_| "sc_status invalid")?,
+                .map_err(|_e| "sc_status invalid")?,
             cs_referer: raw.cs_referer.as_optional_str(),
             cs_user_agent: raw.cs_user_agent,
             cs_uri_query: raw.cs_uri_query.as_optional_str(),
@@ -174,11 +174,11 @@ impl<'a> TryFrom<CheckedRawLogLine<'a>> for LogLine<'a> {
             cs_bytes: raw
                 .cs_bytes
                 .parse::<u64>()
-                .map_err(|_| "cs_bytes invalid")?,
+                .map_err(|_e| "cs_bytes invalid")?,
             time_taken: raw
                 .time_taken
                 .parse::<f64>()
-                .map_err(|_| "time_taken invalid")?,
+                .map_err(|_e| "time_taken invalid")?,
             x_forwarded_for: raw.x_forwarded_for.as_optional_str(),
             ssl_protocol: raw.ssl_protocol.as_optional_str(),
             ssl_cipher: raw.ssl_cipher.as_optional_str(),
@@ -186,21 +186,21 @@ impl<'a> TryFrom<CheckedRawLogLine<'a>> for LogLine<'a> {
             cs_protocol_version: raw.cs_protocol_version,
             fle_status: raw.fle_status.as_optional_str(),
             fle_encrypted_fields: parse_as_option(raw.fle_encrypted_fields)
-                .map_err(|_| "fle_encrypted_fields invalid")?,
-            c_port: raw.c_port.parse::<u16>().map_err(|_| "c_port invalid")?,
+                .map_err(|_e| "fle_encrypted_fields invalid")?,
+            c_port: raw.c_port.parse::<u16>().map_err(|_e| "c_port invalid")?,
             time_to_first_byte: raw
                 .time_to_first_byte
                 .parse::<f64>()
-                .map_err(|_| "time_to_first_byte invalid")?,
+                .map_err(|_e| "time_to_first_byte invalid")?,
             x_edge_detailed_result_type: raw.x_edge_detailed_result_type,
             sc_content_type: raw.sc_content_type,
             sc_content_len: raw
                 .sc_content_len
                 .parse::<u64>()
-                .map_err(|_| "sc_content_len invalid")?,
+                .map_err(|_e| "sc_content_len invalid")?,
             sc_range_start: parse_as_option(raw.sc_range_start)
-                .map_err(|_| "sc_range_start invalid")?,
-            sc_range_end: parse_as_option(raw.sc_range_end).map_err(|_| "sc_range_end invalid")?,
+                .map_err(|_e| "sc_range_start invalid")?,
+            sc_range_end: parse_as_option(raw.sc_range_end).map_err(|_e| "sc_range_end invalid")?,
         };
         Ok(line)
     }

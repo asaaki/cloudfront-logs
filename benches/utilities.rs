@@ -1,4 +1,4 @@
-#![allow(unused)]
+#![allow(unused, clippy::upper_case_acronyms)]
 
 pub use cloudfront_logs::{types::*, *};
 pub use std::net::IpAddr;

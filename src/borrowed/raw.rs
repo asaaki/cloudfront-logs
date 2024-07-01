@@ -111,7 +111,6 @@ pub struct Logline<'a, V> {
 impl<'a> TryFrom<&'a str> for Logline<'a, Validated> {
     type Error = &'static str;
 
-    #[must_use]
     fn try_from(line: &'a str) -> Result<Self, Self::Error> {
         validate_line(line)?;
         let result = new_log_line(line);
@@ -120,13 +119,12 @@ impl<'a> TryFrom<&'a str> for Logline<'a, Validated> {
 }
 
 impl<'a> From<&'a str> for Logline<'a, Unvalidated> {
-    #[must_use]
     fn from(line: &'a str) -> Self {
         new_log_line(line)
     }
 }
 
-fn new_log_line<'a, V>(line: &'a str) -> Logline<'a, V> {
+fn new_log_line<V>(line: &str) -> Logline<'_, V> {
     let mut iter = MemchrTabSplitter::new(line);
 
     Logline {
@@ -168,7 +166,6 @@ fn new_log_line<'a, V>(line: &'a str) -> Logline<'a, V> {
 }
 
 impl<'a> From<Logline<'a, Validated>> for Logline<'a, Unvalidated> {
-    #[must_use]
     fn from(validated: Logline<'a, Validated>) -> Self {
         Logline {
             date: validated.date,
@@ -210,7 +207,6 @@ impl<'a> From<Logline<'a, Validated>> for Logline<'a, Unvalidated> {
 }
 
 impl<'a> From<Logline<'a, Unvalidated>> for Logline<'a, Validated> {
-    #[must_use]
     fn from(unvalidated: Logline<'a, Unvalidated>) -> Self {
         Logline {
             date: unvalidated.date,

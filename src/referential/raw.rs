@@ -23,11 +23,7 @@ self_cell::self_cell!(
 impl Clone for Container {
     fn clone(&self) -> Self {
         let input = Arc::clone(self.borrow_owner());
-        Self::new(input, |line| {
-            let dependent = BorrowedLine::try_from(line.as_ref())
-                .expect("invalid line input despite validation");
-            dependent
-        })
+        Self::new(input, |line| BorrowedLine::from(line.as_ref()))
     }
 }
 

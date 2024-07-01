@@ -90,8 +90,8 @@ impl<'a> Iterator for MemchrTabSplitter<'a> {
 }
 
 // if the input is "-", return Ok(None), otherwise parse the input as T;
-// -> parse_as_option(iter.next().unwrap()).map_err(|_| "…")?
-// -> parse_as_option(str_input).map_err(|_| "…")?
+// -> parse_as_option(iter.next().unwrap()).map_err(|_e| "…")?
+// -> parse_as_option(str_input).map_err(|_e| "…")?
 pub(crate) fn parse_as_option<T: std::str::FromStr>(s: &str) -> Result<Option<T>, T::Err> {
     if s == "-" {
         Ok(None)
@@ -101,7 +101,7 @@ pub(crate) fn parse_as_option<T: std::str::FromStr>(s: &str) -> Result<Option<T>
 }
 
 // better chainable version of parse_as_option;
-// -> iter.next().and_then(as_optional_t).transpose().map_err(|_| "…")?
+// -> iter.next().and_then(as_optional_t).transpose().map_err(|_e| "…")?
 pub(crate) fn as_optional_t<T: std::str::FromStr>(s: &str) -> Option<Result<T, T::Err>> {
     if s == "-" {
         None
