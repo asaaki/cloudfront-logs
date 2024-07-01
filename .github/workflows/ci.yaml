@@ -33,7 +33,7 @@ jobs:
     - run: cargo check --all-features
     - run: cargo build --all-features
     - run: cargo test --all-features
-    - run: cargo bench --all-features --bench real-world
+    - run: cargo bench --all-features
 
   check_fmt_and_docs:
     name: Checking fmt, clippy, and docs

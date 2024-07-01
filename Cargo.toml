@@ -27,12 +27,12 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [[bench]]
-name = "brlv"
+name = "brwv"
 path = "benches/borrowed-real-world-validated.rs"
 harness = false
 
 [[bench]]
-name = "brlu"
+name = "brwu"
 path = "benches/borrowed-real-world-unvalidated.rs"
 harness = false
 
