@@ -119,8 +119,6 @@ There are more benches you can run, like `single-field` and `two-fields` which s
 
 This crate uses ``#![forbid(unsafe_code)]`` to ensure everything is implemented in 100% Safe Rust.
 
-<sup>(See `[lints.rust]` section in `Cargo.toml`)</sup>
-
 ## License
 
 <sup>
