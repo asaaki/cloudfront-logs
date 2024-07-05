@@ -116,7 +116,7 @@ pub struct Logline<'a, V> {
     pub sc_content_type: Option<&'a str>,
     pub sc_content_len: Option<u64>,
     pub sc_range_start: Option<i64>, // *1
-    pub sc_range_end: Option<i64>, // *1
+    pub sc_range_end: Option<i64>,   // *1
     __marker: PhantomData<V>,
 }
 
