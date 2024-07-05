@@ -101,7 +101,7 @@ pub struct Logline<'a, V> {
     pub cs_protocol: CsProtocol,
     pub cs_bytes: u64,
     pub time_taken: Duration,
-    pub x_forwarded_for: Option<IpAddr>,
+    pub x_forwarded_for: Option<ForwardedForAddrs>,
     pub ssl_protocol: Option<SslProtocol>,
     pub ssl_cipher: Option<&'a str>,
     pub x_edge_response_result_type: EdgeResultType,
@@ -111,10 +111,10 @@ pub struct Logline<'a, V> {
     pub c_port: u16,
     pub time_to_first_byte: Duration,
     pub x_edge_detailed_result_type: DetailedEdgeResultType,
-    pub sc_content_type: &'a str,
-    pub sc_content_len: u64,
-    pub sc_range_start: Option<u64>,
-    pub sc_range_end: Option<u64>,
+    pub sc_content_type: Option<&'a str>,
+    pub sc_content_len: Option<u64>,
+    pub sc_range_start: Option<i64>,
+    pub sc_range_end: Option<i64>,
     __marker: PhantomData<V>,
 }
 
@@ -233,11 +233,11 @@ fn new_log_line<V>(line: &str) -> Result<Logline<'_, V>, &'static str> {
             .unwrap()
             .parse()
             .map_err(|_e| "x_edge_detailed_result_type invalid")?,
-        sc_content_type: iter.next().unwrap(),
+        sc_content_type: iter.next().unwrap().as_optional_str(),
         sc_content_len: iter
             .next()
-            .unwrap()
-            .parse()
+            .and_then(as_optional_t)
+            .transpose()
             .map_err(|_e| "sc_content_len invalid")?,
         sc_range_start: iter
             .next()
@@ -331,10 +331,8 @@ fn try_from_v<V>(raw: RawLogline<'_, V>) -> Result<Logline<'_, V>, &'static str>
             .x_edge_detailed_result_type
             .parse()
             .map_err(|_e| "x_edge_detailed_result_type invalid")?,
-        sc_content_type: raw.sc_content_type,
-        sc_content_len: raw
-            .sc_content_len
-            .parse()
+        sc_content_type: raw.sc_content_type.as_optional_str(),
+        sc_content_len: parse_as_option(raw.sc_content_len)
             .map_err(|_e| "sc_content_len invalid")?,
         sc_range_start: parse_as_option(raw.sc_range_start)
             .map_err(|_e| "sc_range_start invalid")?,

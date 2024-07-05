@@ -40,8 +40,8 @@ pub struct LogLine<'a> {
     pub x_edge_detailed_result_type: &'a str,
     pub sc_content_type: &'a str,
     pub sc_content_len: u64,
-    pub sc_range_start: Option<u64>,
-    pub sc_range_end: Option<u64>,
+    pub sc_range_start: Option<i64>,
+    pub sc_range_end: Option<i64>,
 }
 
 impl<'a> TryFrom<&'a str> for LogLine<'a> {

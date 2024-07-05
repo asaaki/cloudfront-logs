@@ -32,7 +32,7 @@ pub struct Logline<V> {
     pub cs_protocol: CsProtocol,
     pub cs_bytes: u64,
     pub time_taken: Duration,
-    pub x_forwarded_for: Option<IpAddr>,
+    pub x_forwarded_for: Option<ForwardedForAddrs>,
     pub ssl_protocol: Option<SslProtocol>,
     pub ssl_cipher: Option<String>, // *1
     pub x_edge_response_result_type: EdgeResultType,
@@ -44,8 +44,8 @@ pub struct Logline<V> {
     pub x_edge_detailed_result_type: DetailedEdgeResultType,
     pub sc_content_type: String,
     pub sc_content_len: u64,
-    pub sc_range_start: Option<u64>,
-    pub sc_range_end: Option<u64>,
+    pub sc_range_start: Option<i64>,
+    pub sc_range_end: Option<i64>,
     __marker: PhantomData<V>,
 }
 

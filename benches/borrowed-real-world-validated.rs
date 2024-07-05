@@ -44,7 +44,7 @@ fn ValidatedSimpleLogline(inputs: Inputs) -> usize {
                 Data::I(item.c_ip),
                 Data::M(item.c_port),
                 Data::S0(item.cs_uri_stem),
-                Data::N(item.sc_content_len),
+                Data::ON(item.sc_content_len),
                 Data::N(item.sc_bytes),
             ];
             result.len()
@@ -68,7 +68,7 @@ fn ValidatedChronoLogline(inputs: Inputs) -> usize {
                 Data::I(item.c_ip),
                 Data::M(item.c_port),
                 Data::S0(item.cs_uri_stem),
-                Data::N(item.sc_content_len),
+                Data::ON(item.sc_content_len),
                 Data::N(item.sc_bytes),
             ];
             result.len()
@@ -92,7 +92,7 @@ fn ValidatedTimeLogline(inputs: Inputs) -> usize {
                 Data::I(item.c_ip),
                 Data::M(item.c_port),
                 Data::S0(item.cs_uri_stem),
-                Data::N(item.sc_content_len),
+                Data::ON(item.sc_content_len),
                 Data::N(item.sc_bytes),
             ];
             result.len()
@@ -116,7 +116,7 @@ fn ValidatedParquetLogline(inputs: Inputs) -> usize {
                 Data::S0(item.c_ip),
                 Data::M(item.c_port),
                 Data::S0(item.cs_uri_stem),
-                Data::N(item.sc_content_len),
+                Data::ON(item.sc_content_len),
                 Data::N(item.sc_bytes),
             ];
             result.len()

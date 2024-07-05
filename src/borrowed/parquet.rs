@@ -73,10 +73,10 @@ pub struct ValidatedLogline<'a> {
     pub c_port: u16,
     pub time_to_first_byte: f64,
     pub x_edge_detailed_result_type: &'a str,
-    pub sc_content_type: &'a str,
-    pub sc_content_len: u64,
-    pub sc_range_start: Option<u64>,
-    pub sc_range_end: Option<u64>,
+    pub sc_content_type: Option<&'a str>,
+    pub sc_content_len: Option<u64>,
+    pub sc_range_start: Option<i64>,
+    pub sc_range_end: Option<i64>,
 }
 
 impl<'a> ValidatedLogline<'a> {
@@ -162,11 +162,11 @@ impl<'a> TryFrom<&'a str> for ValidatedLogline<'a> {
                 .parse::<f64>()
                 .map_err(|_e| "time_to_first_byte invalid")?,
             x_edge_detailed_result_type: iter.next().unwrap(),
-            sc_content_type: iter.next().unwrap(),
+            sc_content_type: iter.next().unwrap().as_optional_str(),
             sc_content_len: iter
                 .next()
-                .unwrap()
-                .parse::<u64>()
+                .and_then(as_optional_t)
+                .transpose()
                 .map_err(|_e| "sc_content_len invalid")?,
             sc_range_start: iter
                 .next()
@@ -240,10 +240,8 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for ValidatedLogline<'a> {
                 .parse::<f64>()
                 .map_err(|_e| "time_to_first_byte invalid")?,
             x_edge_detailed_result_type: raw.x_edge_detailed_result_type,
-            sc_content_type: raw.sc_content_type,
-            sc_content_len: raw
-                .sc_content_len
-                .parse::<u64>()
+            sc_content_type: raw.sc_content_type.as_optional_str(),
+            sc_content_len: parse_as_option(raw.sc_content_len)
                 .map_err(|_e| "sc_content_len invalid")?,
             sc_range_start: parse_as_option(raw.sc_range_start)
                 .map_err(|_e| "sc_range_start invalid")?,
@@ -318,10 +316,10 @@ pub struct UnvalidatedLogline<'a> {
     pub c_port: u16,
     pub time_to_first_byte: f64,
     pub x_edge_detailed_result_type: &'a str,
-    pub sc_content_type: &'a str,
-    pub sc_content_len: u64,
-    pub sc_range_start: Option<u64>,
-    pub sc_range_end: Option<u64>,
+    pub sc_content_type: Option<&'a str>,
+    pub sc_content_len: Option<u64>,
+    pub sc_range_start: Option<i64>,
+    pub sc_range_end: Option<i64>,
 }
 
 impl<'a> UnvalidatedLogline<'a> {
@@ -405,11 +403,11 @@ impl<'a> TryFrom<&'a str> for UnvalidatedLogline<'a> {
                 .parse::<f64>()
                 .map_err(|_e| "time_to_first_byte invalid")?,
             x_edge_detailed_result_type: iter.next().unwrap(),
-            sc_content_type: iter.next().unwrap(),
+            sc_content_type: iter.next().unwrap().as_optional_str(),
             sc_content_len: iter
                 .next()
-                .unwrap()
-                .parse::<u64>()
+                .and_then(as_optional_t)
+                .transpose()
                 .map_err(|_e| "sc_content_len invalid")?,
             sc_range_start: iter
                 .next()
@@ -483,10 +481,8 @@ impl<'a> TryFrom<UnvalidatedRaw<'a>> for UnvalidatedLogline<'a> {
                 .parse::<f64>()
                 .map_err(|_e| "time_to_first_byte invalid")?,
             x_edge_detailed_result_type: raw.x_edge_detailed_result_type,
-            sc_content_type: raw.sc_content_type,
-            sc_content_len: raw
-                .sc_content_len
-                .parse::<u64>()
+            sc_content_type: raw.sc_content_type.as_optional_str(),
+            sc_content_len: parse_as_option(raw.sc_content_len)
                 .map_err(|_e| "sc_content_len invalid")?,
             sc_range_start: parse_as_option(raw.sc_range_start)
                 .map_err(|_e| "sc_range_start invalid")?,
@@ -553,10 +549,8 @@ impl<'a> TryFrom<ValidatedRaw<'a>> for UnvalidatedLogline<'a> {
                 .parse::<f64>()
                 .map_err(|_e| "time_to_first_byte invalid")?,
             x_edge_detailed_result_type: raw.x_edge_detailed_result_type,
-            sc_content_type: raw.sc_content_type,
-            sc_content_len: raw
-                .sc_content_len
-                .parse::<u64>()
+            sc_content_type: raw.sc_content_type.as_optional_str(),
+            sc_content_len: parse_as_option(raw.sc_content_len)
                 .map_err(|_e| "sc_content_len invalid")?,
             sc_range_start: parse_as_option(raw.sc_range_start)
                 .map_err(|_e| "sc_range_start invalid")?,

@@ -34,6 +34,7 @@ pub enum Data<'a> {
     S(String),
     OS(Option<String>),
     N(u64),
+    ON(Option<u64>),
     M(u16),
     I(IpAddr),
     D(Date),

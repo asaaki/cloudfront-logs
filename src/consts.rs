@@ -79,10 +79,10 @@ OPTIONAL INT64 fle_encrypted_fields (INTEGER(64,false));
 REQUIRED INT32 c_port (INTEGER(16,false));
 REQUIRED DOUBLE time_to_first_byte;
 REQUIRED BYTE_ARRAY x_edge_detailed_result_type (STRING);
-REQUIRED BYTE_ARRAY sc_content_type (STRING);
-REQUIRED INT64 sc_content_len (INTEGER(64,false));
-OPTIONAL INT64 sc_range_start (INTEGER(64,false));
-OPTIONAL INT64 sc_range_end (INTEGER(64,false));
+OPTIONAL BYTE_ARRAY sc_content_type (STRING);
+OPTIONAL INT64 sc_content_len (INTEGER(64,false));
+OPTIONAL INT64 sc_range_start (INTEGER(64,true));
+OPTIONAL INT64 sc_range_end (INTEGER(64,true));
     }"#;
 
     // derived from V0, but with considerations of the parquet format spec;
@@ -124,9 +124,9 @@ OPTIONAL INT64 fle_encrypted_fields (INTEGER(64,false));
 REQUIRED INT32 c_port (INTEGER(16,false));
 REQUIRED DOUBLE time_to_first_byte;
 REQUIRED BYTE_ARRAY x_edge_detailed_result_type (STRING);
-REQUIRED BYTE_ARRAY sc_content_type (STRING);
-REQUIRED INT64 sc_content_len (INTEGER(64,false));
-OPTIONAL INT64 sc_range_start (INTEGER(64,false));
-OPTIONAL INT64 sc_range_end (INTEGER(64,false));
+OPTIONAL BYTE_ARRAY sc_content_type (STRING);
+OPTIONAL INT64 sc_content_len (INTEGER(64,false));
+OPTIONAL INT64 sc_range_start (INTEGER(64,true));
+OPTIONAL INT64 sc_range_end (INTEGER(64,true));
     }"#;
 }
