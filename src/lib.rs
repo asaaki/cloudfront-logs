@@ -45,7 +45,6 @@
     clippy::match_wild_err_arm,
     clippy::match_wildcard_for_single_variants,
     clippy::mem_forget,
-    clippy::mismatched_target_os,
     clippy::missing_enforced_import_renames,
     clippy::mut_mut,
     clippy::mutex_integer,
@@ -73,6 +72,7 @@
     clippy::useless_transmute,
     clippy::verbose_file_reads,
     clippy::zero_sized_map_values,
+    unexpected_cfgs,
     future_incompatible,
     nonstandard_style,
     rust_2018_idioms
