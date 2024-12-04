@@ -47,7 +47,7 @@ pub type ValidatedLogline<'a> = Logline<'a, Validated>;
 /// It only uses types available in the standard library.
 ///
 /// If you need more specific types, use the [`typed`](crate::borrowed::typed) module.
-
+///
 /// Unlike [`ValidatedLogline`], this variant does not check if the line can be parsed.
 /// Use this if you already did a check before creating this struct.
 /// A common scenario is that you 1) trust the input data and 2) skipped the comment lines.

@@ -79,7 +79,7 @@ pub struct ValidatedLogline<'a> {
     pub sc_range_end: Option<i64>,
 }
 
-impl<'a> ValidatedLogline<'a> {
+impl ValidatedLogline<'_> {
     pub fn schema() -> &'static str {
         crate::consts::parquet_schemata::V1
     }
@@ -322,7 +322,7 @@ pub struct UnvalidatedLogline<'a> {
     pub sc_range_end: Option<i64>,
 }
 
-impl<'a> UnvalidatedLogline<'a> {
+impl UnvalidatedLogline<'_> {
     pub fn schema() -> &'static str {
         crate::consts::parquet_schemata::V1
     }
