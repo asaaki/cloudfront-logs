@@ -68,4 +68,4 @@ parquet_derive = { version = "54.3.1", optional = true }
 self_cell = "1.1.0"
 
 [dev-dependencies]
-divan = "0.1.17"
+divan = "0.1.18"
