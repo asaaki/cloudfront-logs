@@ -62,7 +62,7 @@ parquet = [
 memchr = "2.7.4"
 time = { version = "0.3.41", features = ["parsing", "macros"], optional = true }
 strum = { version = "0.27.1", features = ["derive"] }
-chrono = { version = "0.4.40", optional = true }
+chrono = { version = "0.4.41", optional = true }
 parquet = { version = "54.3.1", optional = true }
 parquet_derive = { version = "54.3.1", optional = true }
 self_cell = "1.1.0"
