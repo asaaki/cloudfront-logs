@@ -167,7 +167,9 @@ fn x_forwarded_for_addrs_checks() {
     );
     assert_eq!(
         addrs.0.get(2),
-        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(9, 10, 11, 12))))
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(
+            9, 10, 11, 12
+        ))))
     );
 
     // mixed input IPv4 and IPv6; no space after comma
@@ -203,7 +205,9 @@ fn x_forwarded_for_addrs_checks() {
     );
     assert_eq!(
         addrs.0.get(2),
-        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(9, 10, 11, 12))))
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(
+            9, 10, 11, 12
+        ))))
     );
     assert_eq!(
         addrs.0.get(3),
@@ -233,6 +237,8 @@ fn x_forwarded_for_addrs_checks() {
     assert_eq!(addrs.0.len(), 1);
     assert_eq!(
         addrs.0.first(),
-        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(123, 45, 67, 89))))
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(
+            123, 45, 67, 89
+        ))))
     );
 }
