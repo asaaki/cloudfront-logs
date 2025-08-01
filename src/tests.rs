@@ -148,8 +148,8 @@ fn x_forwarded_for_addrs_checks() {
     let addrs = ForwardedForAddrs::try_from(input).unwrap();
     assert_eq!(addrs.0.len(), 1);
     assert_eq!(
-        addrs.0[0],
-        Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4)))
+        addrs.0.first(),
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4))))
     );
 
     // use both regular spaces as well as escaped spaces
@@ -158,16 +158,16 @@ fn x_forwarded_for_addrs_checks() {
     let addrs = ForwardedForAddrs::try_from(input).unwrap();
     assert_eq!(addrs.0.len(), 3);
     assert_eq!(
-        addrs.0[0],
-        Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4)))
+        addrs.0.first(),
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4))))
     );
     assert_eq!(
-        addrs.0[1],
-        Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(5, 6, 7, 8)))
+        addrs.0.get(1),
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(5, 6, 7, 8))))
     );
     assert_eq!(
-        addrs.0[2],
-        Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(9, 10, 11, 12)))
+        addrs.0.get(2),
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(9, 10, 11, 12))))
     );
 
     // mixed input IPv4 and IPv6; no space after comma
@@ -175,14 +175,14 @@ fn x_forwarded_for_addrs_checks() {
     let addrs = ForwardedForAddrs::try_from(input).unwrap();
     assert_eq!(addrs.0.len(), 2);
     assert_eq!(
-        addrs.0[0],
-        Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4)))
+        addrs.0.first(),
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4))))
     );
     assert_eq!(
-        addrs.0[1],
-        Addressable::IpAddr(IpAddr::V6(Ipv6Addr::new(
+        addrs.0.get(1),
+        Some(&Addressable::IpAddr(IpAddr::V6(Ipv6Addr::new(
             0x2001, 0xdb8, 0x85a3, 0x8d3, 0x1319, 0x8a2e, 0x370, 0x7348
-        )))
+        ))))
     );
 
     // mixed input of IPv4 address and socket address
@@ -191,40 +191,40 @@ fn x_forwarded_for_addrs_checks() {
     let addrs = ForwardedForAddrs::try_from(input).unwrap();
     assert_eq!(addrs.0.len(), 4);
     assert_eq!(
-        addrs.0[0],
-        Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4)))
+        addrs.0.first(),
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4))))
     );
     assert_eq!(
-        addrs.0[1],
-        Addressable::Socket(std::net::SocketAddr::new(
+        addrs.0.get(1),
+        Some(&Addressable::Socket(std::net::SocketAddr::new(
             IpAddr::V4(Ipv4Addr::new(5, 6, 7, 8)),
             6969
-        ))
-    );
-    assert_eq!(
-        addrs.0[2],
-        Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(9, 10, 11, 12)))
-    );
-    assert_eq!(
-        addrs.0[3],
-        Addressable::IpAddr(IpAddr::V6(Ipv6Addr::new(
-            0x2001, 0xdb8, 0x85a3, 0x8d3, 0x1319, 0x8a2e, 0x370, 0x7348
         )))
+    );
+    assert_eq!(
+        addrs.0.get(2),
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(9, 10, 11, 12))))
+    );
+    assert_eq!(
+        addrs.0.get(3),
+        Some(&Addressable::IpAddr(IpAddr::V6(Ipv6Addr::new(
+            0x2001, 0xdb8, 0x85a3, 0x8d3, 0x1319, 0x8a2e, 0x370, 0x7348
+        ))))
     );
 
     // SPECIAL CASE: CloudFront throws "unknown" on us 🤔
     let input = "unknown";
     let addrs = ForwardedForAddrs::try_from(input).unwrap();
     assert_eq!(addrs.0.len(), 1);
-    assert_eq!(addrs.0[0], Addressable::Unknown);
+    assert_eq!(addrs.0.first(), Some(&Addressable::Unknown));
 
     let input = "unknown,1.2.3.4";
     let addrs = ForwardedForAddrs::try_from(input).unwrap();
     assert_eq!(addrs.0.len(), 2);
-    assert_eq!(addrs.0[0], Addressable::Unknown);
+    assert_eq!(addrs.0.first(), Some(&Addressable::Unknown));
     assert_eq!(
-        addrs.0[1],
-        Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4)))
+        addrs.0.get(1),
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(1, 2, 3, 4))))
     );
 
     // SPECIAL CASE: CloudFront captures IPs with leading zeros 🤬
@@ -232,7 +232,7 @@ fn x_forwarded_for_addrs_checks() {
     let addrs = ForwardedForAddrs::try_from(input).unwrap();
     assert_eq!(addrs.0.len(), 1);
     assert_eq!(
-        addrs.0[0],
-        Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(123, 45, 67, 89)))
+        addrs.0.first(),
+        Some(&Addressable::IpAddr(IpAddr::V4(Ipv4Addr::new(123, 45, 67, 89))))
     );
 }

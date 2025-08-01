@@ -167,7 +167,10 @@ impl TryFrom<&str> for Addressable {
                     .collect::<Vec<u8>>();
                 if octets.len() == 4 {
                     return Ok(Self::IpAddr(IpAddr::V4(Ipv4Addr::new(
-                        octets[0], octets[1], octets[2], octets[3],
+                        octets.first().copied().unwrap_or(0),
+                        octets.get(1).copied().unwrap_or(0),
+                        octets.get(2).copied().unwrap_or(0),
+                        octets.get(3).copied().unwrap_or(0),
                     ))));
                 }
             }

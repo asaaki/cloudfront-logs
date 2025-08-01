@@ -28,7 +28,7 @@ pub fn validate_line(line: &str) -> Result<(), &'static str> {
     if bytes.is_empty() {
         return Err("Invalid log line (empty)");
     }
-    if bytes[0] == COMMENT_U8 {
+    if bytes.first() == Some(&COMMENT_U8) {
         return Err("Invalid log line (comment)");
     }
     if memchr::memchr_iter(TAB_U8, bytes).count() != TABS {
