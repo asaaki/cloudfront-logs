@@ -280,7 +280,7 @@ dependencies = [
  "chrono",
  "divan",
  "memchr",
- "parquet 55.2.0",
+ "parquet",
  "parquet_derive",
  "self_cell",
  "strum",
@@ -598,7 +598,7 @@ version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08ab2867e3eeeca90e844d1940eab391c9dc5228783db2ed999acbc0a9ed375a"
 dependencies = [
- "twox-hash 2.1.1",
+ "twox-hash",
 ]
 
 [[package]]
@@ -713,25 +713,6 @@ dependencies = [
 
 [[package]]
 name = "parquet"
-version = "54.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfb15796ac6f56b429fd99e33ba133783ad75b27c36b4b5ce06f1f82cc97754e"
-dependencies = [
- "ahash",
- "bytes",
- "chrono",
- "half",
- "hashbrown",
- "num",
- "num-bigint",
- "paste",
- "seq-macro",
- "thrift",
- "twox-hash 1.6.3",
-]
-
-[[package]]
-name = "parquet"
 version = "55.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b17da4150748086bd43352bc77372efa9b6e3dbd06a04831d2a98c041c225cfa"
@@ -759,17 +740,17 @@ dependencies = [
  "simdutf8",
  "snap",
  "thrift",
- "twox-hash 2.1.1",
+ "twox-hash",
  "zstd",
 ]
 
 [[package]]
 name = "parquet_derive"
-version = "54.3.1"
+version = "55.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b41fa0c08ed86d4bc73a9ddf81a25807a7c109ccc634a03e816d28cd74b0bb7c"
+checksum = "c7f3a5da34324281547f5a18897af14e1c66805b15807c918e712f26ed22754b"
 dependencies = [
- "parquet 54.3.1",
+ "parquet",
  "proc-macro2",
  "quote",
  "syn",
@@ -1009,16 +990,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2c9d3793400a45f954c52e73d068316d76b6f4e36977e3fcebb13a2721e80237"
 dependencies = [
  "crunchy",
-]
-
-[[package]]
-name = "twox-hash"
-version = "1.6.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
-dependencies = [
- "cfg-if",
- "static_assertions",
 ]
 
 [[package]]
