@@ -64,7 +64,7 @@ dependencies = [
  "arrow-schema",
  "chrono",
  "half",
- "hashbrown",
+ "hashbrown 0.15.4",
  "num",
 ]
 
@@ -273,7 +273,7 @@ dependencies = [
  "chrono",
  "divan",
  "memchr",
- "parquet",
+ "parquet 56.0.0",
  "parquet_derive",
  "self_cell",
  "strum",
@@ -431,6 +431,12 @@ name = "hashbrown"
 version = "0.15.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5971ac85611da7067dbfcabef3c70ebb5606018acd9e2a3903a0da507521e0d5"
+
+[[package]]
+name = "hashbrown"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5419bdc4f6a9207fbeba6d11b604d481addf78ecd10c11ad51e76c2f6482748d"
 
 [[package]]
 name = "heck"
@@ -724,7 +730,7 @@ dependencies = [
  "chrono",
  "flate2",
  "half",
- "hashbrown",
+ "hashbrown 0.15.4",
  "lz4_flex",
  "num",
  "num-bigint",
@@ -738,12 +744,32 @@ dependencies = [
 ]
 
 [[package]]
-name = "parquet_derive"
-version = "56.0.0"
+name = "parquet"
+version = "57.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c7f5c3f1365cd144c2f881ef7045bc65bdb0fe1259661c0e533aedf2a93627e"
+checksum = "7a0f31027ef1af7549f7cec603a9a21dce706d3f8d7c2060a68f43c1773be95a"
 dependencies = [
- "parquet",
+ "ahash",
+ "bytes",
+ "chrono",
+ "half",
+ "hashbrown 0.16.0",
+ "num-bigint",
+ "num-integer",
+ "num-traits",
+ "paste",
+ "seq-macro",
+ "thrift",
+ "twox-hash",
+]
+
+[[package]]
+name = "parquet_derive"
+version = "57.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f49b2b5810c55f6cbc9ecbd12b78a13c26252bbfc8b6abf8098c4418e77731d5"
+dependencies = [
+ "parquet 57.0.0",
  "proc-macro2",
  "quote",
  "syn",
