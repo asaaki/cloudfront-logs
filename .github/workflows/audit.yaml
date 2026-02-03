@@ -2,19 +2,19 @@ name: Security Audit
 
 on:
   pull_request:
-    paths: ['**/Cargo.toml', '**/Cargo.lock']
+    paths: ["**/Cargo.toml", "**/Cargo.lock"]
   push:
     branches: [main]
-    paths: ['**/Cargo.toml', '**/Cargo.lock']
+    paths: ["**/Cargo.toml", "**/Cargo.lock"]
   schedule:
-    - cron: '23 5 * * *'
+    - cron: "23 5 * * *"
 
 jobs:
   security_audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
-      - uses: Swatinem/rust-cache@v2.8.1
+      - uses: actions/checkout@v6.0.2
+      - uses: Swatinem/rust-cache@v2.8.2
       - uses: dtolnay/rust-toolchain@stable
       - name: Install cargo audit
         run: cargo install cargo-audit --locked

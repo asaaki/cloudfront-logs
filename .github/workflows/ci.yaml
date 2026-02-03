@@ -2,9 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   RUSTFLAGS: -Dwarnings
@@ -19,39 +19,39 @@ jobs:
         rust: [stable, beta, nightly]
 
     steps:
-    - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.2
 
-    - uses: dtolnay/rust-toolchain@stable
-      with:
-        toolchain: ${{ matrix.rust }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
 
-    - uses: Swatinem/rust-cache@v2.8.1
-      with:
-        cache-all-crates: true
+      - uses: Swatinem/rust-cache@v2.8.1
+        with:
+          cache-all-crates: true
 
-    - run: cargo fetch
-    - run: cargo check --all-features
-    - run: cargo build --all-features
-    - run: cargo test --all-features
-    - run: cargo bench --all-features
+      - run: cargo fetch
+      - run: cargo check --all-features
+      - run: cargo build --all-features
+      - run: cargo test --all-features
+      - run: cargo bench --all-features
 
   check_fmt_and_docs:
     name: Checking fmt, clippy, and docs
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v6.0.2
 
-    - uses: dtolnay/rust-toolchain@stable
-      with:
-        toolchain: stable
-        components: rustfmt, clippy
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
 
-    - uses: Swatinem/rust-cache@v2.8.1
-      with:
-        cache-all-crates: true
+      - uses: Swatinem/rust-cache@v2.8.1
+        with:
+          cache-all-crates: true
 
-    - run: cargo check --workspace --all-features --benches --examples --tests
-    - run: cargo clippy --workspace --all-features --benches --examples --tests -- -D warnings
-    - run: cargo fmt --check
-    - run: cargo doc --workspace --all-features --no-deps
+      - run: cargo check --workspace --all-features --benches --examples --tests
+      - run: cargo clippy --workspace --all-features --benches --examples --tests -- -D warnings
+      - run: cargo fmt --check
+      - run: cargo doc --workspace --all-features --no-deps
