@@ -1,4 +1,4 @@
-use crate::{COMMENT_U8, TABS, TAB_U8};
+use crate::{COMMENT_U8, TAB_U8, TABS};
 
 /// Validates a log line
 ///
@@ -103,11 +103,7 @@ pub(crate) fn parse_as_option<T: std::str::FromStr>(s: &str) -> Result<Option<T>
 // better chainable version of parse_as_option;
 // -> iter.next().and_then(as_optional_t).transpose().map_err(|_e| "…")?
 pub(crate) fn as_optional_t<T: std::str::FromStr>(s: &str) -> Option<Result<T, T::Err>> {
-    if s == "-" {
-        None
-    } else {
-        Some(s.parse())
-    }
+    if s == "-" { None } else { Some(s.parse()) }
 }
 
 // String type extension trait;
@@ -136,10 +132,6 @@ pub(crate) trait AsOptionalStr {
 #[cfg(feature = "parquet")]
 impl AsOptionalStr for str {
     fn as_optional_str(&self) -> Option<&str> {
-        if self == "-" {
-            None
-        } else {
-            Some(self)
-        }
+        if self == "-" { None } else { Some(self) }
     }
 }

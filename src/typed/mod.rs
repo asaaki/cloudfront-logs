@@ -1,4 +1,4 @@
-use crate::{shared::*, types::*, CheckedRawLogLine, TIME_DATE_FMT, TIME_TIME_FMT};
+use crate::{CheckedRawLogLine, TIME_DATE_FMT, TIME_TIME_FMT, shared::*, types::*};
 
 pub use LogLine as TypedLogLine;
 

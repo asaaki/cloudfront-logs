@@ -1,11 +1,11 @@
 use crate::{
+    TIME_DATE_FMT, TIME_TIME_FMT,
     borrowed::raw::{
         Logline as RawLogline, UnvalidatedLogline as UnvalidatedRaw,
         ValidatedLogline as ValidatedRaw,
     },
     shared::*,
     types::*,
-    TIME_DATE_FMT, TIME_TIME_FMT,
 };
 
 /// The validated typed log line, using [`time`](https://docs.rs/time/latest/time/index.html) crate for date and time

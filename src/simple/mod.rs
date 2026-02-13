@@ -1,4 +1,4 @@
-use crate::{shared::*, types::*, CheckedRawLogLine};
+use crate::{CheckedRawLogLine, shared::*, types::*};
 
 pub use LogLine as SimpleLogLine;
 
