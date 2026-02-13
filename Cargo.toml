@@ -2,7 +2,7 @@
 name = "cloudfront-logs"
 description = "AWS CloudFront log line parser"
 version = "0.9.1"
-edition = "2021"
+edition = "2024"
 readme = "README.md"
 homepage = "https://github.com/asaaki/cloudfront-logs"
 repository = "https://github.com/asaaki/cloudfront-logs"
@@ -59,12 +59,12 @@ parquet = [
 ]
 
 [dependencies]
-memchr = "2.7.6"
-time = { version = "0.3.46", features = ["parsing", "macros"], optional = true }
+memchr = "2.8.0"
+time = { version = "0.3.47", features = ["parsing", "macros"], optional = true }
 strum = { version = "0.27.2", features = ["derive"] }
 chrono = { version = "0.4.43", optional = true }
-parquet = { version = "57.2.0", optional = true }
-parquet_derive = { version = "57.2.0", optional = true }
+parquet = { version = "57.3.0", optional = true }
+parquet_derive = { version = "57.3.0", optional = true }
 self_cell = "1.2.2"
 
 [dev-dependencies]
