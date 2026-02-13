@@ -26,9 +26,7 @@ impl Clone for Container {
     fn clone(&self) -> Self {
         let input = Arc::clone(self.borrow_owner());
         Self::new(input, |line| {
-            
-            BorrowedLine::try_from(line.as_ref())
-                .expect("invalid line input despite validation")
+            BorrowedLine::try_from(line.as_ref()).expect("invalid line input despite validation")
         })
     }
 }
