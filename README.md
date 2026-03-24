@@ -20,7 +20,7 @@ It's possible that in the future more utilities get added, but as of now it's mo
 
 The library therefore serves different parser implementation, so you can pick the one for your use cases and needs.
 
-Consult the benchmarks (run `./benches.sh`) for a synthetic overview.
+Consult the benchmarks (run `./bin/benches.sh` on Linux/macOS or `./bin/benches.ps1` on PowerShell) for a synthetic overview. Use `--doc` (bash) or `-Doc` (PowerShell) to emit a BENCHMARK.md-ready output block.
 
 ## Example
 
@@ -70,50 +70,7 @@ assert_eq!(item.time_taken, Duration::from_millis(1));
 
 ## Benchmark example
 
-The following was run under WSL Ubuntu, on a AMD Ryzen 9 7950X3D 16-Core Processor, 64 GiB RAM machine.
-
-Your own numbers may vary. What's more important are the relative differences of the parser implementations.
-
-```shell
-# code under benches/comparison-real-world.rs
-RUSTFLAGS="-Ctarget-cpu=native" cargo bench -q --all-features --bench real-world
-```
-
-```txt
-*** Comparing different parsers for AWS CloudFront logs ***
-
-Parses lines and extracts a few fields, slightly unordered,
-this should simulate close to real-world usages.
-Timer precision: 10 ns
-real_world                   fastest       │ slowest       │ median        │ mean          │ samples │ iters
-├─ 00 CheckedRawLogLine                    │               │               │               │         │
-│  ├─ Line A                 162.3 ns      │ 210.6 ns      │ 167.1 ns      │ 167.8 ns      │ 1000    │ 1000000
-│  ├─ Line B                 164.2 ns      │ 275.6 ns      │ 171.8 ns      │ 175.8 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              325.1 ns      │ 398.2 ns      │ 337.4 ns      │ 337.5 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            994 ns        │ 1.1 µs        │ 1.024 µs      │ 1.029 µs      │ 1000    │ 1000000
-├─ 10 CheckedRawLogLineView                │               │               │               │         │
-│  ├─ Line A                 366.6 ns      │ 422.9 ns      │ 376.8 ns      │ 378 ns        │ 1000    │ 1000000
-│  ├─ Line B                 358.8 ns      │ 412.5 ns      │ 369 ns        │ 370 ns        │ 1000    │ 1000000
-│  ├─ Lines A+B              716.5 ns      │ 888.4 ns      │ 748.2 ns      │ 749.7 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            2.178 µs      │ 2.784 µs      │ 2.279 µs      │ 2.279 µs      │ 1000    │ 1000000
-├─ 11 SmartRawLogLineView                  │               │               │               │         │
-│  ├─ Line A                 287.5 ns      │ 385 ns        │ 298.9 ns      │ 301.3 ns      │ 1000    │ 1000000
-│  ├─ Line B                 285.2 ns      │ 401.5 ns      │ 301.5 ns      │ 303 ns        │ 1000    │ 1000000
-│  ├─ Lines A+B              556.7 ns      │ 680.3 ns      │ 594.7 ns      │ 595.8 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            1.694 µs      │ 2.671 µs      │ 1.789 µs      │ 1.796 µs      │ 1000    │ 1000000
-├─ 20 SimpleLogLine                        │               │               │               │         │
-│  ├─ Line A                 355.2 ns      │ 432 ns        │ 370.8 ns      │ 372.9 ns      │ 1000    │ 1000000
-│  ├─ Line B                 347.8 ns      │ 533.7 ns      │ 370.7 ns      │ 373.5 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B              715.5 ns      │ 883.4 ns      │ 752 ns        │ 753.9 ns      │ 1000    │ 1000000
-│  ╰─ Sample File            2.136 µs      │ 3.085 µs      │ 2.236 µs      │ 2.247 µs      │ 1000    │ 1000000
-╰─ 21 TypedLogLine                         │               │               │               │         │
-   ├─ Line A                 395.5 ns      │ 467.9 ns      │ 407.9 ns      │ 409.6 ns      │ 1000    │ 1000000
-   ├─ Line B                 387.8 ns      │ 512.7 ns      │ 397.1 ns      │ 399.5 ns      │ 1000    │ 1000000
-   ├─ Lines A+B              781 ns        │ 1.164 µs      │ 812.2 ns      │ 813.6 ns      │ 1000    │ 1000000
-   ╰─ Sample File            2.317 µs      │ 3.551 µs      │ 2.384 µs      │ 2.409 µs      │ 1000    │ 1000000
-```
-
-There are more benches you can run, like `single-field` and `two-fields` which should highlight where the "View" parsers shine.
+See [BENCHMARK.md](BENCHMARK.md) for benchmark setup, sample output, and additional benchmark notes.
 
 ## Safety
 
