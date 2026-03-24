@@ -121,13 +121,13 @@ fn validate_parquet_schema_v1() {
 fn result_type_from_str_checks() {
     let input = "Hit";
     assert_eq!(
-        EdgeResultType::try_from(input).unwrap(),
+        EdgeResultType::from(input),
         EdgeResultType::Hit
     );
 
     let input = "Unknown";
     assert_eq!(
-        EdgeResultType::try_from(input).unwrap(),
+        EdgeResultType::from(input),
         EdgeResultType::Other(String::from(input))
     );
 }

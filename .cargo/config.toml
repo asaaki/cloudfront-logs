@@ -19,6 +19,6 @@ DIVAN_SAMPLE_COUNT = "1000"
 
 [target.'cfg(all())']
 rustflags = [
-    "-Wclippy::all",
-    "-Wrust_2018_idioms",
+  "-Wclippy::all",
+  "-Wrust_2018_idioms",
 ]
