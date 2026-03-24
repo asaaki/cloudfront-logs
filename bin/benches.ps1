@@ -5,8 +5,14 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$repoRoot = (git rev-parse --show-toplevel).Trim()
+$repoRoot = Split-Path -Parent $PSScriptRoot
+# Temporarily disable LocationChangedAction around Set-Location because tools like
+# zoxide/starship/oh-my-posh register a buggy hook that throws when combined with
+# $ErrorActionPreference = "Stop". The hook is restored immediately after.
+$savedAction = $ExecutionContext.InvokeCommand.LocationChangedAction
+$ExecutionContext.InvokeCommand.LocationChangedAction = $null
 Set-Location -Path $repoRoot
+$ExecutionContext.InvokeCommand.LocationChangedAction = $savedAction
 
 # $env:RUST_BACKTRACE = "1"
 if (-not $env:RUSTFLAGS)
