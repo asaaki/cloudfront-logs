@@ -59,7 +59,7 @@ parquet = [
 ]
 
 [dependencies]
-memchr = "2.8.0"
+memchr = "2.8.1"
 time = { version = "0.3.47", features = ["parsing", "macros"], optional = true }
 strum = { version = "0.28.0", features = ["derive"] }
 chrono = { version = "0.4.44", optional = true }
