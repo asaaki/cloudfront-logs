@@ -250,7 +250,7 @@ dependencies = [
  "chrono",
  "divan",
  "memchr",
- "parquet",
+ "parquet 58.3.0",
  "parquet_derive",
  "self_cell",
  "strum",
@@ -630,12 +630,31 @@ dependencies = [
 ]
 
 [[package]]
-name = "parquet_derive"
-version = "58.3.0"
+name = "parquet"
+version = "59.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9fe4f2cd0b76d71c8be5c1ad2aa398c27a4a33524d3d8c1d8ff1401fe7195a8"
+checksum = "970dff83e97d953c827ae8176f6bf4e9f77bf62daacc01ec5df348ec5eacd913"
 dependencies = [
- "parquet",
+ "ahash",
+ "bytes",
+ "chrono",
+ "half",
+ "hashbrown",
+ "num-bigint",
+ "num-integer",
+ "num-traits",
+ "paste",
+ "seq-macro",
+ "twox-hash",
+]
+
+[[package]]
+name = "parquet_derive"
+version = "59.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "24f33a384e5744d8ca335cf38ca0afb86882a2f4830ea449a64002ad14bef998"
+dependencies = [
+ "parquet 59.0.0",
  "proc-macro2",
  "quote",
  "syn",
