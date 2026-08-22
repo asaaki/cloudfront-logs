@@ -1,5 +1,4 @@
 use crate::{CheckedRawLogLine, shared::*, types::*};
-
 pub use LogLine as ParquetLogLine;
 
 /// A mostly borrowed version suitable for writing into parquet files

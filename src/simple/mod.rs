@@ -1,5 +1,4 @@
 use crate::{CheckedRawLogLine, shared::*, types::*};
-
 pub use LogLine as SimpleLogLine;
 
 /// A simple log line representation owning its field data

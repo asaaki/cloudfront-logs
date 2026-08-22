@@ -1,3 +1,4 @@
+pub use crate::types::{Datelike, Timelike};
 use crate::{
     CHRONO_DATE_FMT, CHRONO_TIME_FMT,
     borrowed::raw::{
@@ -7,8 +8,6 @@ use crate::{
     shared::*,
     types::*,
 };
-
-pub use crate::types::{Datelike, Timelike};
 
 /// The validated typed log line, using [`chrono`] crate for date and time
 ///

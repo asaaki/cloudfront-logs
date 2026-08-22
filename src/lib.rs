@@ -23,7 +23,6 @@
     clippy::flat_map_option,
     clippy::float_cmp_const,
     clippy::fn_params_excessive_bools,
-    clippy::from_iter_instead_of_collect,
     clippy::if_let_mutex,
     clippy::implicit_clone,
     clippy::imprecise_flops,
@@ -93,29 +92,44 @@ pub mod owned;
 pub mod referential; // not sure about the module name yet
 pub mod types;
 
-pub use consts::*;
-pub use types::*;
-
-// useful helper function for minimizing validation needs
-pub use shared::validate_line;
-
+#[cfg(feature = "chrono")]
+#[doc(inline)]
+pub use borrowed::typed::{UnvalidatedChronoLogline, ValidatedChronoLogline};
+#[cfg(feature = "time")]
+#[doc(inline)]
+pub use borrowed::typed::{UnvalidatedTimeLogline, ValidatedTimeLogline};
+#[cfg(feature = "parquet")]
+#[doc(inline)]
+pub use borrowed::{UnvalidatedParquetLogline, ValidatedParquetLogline};
 #[doc(inline)]
 pub use borrowed::{
     UnvalidatedRawLogline, UnvalidatedSimpleLogline, ValidatedRawLogline, ValidatedSimpleLogline,
 };
-
-#[cfg(feature = "chrono")]
-#[doc(inline)]
-pub use borrowed::typed::{UnvalidatedChronoLogline, ValidatedChronoLogline};
-
-#[cfg(feature = "time")]
-#[doc(inline)]
-pub use borrowed::typed::{UnvalidatedTimeLogline, ValidatedTimeLogline};
-
+pub use consts::*;
 #[cfg(feature = "parquet")]
 #[doc(inline)]
-pub use borrowed::{UnvalidatedParquetLogline, ValidatedParquetLogline};
-
+pub use owned::{
+    UnvalidatedParquetLogline as OwnedUnvalidatedParquetLogline,
+    ValidatedParquetLogline as OwnedValidatedParquetLogline,
+};
+#[cfg(feature = "chrono")]
+#[doc(inline)]
+pub use referential::typed::{
+    UnvalidatedChronoLogline as OwningUnvalidatedChronoLogline,
+    ValidatedChronoLogline as OwningValidatedChronoLogline,
+};
+#[cfg(feature = "time")]
+#[doc(inline)]
+pub use referential::typed::{
+    UnvalidatedTimeLogline as OwningUnvalidatedTimeLogline,
+    ValidatedTimeLogline as OwningValidatedTimeLogline,
+};
+#[cfg(feature = "parquet")]
+#[doc(inline)]
+pub use referential::{
+    UnvalidatedParquetLogline as OwningUnvalidatedParquetLogline,
+    ValidatedParquetLogline as OwningValidatedParquetLogline,
+};
 #[doc(inline)]
 pub use referential::{
     UnvalidatedRawLogline as OwningUnvalidatedRawLogline,
@@ -123,34 +137,9 @@ pub use referential::{
     ValidatedRawLogline as OwningValidatedRawLogline,
     ValidatedSimpleLogline as OwningValidatedSimpleLogline,
 };
-
-#[cfg(feature = "chrono")]
-#[doc(inline)]
-pub use referential::typed::{
-    UnvalidatedChronoLogline as OwningUnvalidatedChronoLogline,
-    ValidatedChronoLogline as OwningValidatedChronoLogline,
-};
-
-#[cfg(feature = "time")]
-#[doc(inline)]
-pub use referential::typed::{
-    UnvalidatedTimeLogline as OwningUnvalidatedTimeLogline,
-    ValidatedTimeLogline as OwningValidatedTimeLogline,
-};
-
-#[cfg(feature = "parquet")]
-#[doc(inline)]
-pub use referential::{
-    UnvalidatedParquetLogline as OwningUnvalidatedParquetLogline,
-    ValidatedParquetLogline as OwningValidatedParquetLogline,
-};
-
-#[cfg(feature = "parquet")]
-#[doc(inline)]
-pub use owned::{
-    UnvalidatedParquetLogline as OwnedUnvalidatedParquetLogline,
-    ValidatedParquetLogline as OwnedValidatedParquetLogline,
-};
+// useful helper function for minimizing validation needs
+pub use shared::validate_line;
+pub use types::*;
 
 // === tests ===
 
@@ -189,16 +178,13 @@ mod parquet;
     note = "use new modules/types instead (borrowed, owned, referential)"
 )]
 pub mod deprecated {
-    pub use crate::raw::{CheckedRawLogLine, CheckedRawLogLineView, SmartRawLogLineView};
-
-    #[cfg(feature = "alloc")]
-    pub use crate::simple::SimpleLogLine;
-
-    #[cfg(feature = "time")]
-    pub use crate::typed::TypedLogLine;
-
     #[cfg(feature = "parquet")]
     pub use crate::parquet::ParquetLogLine;
+    pub use crate::raw::{CheckedRawLogLine, CheckedRawLogLineView, SmartRawLogLineView};
+    #[cfg(feature = "alloc")]
+    pub use crate::simple::SimpleLogLine;
+    #[cfg(feature = "time")]
+    pub use crate::typed::TypedLogLine;
 }
 
 pub use deprecated::*;

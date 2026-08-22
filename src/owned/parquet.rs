@@ -1,11 +1,10 @@
+pub use crate::types::{Datelike, Timelike};
 use crate::{
     CHRONO_DATE_FMT, CHRONO_TIME_FMT,
     borrowed::raw::{UnvalidatedLogline as UnvalidatedRaw, ValidatedLogline as ValidatedRaw},
     shared::*,
     types::*,
 };
-
-pub use crate::types::{Datelike, Timelike};
 
 /// The validated log line for [`parquet`] usage
 ///

@@ -1,6 +1,5 @@
-use crate::{borrowed::UnvalidatedChronoLogline as BorrowedLine, shared::validate_line, types::*};
-
 pub use crate::types::{Datelike, Timelike};
+use crate::{borrowed::UnvalidatedChronoLogline as BorrowedLine, shared::validate_line, types::*};
 
 /// A (thread safe) line string
 ///

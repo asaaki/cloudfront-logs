@@ -17,25 +17,21 @@ pub mod typed;
 #[cfg(feature = "parquet")]
 pub mod parquet;
 
+#[cfg(feature = "parquet")]
+pub use parquet::{
+    UnvalidatedLogline as UnvalidatedParquetLogline, ValidatedLogline as ValidatedParquetLogline,
+};
 pub use raw::{
     UnvalidatedLogline as UnvalidatedRawLogline, ValidatedLogline as ValidatedRawLogline,
 };
-
 pub use simple::{
     UnvalidatedLogline as UnvalidatedSimpleLogline, ValidatedLogline as ValidatedSimpleLogline,
 };
-
 #[cfg(feature = "chrono")]
 pub use typed::chrono::{
     UnvalidatedLogline as UnvalidatedChronoLogline, ValidatedLogline as ValidatedChronoLogline,
 };
-
 #[cfg(feature = "time")]
 pub use typed::time::{
     UnvalidatedLogline as UnvalidatedTimeLogline, ValidatedLogline as ValidatedTimeLogline,
-};
-
-#[cfg(feature = "parquet")]
-pub use parquet::{
-    UnvalidatedLogline as UnvalidatedParquetLogline, ValidatedLogline as ValidatedParquetLogline,
 };

@@ -14,7 +14,6 @@ pub struct Unvalidated;
 
 #[cfg(feature = "chrono")]
 pub use chrono::{Datelike, NaiveDate, NaiveDateTime, NaiveTime, Timelike};
-
 #[cfg(feature = "time")]
 pub use time::{Date, OffsetDateTime, Time, UtcOffset};
 

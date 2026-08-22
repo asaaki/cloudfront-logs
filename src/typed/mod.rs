@@ -1,5 +1,4 @@
 use crate::{CheckedRawLogLine, TIME_DATE_FMT, TIME_TIME_FMT, shared::*, types::*};
-
 pub use LogLine as TypedLogLine;
 
 /// A simple log line representation owning its field data
