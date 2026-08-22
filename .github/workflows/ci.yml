@@ -13,6 +13,9 @@ jobs:
   build_and_test:
     name: Build and test
     runs-on: ${{ matrix.os }}
+    # Only stable gates merges and releases; beta/nightly are advisory, so
+    # upstream toolchain churn cannot block a dependency bump or a release.
+    continue-on-error: ${{ matrix.rust != 'stable' }}
     strategy:
       matrix:
         os: [ubuntu-latest]
