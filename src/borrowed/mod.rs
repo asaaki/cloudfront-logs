@@ -4,8 +4,7 @@
 //! and the struct can be discarded quickly afterwards.
 
 pub mod raw;
-pub mod simple;
-pub mod typed;
+pub mod structured;
 
 #[cfg(feature = "parquet")]
 pub mod parquet;
@@ -17,18 +16,6 @@ pub use parquet::{
 pub use raw::{
     UnvalidatedLogline as UnvalidatedRawLogline, ValidatedLogline as ValidatedRawLogline,
 };
-pub use simple::{
-    UnvalidatedLogline as UnvalidatedSimpleLogline, ValidatedLogline as ValidatedSimpleLogline,
-};
-#[cfg(feature = "chrono")]
-pub use typed::chrono::{
-    UnvalidatedLogline as UnvalidatedChronoLogline, ValidatedLogline as ValidatedChronoLogline,
-};
-#[cfg(feature = "jiff")]
-pub use typed::jiff::{
-    UnvalidatedLogline as UnvalidatedJiffLogline, ValidatedLogline as ValidatedJiffLogline,
-};
-#[cfg(feature = "time")]
-pub use typed::time::{
-    UnvalidatedLogline as UnvalidatedTimeLogline, ValidatedLogline as ValidatedTimeLogline,
-};
+pub use structured::{UnvalidatedSimpleLogline, ValidatedSimpleLogline};
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+pub use structured::{UnvalidatedTypedLogline, ValidatedTypedLogline};

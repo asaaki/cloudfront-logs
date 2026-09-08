@@ -11,7 +11,7 @@ env:
 
 jobs:
   build_and_test:
-    name: Build and test
+    name: Build and test (${{ matrix.rust }}, ${{ matrix.feature_args || 'default' }})
     runs-on: ${{ matrix.os }}
     # Only stable gates merges and releases; beta/nightly are advisory, so
     # upstream toolchain churn cannot block a dependency bump or a release.
@@ -19,7 +19,22 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        rust: [stable, beta, nightly]
+        rust: [stable]
+        feature_args:
+          - "--no-default-features"
+          - "--no-default-features --features alloc"
+          - "--no-default-features --features time"
+          - "--no-default-features --features chrono"
+          - "--no-default-features --features jiff"
+          - "--no-default-features --features parquet"
+          - ""
+        include:
+          - os: ubuntu-latest
+            rust: beta
+            feature_args: ""
+          - os: ubuntu-latest
+            rust: nightly
+            feature_args: ""
 
     steps:
       - uses: actions/checkout@v7.0.1
@@ -33,10 +48,9 @@ jobs:
           cache-all-crates: true
 
       - run: cargo fetch
-      - run: cargo check --all-features
-      - run: cargo build --all-features
-      - run: cargo test --all-features
-      - run: cargo bench --all-features
+      - run: cargo check ${{ matrix.feature_args }}
+      - run: cargo test ${{ matrix.feature_args }}
+      - run: cargo bench ${{ matrix.feature_args }}
 
   check_fmt_and_docs:
     name: Checking fmt, clippy, and docs
@@ -54,7 +68,24 @@ jobs:
         with:
           cache-all-crates: true
 
-      - run: cargo check --workspace --all-features --benches --examples --tests
-      - run: cargo clippy --workspace --all-features --benches --examples --tests -- -D warnings
+      - run: cargo check --workspace --all-targets
+      - run: cargo clippy --workspace --all-targets -- -D warnings
       - run: cargo fmt --check
-      - run: cargo doc --workspace --all-features --no-deps
+      - run: cargo doc --workspace --no-deps
+
+  check_invalid_features:
+    name: Check invalid feature pairs
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - uses: Swatinem/rust-cache@v2.9.2
+        with:
+          cache-all-crates: true
+
+      - run: just feature-check-invalid

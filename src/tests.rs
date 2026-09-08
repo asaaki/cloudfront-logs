@@ -1,7 +1,11 @@
 use crate::*;
+#[cfg(feature = "parquet")]
 use ::parquet::{record::RecordWriter, schema::parser::parse_message_type};
+#[cfg(feature = "parquet")]
+use chrono::NaiveDate;
 use std::net::{Ipv4Addr, Ipv6Addr};
 
+#[cfg(feature = "parquet")]
 const AWS_DOCS_EXAMPLE: &str = r#"#Version: 1.0
 #Fields: date time x-edge-location sc-bytes c-ip cs-method cs(Host) cs-uri-stem sc-status cs(Referer) cs(User-Agent) cs-uri-query cs(Cookie) x-edge-result-type x-edge-request-id x-host-header cs-protocol cs-bytes time-taken x-forwarded-for ssl-protocol ssl-cipher x-edge-response-result-type cs-protocol-version fle-status fle-encrypted-fields c-port time-to-first-byte x-edge-detailed-result-type sc-content-type sc-content-len sc-range-start sc-range-end
 2019-12-04	21:02:31	LAX1	392	192.0.2.100	GET	d111111abcdef8.cloudfront.net	/index.html	200	-	Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/78.0.3904.108%20Safari/537.36	-	-	Hit	SOX4xwn4XV6Q4rgb7XiVGOHms_BGlTAC4KyHmureZmBNrjGdRLiNIQ==	d111111abcdef8.cloudfront.net	https	23	0.001	-	TLSv1.2	ECDHE-RSA-AES128-GCM-SHA256	Hit	HTTP/2.0	-	-	11040	0.001	Hit	text/html	78	-	-
@@ -34,11 +38,112 @@ fn readme_examples_simple() {
 }
 
 #[test]
+fn simple_logline_uses_text_date_and_time() {
+    let item = ValidatedSimpleLogline::try_from(SINGLE_LOG_LINE).unwrap();
+
+    assert_eq!(item.date, "2019-12-04");
+    assert_eq!(item.time, "21:02:31");
+    assert_eq!(item.sc_bytes, 392);
+}
+
+#[test]
+fn simple_logline_converts_from_raw() {
+    let raw = ValidatedRawLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let item = borrowed::structured::ValidatedSimpleLogline::try_from(raw).unwrap();
+
+    assert_eq!(item.date, "2019-12-04");
+    assert_eq!(item.cs_protocol, CsProtocol::Https);
+}
+
+#[test]
+fn borrowed_simple_logline_converts_validation_states_without_changing_fields() {
+    let validated = ValidatedSimpleLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let unvalidated: UnvalidatedSimpleLogline<'_> = validated.into();
+    let validated: ValidatedSimpleLogline<'_> = unvalidated.into();
+
+    assert_eq!(validated.date, "2019-12-04");
+    assert_eq!(validated.sc_bytes, 392);
+}
+
+#[test]
+fn owning_simple_logline_exposes_borrowed_view() {
+    let item = OwningValidatedSimpleLogline::try_from(String::from(SINGLE_LOG_LINE)).unwrap();
+
+    assert_eq!(item.view().date, "2019-12-04");
+    assert_eq!(item.as_raw(), SINGLE_LOG_LINE);
+}
+
+#[test]
+fn owning_simple_logline_preserves_inputs_and_validation_states() {
+    let boxed: Box<str> = SINGLE_LOG_LINE.into();
+    let shared: std::sync::Arc<str> = SINGLE_LOG_LINE.into();
+
+    assert_eq!(
+        OwningValidatedSimpleLogline::try_from(SINGLE_LOG_LINE)
+            .unwrap()
+            .into_raw()
+            .as_ref(),
+        SINGLE_LOG_LINE
+    );
+    assert_eq!(
+        OwningValidatedSimpleLogline::try_from(boxed)
+            .unwrap()
+            .as_raw(),
+        SINGLE_LOG_LINE
+    );
+    assert_eq!(
+        OwningUnvalidatedSimpleLogline::try_from(shared)
+            .unwrap()
+            .as_raw(),
+        SINGLE_LOG_LINE
+    );
+    let unchecked = format!("{SINGLE_LOG_LINE}\textra");
+    assert!(OwningValidatedSimpleLogline::try_from(unchecked.as_str()).is_err());
+    assert!(OwningUnvalidatedSimpleLogline::try_from(unchecked).is_ok());
+}
+
+#[test]
+fn owning_simple_logline_converts_validation_states_without_changing_storage() {
+    let validated = OwningValidatedSimpleLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let owner = validated.as_raw().as_ptr();
+    let unvalidated: OwningUnvalidatedSimpleLogline = validated.into();
+    assert_eq!(unvalidated.as_raw().as_ptr(), owner);
+    let validated: OwningValidatedSimpleLogline = unvalidated.into();
+
+    assert_eq!(validated.as_raw().as_ptr(), owner);
+    assert_eq!(validated.view().sc_bytes, 392);
+}
+
+#[test]
+fn crate_root_exposes_simple_logline_api() {
+    let _: ValidatedSimpleLogline<'_> = ValidatedSimpleLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let _: UnvalidatedSimpleLogline<'_> =
+        UnvalidatedSimpleLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let _: OwningValidatedSimpleLogline =
+        OwningValidatedSimpleLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let _: OwningUnvalidatedSimpleLogline =
+        OwningUnvalidatedSimpleLogline::try_from(SINGLE_LOG_LINE).unwrap();
+}
+
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+#[test]
+fn crate_root_exposes_typed_logline_api() {
+    let _: ValidatedTypedLogline<'_> = ValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let _: UnvalidatedTypedLogline<'_> =
+        UnvalidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let _: OwningValidatedTypedLogline =
+        OwningValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let _: OwningUnvalidatedTypedLogline =
+        OwningUnvalidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+}
+
+#[test]
+#[cfg(feature = "time")]
 fn readme_examples_typed() {
     use time::macros::{date, time}; // just for the example
 
     let logline: &str = SINGLE_LOG_LINE;
-    let item = ValidatedTimeLogline::try_from(logline).unwrap();
+    let item = ValidatedTypedLogline::try_from(logline).unwrap();
 
     assert_eq!(item.date, date!(2019 - 12 - 04));
     assert_eq!(item.time, time!(21:02:31));
@@ -47,18 +152,63 @@ fn readme_examples_typed() {
 
 #[cfg(feature = "jiff")]
 #[test]
-fn jiff_typed_variants_parse_civil_datetime() {
-    let item = ValidatedJiffLogline::try_from(SINGLE_LOG_LINE).unwrap();
+fn typed_logline_uses_jiff_and_derives_datetime() {
+    let item = ValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
 
     assert_eq!(item.date, jiff::civil::date(2019, 12, 4));
     assert_eq!(item.time, jiff::civil::time(21, 2, 31, 0));
     assert_eq!(
-        item.datetime,
-        jiff::civil::datetime(2019, 12, 4, 21, 2, 31, 0)
+        item.datetime(),
+        jiff::civil::datetime(2019, 12, 4, 21, 2, 31, 0),
     );
+}
 
-    let owning = OwningValidatedJiffLogline::try_from(SINGLE_LOG_LINE).unwrap();
-    assert_eq!(owning.view().datetime, item.datetime);
+#[cfg(feature = "time")]
+#[test]
+fn typed_logline_uses_time_and_derives_datetime() {
+    let item = ValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+
+    assert_eq!(item.date, time::macros::date!(2019 - 12 - 04));
+    assert_eq!(item.time, time::macros::time!(21:02:31));
+    assert_eq!(
+        item.datetime(),
+        time::macros::datetime!(2019-12-04 21:02:31 UTC),
+    );
+}
+
+#[cfg(feature = "chrono")]
+#[test]
+fn typed_logline_uses_chrono_and_derives_datetime() {
+    let item = ValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let date = chrono::NaiveDate::from_ymd_opt(2019, 12, 4).unwrap();
+    let time = chrono::NaiveTime::from_hms_opt(21, 2, 31).unwrap();
+
+    assert_eq!(item.date, date);
+    assert_eq!(item.time, time);
+    assert_eq!(item.datetime(), chrono::NaiveDateTime::new(date, time));
+}
+
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+#[test]
+fn borrowed_typed_logline_converts_validation_states_without_changing_fields() {
+    let validated = ValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let unvalidated: UnvalidatedTypedLogline<'_> = validated.into();
+    let validated: ValidatedTypedLogline<'_> = unvalidated.into();
+
+    assert_eq!(validated.sc_bytes, 392);
+}
+
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+#[test]
+fn owning_typed_logline_converts_validation_states_without_changing_storage() {
+    let validated = OwningValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let owner = validated.as_raw().as_ptr();
+    let unvalidated: OwningUnvalidatedTypedLogline = validated.into();
+    assert_eq!(unvalidated.as_raw().as_ptr(), owner);
+    let validated: OwningValidatedTypedLogline = unvalidated.into();
+
+    assert_eq!(validated.as_raw().as_ptr(), owner);
+    assert_eq!(validated.view().sc_bytes, 392);
 }
 
 #[cfg(feature = "jiff")]
@@ -67,8 +217,24 @@ fn jiff_typed_variants_reject_invalid_civil_date() {
     let line = SINGLE_LOG_LINE.replacen("2019-12-04", "2019-02-30", 1);
 
     assert_eq!(
-        ValidatedJiffLogline::try_from(line.as_str()),
+        ValidatedTypedLogline::try_from(line.as_str()),
         Err("date invalid")
+    );
+}
+
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+#[test]
+fn typed_variants_reject_invalid_date_and_time() {
+    let invalid_date = SINGLE_LOG_LINE.replacen("2019-12-04", "2019-02-30", 1);
+    let invalid_time = SINGLE_LOG_LINE.replacen("21:02:31", "25:02:31", 1);
+
+    assert_eq!(
+        ValidatedTypedLogline::try_from(invalid_date.as_str()),
+        Err("date invalid")
+    );
+    assert_eq!(
+        ValidatedTypedLogline::try_from(invalid_time.as_str()),
+        Err("time invalid")
     );
 }
 
@@ -76,17 +242,54 @@ fn jiff_typed_variants_reject_invalid_civil_date() {
 #[test]
 fn jiff_typed_variants_convert_raw_loglines() {
     let raw = ValidatedRawLogline::try_from(SINGLE_LOG_LINE).unwrap();
-    let item = borrowed::typed::jiff::ValidatedLogline::try_from(raw).unwrap();
+    let item = ValidatedTypedLogline::try_from(raw).unwrap();
 
     assert_eq!(item.date, jiff::civil::date(2019, 12, 4));
     assert_eq!(item.time, jiff::civil::time(21, 2, 31, 0));
 }
 
+#[cfg(feature = "time")]
 #[test]
+fn owning_typed_time_logline_exposes_borrowed_view() {
+    let item = OwningValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    assert_eq!(item.view().date, time::macros::date!(2019 - 12 - 04));
+}
+
+#[cfg(feature = "chrono")]
+#[test]
+fn owning_typed_chrono_logline_exposes_borrowed_view() {
+    let item = OwningValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    assert_eq!(
+        item.view().date,
+        chrono::NaiveDate::from_ymd_opt(2019, 12, 4).unwrap()
+    );
+}
+
+#[cfg(feature = "jiff")]
+#[test]
+fn owning_typed_jiff_logline_exposes_borrowed_view() {
+    let item = OwningValidatedTypedLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    assert_eq!(
+        item.view().datetime(),
+        jiff::civil::datetime(2019, 12, 4, 21, 2, 31, 0)
+    );
+}
+
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+#[test]
+fn owning_typed_logline_preserves_inputs_and_raw_access() {
+    let item = OwningUnvalidatedTypedLogline::try_from(String::from(SINGLE_LOG_LINE)).unwrap();
+
+    assert_eq!(item.as_raw(), SINGLE_LOG_LINE);
+    assert_eq!(item.into_raw().as_ref(), SINGLE_LOG_LINE);
+}
+
+#[test]
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
 fn transformation_roundtrip() {
-    let checked_line = CheckedRawLogLine::try_from(SINGLE_LOG_LINE).unwrap();
-    let simple_line = SimpleLogLine::try_from(checked_line).unwrap();
-    let typed_line = TypedLogLine::try_from(checked_line).unwrap();
+    let checked_line = ValidatedRawLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let simple_line = ValidatedSimpleLogline::try_from(checked_line).unwrap();
+    let typed_line = ValidatedTypedLogline::try_from(checked_line).unwrap();
 
     assert_eq!(simple_line.sc_bytes, typed_line.sc_bytes);
     assert_eq!(simple_line.cs_host, typed_line.cs_host);
@@ -98,6 +301,7 @@ fn transformation_roundtrip() {
 
 // note: this also tests the underlying borrowed types
 #[test]
+#[cfg(feature = "parquet")]
 fn self_referentially_owned_types() {
     let logline: &str = SINGLE_LOG_LINE;
     let item = OwningValidatedParquetLogline::try_from(logline).unwrap();
@@ -112,6 +316,7 @@ fn self_referentially_owned_types() {
 }
 
 #[test]
+#[cfg(feature = "parquet")]
 fn owned_types() {
     let logline: &str = SINGLE_LOG_LINE;
     let item = OwnedValidatedParquetLogline::try_from(logline).unwrap();
@@ -128,6 +333,7 @@ fn owned_types() {
 }
 
 #[test]
+#[cfg(feature = "parquet")]
 fn derived_parquet_schema() {
     let sample: &str = AWS_DOCS_EXAMPLE;
     let rows = sample
@@ -141,6 +347,7 @@ fn derived_parquet_schema() {
 }
 
 #[test]
+#[cfg(feature = "parquet")]
 fn validate_parquet_schema_v0() {
     let schema = parquet_schemata::V0;
     let schema_t = parse_message_type(schema).unwrap();
@@ -148,6 +355,7 @@ fn validate_parquet_schema_v0() {
 }
 
 #[test]
+#[cfg(feature = "parquet")]
 fn validate_parquet_schema_v1() {
     let schema = parquet_schemata::V1;
     let schema_t = parse_message_type(schema).unwrap();

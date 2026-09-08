@@ -11,8 +11,7 @@
 // TODO: elaborate on stream processing and owned/borrowed data
 
 pub mod raw;
-pub mod simple;
-pub mod typed;
+pub mod structured;
 
 #[cfg(feature = "parquet")]
 pub mod parquet;
@@ -24,18 +23,16 @@ pub use parquet::{
 pub use raw::{
     UnvalidatedLogline as UnvalidatedRawLogline, ValidatedLogline as ValidatedRawLogline,
 };
-pub use simple::{
-    UnvalidatedLogline as UnvalidatedSimpleLogline, ValidatedLogline as ValidatedSimpleLogline,
+pub use structured::{
+    UnvalidatedSimpleLogline as OwningUnvalidatedSimpleLogline,
+    ValidatedSimpleLogline as OwningValidatedSimpleLogline,
 };
-#[cfg(feature = "chrono")]
-pub use typed::chrono::{
-    UnvalidatedLogline as UnvalidatedChronoLogline, ValidatedLogline as ValidatedChronoLogline,
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+pub use structured::{
+    UnvalidatedTypedLogline as OwningUnvalidatedTypedLogline,
+    ValidatedTypedLogline as OwningValidatedTypedLogline,
 };
-#[cfg(feature = "jiff")]
-pub use typed::jiff::{
-    UnvalidatedLogline as UnvalidatedJiffLogline, ValidatedLogline as ValidatedJiffLogline,
-};
-#[cfg(feature = "time")]
-pub use typed::time::{
-    UnvalidatedLogline as UnvalidatedTimeLogline, ValidatedLogline as ValidatedTimeLogline,
-};
+
+pub use structured::{UnvalidatedSimpleLogline, ValidatedSimpleLogline};
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+pub use structured::{UnvalidatedTypedLogline, ValidatedTypedLogline};

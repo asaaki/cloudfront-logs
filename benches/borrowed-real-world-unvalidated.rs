@@ -57,34 +57,11 @@ fn UnvalidatedSimpleLogline(inputs: Inputs) -> usize {
         .sum()
 }
 
-#[divan::bench(name = "02 UnvalidatedChronoLogline", args = ARGS_NO_COMMENTS)]
-fn UnvalidatedChronoLogline(inputs: Inputs) -> usize {
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+#[divan::bench(name = "02 UnvalidatedTypedLogline", args = ARGS_NO_COMMENTS)]
+fn UnvalidatedTypedLogline(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
-        UnvalidatedChronoLogline::try_from(line).ok().map(|item| {
-            let result = &[
-                Data::ND(item.date),
-                Data::NT(item.time),
-                Data::I(item.c_ip),
-                Data::M(item.c_port),
-                Data::S0(item.cs_uri_stem),
-                Data::ON(item.sc_content_len),
-                Data::N(item.sc_bytes),
-            ];
-            result.len()
-        })
-    }
-
-    inputs
-        .data()
-        .iter()
-        .map(|line| parse(divan::black_box(*line)).unwrap_or_default())
-        .sum()
-}
-
-#[divan::bench(name = "03 UnvalidatedTimeLogline", args = ARGS_NO_COMMENTS)]
-fn UnvalidatedTimeLogline(inputs: Inputs) -> usize {
-    fn parse(line: &str) -> Option<usize> {
-        UnvalidatedTimeLogline::try_from(line).ok().map(|item| {
+        UnvalidatedTypedLogline::try_from(line).ok().map(|item| {
             let result = &[
                 Data::D(item.date),
                 Data::T(item.time),
@@ -105,12 +82,13 @@ fn UnvalidatedTimeLogline(inputs: Inputs) -> usize {
         .sum()
 }
 
-#[divan::bench(name = "04 UnvalidatedParquetLogline", args = ARGS_NO_COMMENTS)]
+#[cfg(feature = "parquet")]
+#[divan::bench(name = "03 UnvalidatedParquetLogline", args = ARGS_NO_COMMENTS)]
 fn UnvalidatedParquetLogline(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
         UnvalidatedParquetLogline::try_from(line).ok().map(|item| {
             let result = &[
-                Data::ND(item.date),
+                Data::D(item.date),
                 Data::S0(item.time),
                 Data::S0(item.c_ip),
                 Data::M(item.c_port),

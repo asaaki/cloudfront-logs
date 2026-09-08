@@ -1,5 +1,11 @@
-use crate::{CheckedRawLogLine, TIME_DATE_FMT, TIME_TIME_FMT, shared::*, types::*};
+use crate::{
+    CheckedRawLogLine,
+    consts::{TIME_DATE_FMT, TIME_TIME_FMT},
+    shared::*,
+    types::*,
+};
 pub use LogLine as TypedLogLine;
+use time::{Date, OffsetDateTime, Time};
 
 /// A simple log line representation owning its field data
 ///

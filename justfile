@@ -66,8 +66,8 @@ bump kind:
 
     echo "Released $tag"
 
-# Format, lint at the strictest setting, and run every test.
-check: fmt-check lint test
+# Format, lint at the strictest setting, and run every test and feature check.
+check: fmt-check lint test feature-check feature-check-invalid
 
 # Rewrite every file the way rustfmt wants it.
 fmt:
@@ -78,11 +78,36 @@ fmt-check:
 
 # Clippy at its strictest; a warning fails the recipe.
 lint:
-    cargo clippy --workspace --all-features --all-targets -- -D warnings
+    cargo clippy --workspace --all-targets -- -D warnings
 
 # Unit, integration, and doc tests, across every feature.
 test:
-    cargo test --workspace --all-features
+    cargo test --workspace
+
+# Check every supported feature configuration.
+feature-check:
+    cargo check --no-default-features
+    cargo check --no-default-features --features alloc
+    cargo check --no-default-features --features time
+    cargo check --no-default-features --features chrono
+    cargo check --no-default-features --features jiff
+    cargo check --no-default-features --features parquet
+    cargo check
+
+# Confirm that Cargo rejects every unsupported date/time backend pair.
+feature-check-invalid:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    for features in time,chrono time,jiff chrono,jiff; do
+        stderr="$(mktemp)"
+        if cargo check --no-default-features --features "$features" 2>"$stderr"; then
+            rm -f "$stderr"
+            exit 1
+        fi
+        grep -Fq "enable at most one date/time backend" "$stderr"
+        rm -f "$stderr"
+    done
 
 # Reflow the `use` blocks: one sorted block per file, merged per crate. Both
 # options are nightly-only, which is why they are not in rustfmt.toml.

@@ -1,0 +1,18 @@
+error[E0432]: unresolved imports `cloudfront_logs::OwningValidatedJiffLogline`, `cloudfront_logs::ValidatedJiffLogline`
+ --> tests/ui/backend-specific-root-aliases.rs:1:23
+  |
+1 | use cloudfront_logs::{OwningValidatedJiffLogline, ValidatedJiffLogline};
+  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^ no `ValidatedJiffLogline` in the root
+  |                       |
+  |                       no `OwningValidatedJiffLogline` in the root
+  |
+help: a similar name exists in the module
+  |
+1 - use cloudfront_logs::{OwningValidatedJiffLogline, ValidatedJiffLogline};
+1 + use cloudfront_logs::{OwningValidatedRawLogline, ValidatedJiffLogline};
+  |
+help: a similar name exists in the module
+  |
+1 - use cloudfront_logs::{OwningValidatedJiffLogline, ValidatedJiffLogline};
+1 + use cloudfront_logs::{OwningValidatedJiffLogline, ValidatedRawLogline};
+  |

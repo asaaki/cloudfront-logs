@@ -1,5 +1,5 @@
-pub use crate::types::{Datelike, Timelike};
 use crate::{borrowed::UnvalidatedParquetLogline as BorrowedLine, shared::validate_line, types::*};
+pub use chrono::{Datelike, Timelike};
 
 /// A (thread safe) line string
 ///

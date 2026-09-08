@@ -58,34 +58,11 @@ fn ValidatedSimpleLogline(inputs: Inputs) -> usize {
         .sum()
 }
 
-#[divan::bench(name = "02 ValidatedChronoLogline", args = ARGS)]
-fn ValidatedChronoLogline(inputs: Inputs) -> usize {
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+#[divan::bench(name = "02 ValidatedTypedLogline", args = ARGS)]
+fn ValidatedTypedLogline(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
-        ValidatedChronoLogline::try_from(line).ok().map(|item| {
-            let result = &[
-                Data::ND(item.date),
-                Data::NT(item.time),
-                Data::I(item.c_ip),
-                Data::M(item.c_port),
-                Data::S0(item.cs_uri_stem),
-                Data::ON(item.sc_content_len),
-                Data::N(item.sc_bytes),
-            ];
-            result.len()
-        })
-    }
-
-    inputs
-        .data()
-        .iter()
-        .map(|line| parse(divan::black_box(*line)).unwrap_or_default())
-        .sum()
-}
-
-#[divan::bench(name = "03 ValidatedTimeLogline", args = ARGS)]
-fn ValidatedTimeLogline(inputs: Inputs) -> usize {
-    fn parse(line: &str) -> Option<usize> {
-        ValidatedTimeLogline::try_from(line).ok().map(|item| {
+        ValidatedTypedLogline::try_from(line).ok().map(|item| {
             let result = &[
                 Data::D(item.date),
                 Data::T(item.time),
@@ -106,12 +83,13 @@ fn ValidatedTimeLogline(inputs: Inputs) -> usize {
         .sum()
 }
 
-#[divan::bench(name = "04 ValidatedParquetLogline", args = ARGS)]
+#[cfg(feature = "parquet")]
+#[divan::bench(name = "03 ValidatedParquetLogline", args = ARGS)]
 fn ValidatedParquetLogline(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
         ValidatedParquetLogline::try_from(line).ok().map(|item| {
             let result = &[
-                Data::ND(item.date),
+                Data::D(item.date),
                 Data::S0(item.time),
                 Data::S0(item.c_ip),
                 Data::M(item.c_port),

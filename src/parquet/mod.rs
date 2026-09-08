@@ -1,5 +1,6 @@
 use crate::{CheckedRawLogLine, shared::*, types::*};
 pub use LogLine as ParquetLogLine;
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 /// A mostly borrowed version suitable for writing into parquet files
 ///

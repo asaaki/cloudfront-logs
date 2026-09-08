@@ -1,4 +1,4 @@
-use crate::{COMMENT_U8, TAB_U8, TABS};
+use crate::consts::{COMMENT_U8, TAB_U8, TABS};
 
 /// Validates a log line
 ///
@@ -38,6 +38,7 @@ pub fn validate_line(line: &str) -> Result<(), &'static str> {
 }
 
 #[inline]
+#[allow(dead_code)]
 pub(crate) fn split(line: &str) -> MemchrTabSplitter<'_> {
     MemchrTabSplitter::new(line)
 }

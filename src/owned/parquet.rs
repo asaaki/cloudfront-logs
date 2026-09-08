@@ -1,10 +1,10 @@
-pub use crate::types::{Datelike, Timelike};
 use crate::{
-    CHRONO_DATE_FMT, CHRONO_TIME_FMT,
     borrowed::raw::{UnvalidatedLogline as UnvalidatedRaw, ValidatedLogline as ValidatedRaw},
+    consts::{CHRONO_DATE_FMT, CHRONO_TIME_FMT},
     shared::*,
-    types::*,
 };
+pub use chrono::{Datelike, Timelike};
+use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 
 /// The validated log line for [`parquet`] usage
 ///
@@ -27,13 +27,14 @@ use crate::{
 /// Use `.try_from()` or `.try_into()` to construct an instance, since action can fail.
 ///
 /// ```rust
-/// use cloudfront_logs::{borrowed::parquet::ValidatedLogline, types::*};
+/// use chrono::NaiveDate;
+/// use cloudfront_logs::owned::parquet::ValidatedLogline;
 ///
 /// let line = "2019-12-04	21:02:31	LAX1	392	192.0.2.100	GET	d111111abcdef8.cloudfront.net	/index.html	200	-	Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/78.0.3904.108%20Safari/537.36	-	-	Hit	SOX4xwn4XV6Q4rgb7XiVGOHms_BGlTAC4KyHmureZmBNrjGdRLiNIQ==	d111111abcdef8.cloudfront.net	https	23	0.001	-	TLSv1.2	ECDHE-RSA-AES128-GCM-SHA256	Hit	HTTP/2.0	-	-	11040	0.001	Hit	text/html	78	-	-";
 ///
 /// let item = ValidatedLogline::try_from(line).unwrap();
 /// // alternative:
-/// let item: ValidatedLogline<'_> = line.try_into().unwrap();
+/// let item: ValidatedLogline = line.try_into().unwrap();
 ///
 /// assert_eq!(item.date, NaiveDate::from_ymd_opt(2019, 12, 4).unwrap());
 /// assert_eq!(item.sc_bytes, 392u64);
@@ -270,13 +271,14 @@ impl TryFrom<ValidatedRaw<'_>> for ValidatedLogline {
 /// Use `.try_from()` or `.try_into()` to construct an instance, since action can fail.
 ///
 /// ```rust
-/// use cloudfront_logs::{borrowed::parquet::UnvalidatedLogline, types::*};
+/// use chrono::NaiveDate;
+/// use cloudfront_logs::owned::parquet::UnvalidatedLogline;
 ///
 /// let line = "2019-12-04	21:02:31	LAX1	392	192.0.2.100	GET	d111111abcdef8.cloudfront.net	/index.html	200	-	Mozilla/5.0%20(Windows%20NT%2010.0;%20Win64;%20x64)%20AppleWebKit/537.36%20(KHTML,%20like%20Gecko)%20Chrome/78.0.3904.108%20Safari/537.36	-	-	Hit	SOX4xwn4XV6Q4rgb7XiVGOHms_BGlTAC4KyHmureZmBNrjGdRLiNIQ==	d111111abcdef8.cloudfront.net	https	23	0.001	-	TLSv1.2	ECDHE-RSA-AES128-GCM-SHA256	Hit	HTTP/2.0	-	-	11040	0.001	Hit	text/html	78	-	-";
 ///
 /// let item = UnvalidatedLogline::try_from(line).unwrap();
 /// // alternative:
-/// let item: UnvalidatedLogline<'_> = line.try_into().unwrap();
+/// let item: UnvalidatedLogline = line.try_into().unwrap();
 ///
 /// assert_eq!(item.date, NaiveDate::from_ymd_opt(2019, 12, 4).unwrap());
 /// assert_eq!(item.sc_bytes, 392u64);

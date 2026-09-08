@@ -37,12 +37,18 @@ pub enum Data<'a> {
     ON(Option<u64>),
     M(u16),
     I(IpAddr),
-    D(Date),
-    ND(NaiveDate),
-    T(Time),
-    NT(NaiveTime),
-    DT(OffsetDateTime),
-    NDT(NaiveDateTime),
+    #[cfg(feature = "time")]
+    D(time::Date),
+    #[cfg(feature = "time")]
+    T(time::Time),
+    #[cfg(feature = "chrono")]
+    D(chrono::NaiveDate),
+    #[cfg(feature = "chrono")]
+    T(chrono::NaiveTime),
+    #[cfg(feature = "jiff")]
+    D(jiff::civil::Date),
+    #[cfg(feature = "jiff")]
+    T(jiff::civil::Time),
 }
 
 #[derive(Debug, Clone, Copy)]

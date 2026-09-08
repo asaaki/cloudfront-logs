@@ -1,0 +1,8 @@
+error[E0432]: unresolved imports `cloudfront_logs::CheckedRawLogLine`, `cloudfront_logs::SimpleLogLine`, `cloudfront_logs::TypedLogLine`
+ --> tests/ui/deprecated-root-aliases.rs:1:23
+  |
+1 | use cloudfront_logs::{CheckedRawLogLine, SimpleLogLine, TypedLogLine};
+  |                       ^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^  ^^^^^^^^^^^^ no `TypedLogLine` in the root
+  |                       |                  |
+  |                       |                  no `SimpleLogLine` in the root
+  |                       no `CheckedRawLogLine` in the root

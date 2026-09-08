@@ -17,11 +17,8 @@ exclude = [".assets/*", ".github/*"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-# docs.rs-specific configuration
 [package.metadata.docs.rs]
-# document all features
-all-features = true
-# defines the configuration attribute `docsrs`
+features = ["jiff"]
 rustdoc-args = ["--cfg", "docsrs"]
 
 [[bench]]
@@ -35,10 +32,7 @@ path = "benches/borrowed-real-world-unvalidated.rs"
 harness = false
 
 [features]
-# for now we enable all features by default;
-# this might change in the future.
-# use default-features = false + features = ["..."] to narrow it to your needs
-default = ["alloc", "time", "chrono", "jiff", "parquet"]
+default = ["alloc", "jiff"]
 
 # when you need owned versions of the structured log data; enabled by default
 alloc = []
@@ -52,11 +46,7 @@ chrono = ["alloc", "dep:chrono"]
 jiff = ["alloc", "dep:jiff"]
 
 # provides parquet (record writer) support
-parquet = [
-  "dep:parquet",
-  "dep:parquet_derive",
-  "chrono",
-]
+parquet = ["dep:parquet", "dep:parquet_derive", "chrono"]
 
 [dependencies]
 memchr = "2.8.3"
@@ -70,3 +60,4 @@ self_cell = "1.3.0"
 
 [dev-dependencies]
 divan = "0.1.21"
+trybuild = "1.0.121"

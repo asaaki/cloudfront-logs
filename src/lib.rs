@@ -80,7 +80,14 @@
 
 // mem_forget: safe_cell
 // tabs_in_doc_comments: tab'ed CF log lines in examples
-#![allow(deprecated, clippy::tabs_in_doc_comments, clippy::mem_forget)]
+#![allow(clippy::tabs_in_doc_comments, clippy::mem_forget)]
+
+#[cfg(any(
+    all(feature = "time", feature = "chrono"),
+    all(feature = "time", feature = "jiff"),
+    all(feature = "chrono", feature = "jiff"),
+))]
+compile_error!("enable at most one date/time backend: time, chrono, or jiff");
 
 // @@@ NEW STRUCTURE @@@
 
@@ -92,15 +99,6 @@ pub mod owned;
 pub mod referential; // not sure about the module name yet
 pub mod types;
 
-#[cfg(feature = "chrono")]
-#[doc(inline)]
-pub use borrowed::typed::{UnvalidatedChronoLogline, ValidatedChronoLogline};
-#[cfg(feature = "jiff")]
-#[doc(inline)]
-pub use borrowed::typed::{UnvalidatedJiffLogline, ValidatedJiffLogline};
-#[cfg(feature = "time")]
-#[doc(inline)]
-pub use borrowed::typed::{UnvalidatedTimeLogline, ValidatedTimeLogline};
 #[cfg(feature = "parquet")]
 #[doc(inline)]
 pub use borrowed::{UnvalidatedParquetLogline, ValidatedParquetLogline};
@@ -108,31 +106,20 @@ pub use borrowed::{UnvalidatedParquetLogline, ValidatedParquetLogline};
 pub use borrowed::{
     UnvalidatedRawLogline, UnvalidatedSimpleLogline, ValidatedRawLogline, ValidatedSimpleLogline,
 };
-pub use consts::*;
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+#[doc(inline)]
+pub use borrowed::{UnvalidatedTypedLogline, ValidatedTypedLogline};
+#[cfg(feature = "parquet")]
+pub use consts::parquet_schemata;
 #[cfg(feature = "parquet")]
 #[doc(inline)]
 pub use owned::{
     UnvalidatedParquetLogline as OwnedUnvalidatedParquetLogline,
     ValidatedParquetLogline as OwnedValidatedParquetLogline,
 };
-#[cfg(feature = "chrono")]
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
 #[doc(inline)]
-pub use referential::typed::{
-    UnvalidatedChronoLogline as OwningUnvalidatedChronoLogline,
-    ValidatedChronoLogline as OwningValidatedChronoLogline,
-};
-#[cfg(feature = "jiff")]
-#[doc(inline)]
-pub use referential::typed::{
-    UnvalidatedJiffLogline as OwningUnvalidatedJiffLogline,
-    ValidatedJiffLogline as OwningValidatedJiffLogline,
-};
-#[cfg(feature = "time")]
-#[doc(inline)]
-pub use referential::typed::{
-    UnvalidatedTimeLogline as OwningUnvalidatedTimeLogline,
-    ValidatedTimeLogline as OwningValidatedTimeLogline,
-};
+pub use referential::{OwningUnvalidatedTypedLogline, OwningValidatedTypedLogline};
 #[cfg(feature = "parquet")]
 #[doc(inline)]
 pub use referential::{
@@ -154,46 +141,3 @@ pub use types::*;
 
 #[cfg(test)]
 mod tests;
-
-// !!! DEPRECATED !!!
-
-#[deprecated(
-    since = "0.7.0",
-    note = "use new modules/types instead (borrowed, owned, referential)"
-)]
-mod raw;
-#[deprecated(
-    since = "0.7.0",
-    note = "use new modules/types instead (borrowed, owned, referential)"
-)]
-mod simple;
-
-#[deprecated(
-    since = "0.7.0",
-    note = "use new modules/types instead (borrowed, owned, referential)"
-)]
-#[cfg(feature = "time")]
-mod typed;
-
-#[deprecated(
-    since = "0.7.0",
-    note = "use new modules/types instead (borrowed, owned, referential)"
-)]
-#[cfg(feature = "parquet")]
-mod parquet;
-
-#[deprecated(
-    since = "0.7.0",
-    note = "use new modules/types instead (borrowed, owned, referential)"
-)]
-pub mod deprecated {
-    #[cfg(feature = "parquet")]
-    pub use crate::parquet::ParquetLogLine;
-    pub use crate::raw::{CheckedRawLogLine, CheckedRawLogLineView, SmartRawLogLineView};
-    #[cfg(feature = "alloc")]
-    pub use crate::simple::SimpleLogLine;
-    #[cfg(feature = "time")]
-    pub use crate::typed::TypedLogLine;
-}
-
-pub use deprecated::*;

@@ -32,18 +32,18 @@ pub(crate) const TABS: usize = 32;
 pub(crate) const FIELDS: usize = TABS + 1;
 
 #[cfg(feature = "time")]
-pub const TIME_DATE_FMT: &[time::format_description::FormatItem<'_>] =
+pub(crate) const TIME_DATE_FMT: &[time::format_description::FormatItem<'_>] =
     time::macros::format_description!("[year]-[month]-[day]");
 
 #[cfg(feature = "time")]
-pub const TIME_TIME_FMT: &[time::format_description::FormatItem<'_>] =
+pub(crate) const TIME_TIME_FMT: &[time::format_description::FormatItem<'_>] =
     time::macros::format_description!("[hour]:[minute]:[second]");
 
 #[cfg(feature = "chrono")]
-pub const CHRONO_DATE_FMT: &str = "%Y-%m-%d";
+pub(crate) const CHRONO_DATE_FMT: &str = "%Y-%m-%d";
 
 #[cfg(feature = "chrono")]
-pub const CHRONO_TIME_FMT: &str = "%H:%M:%S";
+pub(crate) const CHRONO_TIME_FMT: &str = "%H:%M:%S";
 
 #[cfg(feature = "parquet")]
 pub mod parquet_schemata {

@@ -1,0 +1,18 @@
+error[E0432]: unresolved imports `cloudfront_logs::referential::ValidatedJiffLogline`, `cloudfront_logs::referential::UnvalidatedJiffLogline`
+ --> tests/ui/backend-specific-referential-aliases.rs:1:36
+  |
+1 | use cloudfront_logs::referential::{ValidatedJiffLogline, UnvalidatedJiffLogline};
+  |                                    ^^^^^^^^^^^^^^^^^^^^  ^^^^^^^^^^^^^^^^^^^^^^ no `UnvalidatedJiffLogline` in `referential`
+  |                                    |
+  |                                    no `ValidatedJiffLogline` in `referential`
+  |
+help: a similar name exists in the module
+  |
+1 - use cloudfront_logs::referential::{ValidatedJiffLogline, UnvalidatedJiffLogline};
+1 + use cloudfront_logs::referential::{ValidatedRawLogline, UnvalidatedJiffLogline};
+  |
+help: a similar name exists in the module
+  |
+1 - use cloudfront_logs::referential::{ValidatedJiffLogline, UnvalidatedJiffLogline};
+1 + use cloudfront_logs::referential::{ValidatedJiffLogline, UnvalidatedRawLogline};
+  |
