@@ -95,6 +95,9 @@ pub mod types;
 #[cfg(feature = "chrono")]
 #[doc(inline)]
 pub use borrowed::typed::{UnvalidatedChronoLogline, ValidatedChronoLogline};
+#[cfg(feature = "jiff")]
+#[doc(inline)]
+pub use borrowed::typed::{UnvalidatedJiffLogline, ValidatedJiffLogline};
 #[cfg(feature = "time")]
 #[doc(inline)]
 pub use borrowed::typed::{UnvalidatedTimeLogline, ValidatedTimeLogline};
@@ -117,6 +120,12 @@ pub use owned::{
 pub use referential::typed::{
     UnvalidatedChronoLogline as OwningUnvalidatedChronoLogline,
     ValidatedChronoLogline as OwningValidatedChronoLogline,
+};
+#[cfg(feature = "jiff")]
+#[doc(inline)]
+pub use referential::typed::{
+    UnvalidatedJiffLogline as OwningUnvalidatedJiffLogline,
+    ValidatedJiffLogline as OwningValidatedJiffLogline,
 };
 #[cfg(feature = "time")]
 #[doc(inline)]

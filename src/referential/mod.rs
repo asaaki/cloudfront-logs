@@ -31,6 +31,10 @@ pub use simple::{
 pub use typed::chrono::{
     UnvalidatedLogline as UnvalidatedChronoLogline, ValidatedLogline as ValidatedChronoLogline,
 };
+#[cfg(feature = "jiff")]
+pub use typed::jiff::{
+    UnvalidatedLogline as UnvalidatedJiffLogline, ValidatedLogline as ValidatedJiffLogline,
+};
 #[cfg(feature = "time")]
 pub use typed::time::{
     UnvalidatedLogline as UnvalidatedTimeLogline, ValidatedLogline as ValidatedTimeLogline,

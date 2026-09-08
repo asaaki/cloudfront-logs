@@ -38,7 +38,7 @@ harness = false
 # for now we enable all features by default;
 # this might change in the future.
 # use default-features = false + features = ["..."] to narrow it to your needs
-default = ["alloc", "time", "chrono", "parquet"]
+default = ["alloc", "time", "chrono", "jiff", "parquet"]
 
 # when you need owned versions of the structured log data; enabled by default
 alloc = []
@@ -48,6 +48,8 @@ time = ["alloc", "dep:time"]
 # use typed variants with chrono's date and time types;
 # also needed for parquet support as well
 chrono = ["alloc", "dep:chrono"]
+# use typed variants with jiff's civil date and time types
+jiff = ["alloc", "dep:jiff"]
 
 # provides parquet (record writer) support
 parquet = [
@@ -61,6 +63,7 @@ memchr = "2.8.3"
 time = { version = "0.3.55", features = ["parsing", "macros"], optional = true }
 strum = { version = "0.28.0", features = ["derive"] }
 chrono = { version = "0.4.45", optional = true }
+jiff = { version = "0.2.35", optional = true }
 parquet = { version = "59.3.0", optional = true }
 parquet_derive = { version = "59.3.0", optional = true }
 self_cell = "1.3.0"

@@ -124,12 +124,10 @@ impl ToOptionalString for &str {
 
 // str type extension trait;
 // returns None if the input is "-", otherwise Some(&str)
-#[cfg(feature = "parquet")]
 pub(crate) trait AsOptionalStr {
     fn as_optional_str(&self) -> Option<&str>;
 }
 
-#[cfg(feature = "parquet")]
 impl AsOptionalStr for str {
     fn as_optional_str(&self) -> Option<&str> {
         if self == "-" { None } else { Some(self) }

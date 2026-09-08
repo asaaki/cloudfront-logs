@@ -45,6 +45,43 @@ fn readme_examples_typed() {
     assert_eq!(item.time_taken, Duration::from_millis(1));
 }
 
+#[cfg(feature = "jiff")]
+#[test]
+fn jiff_typed_variants_parse_civil_datetime() {
+    let item = ValidatedJiffLogline::try_from(SINGLE_LOG_LINE).unwrap();
+
+    assert_eq!(item.date, jiff::civil::date(2019, 12, 4));
+    assert_eq!(item.time, jiff::civil::time(21, 2, 31, 0));
+    assert_eq!(
+        item.datetime,
+        jiff::civil::datetime(2019, 12, 4, 21, 2, 31, 0)
+    );
+
+    let owning = OwningValidatedJiffLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    assert_eq!(owning.view().datetime, item.datetime);
+}
+
+#[cfg(feature = "jiff")]
+#[test]
+fn jiff_typed_variants_reject_invalid_civil_date() {
+    let line = SINGLE_LOG_LINE.replacen("2019-12-04", "2019-02-30", 1);
+
+    assert_eq!(
+        ValidatedJiffLogline::try_from(line.as_str()),
+        Err("date invalid")
+    );
+}
+
+#[cfg(feature = "jiff")]
+#[test]
+fn jiff_typed_variants_convert_raw_loglines() {
+    let raw = ValidatedRawLogline::try_from(SINGLE_LOG_LINE).unwrap();
+    let item = borrowed::typed::jiff::ValidatedLogline::try_from(raw).unwrap();
+
+    assert_eq!(item.date, jiff::civil::date(2019, 12, 4));
+    assert_eq!(item.time, jiff::civil::time(21, 2, 31, 0));
+}
+
 #[test]
 fn transformation_roundtrip() {
     let checked_line = CheckedRawLogLine::try_from(SINGLE_LOG_LINE).unwrap();
