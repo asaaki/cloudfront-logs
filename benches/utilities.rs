@@ -49,6 +49,8 @@ pub enum Data<'a> {
     D(jiff::civil::Date),
     #[cfg(feature = "jiff")]
     T(jiff::civil::Time),
+    #[cfg(feature = "parquet")]
+    PD(chrono::NaiveDate),
 }
 
 #[derive(Debug, Clone, Copy)]

@@ -20,7 +20,7 @@ It's possible that in the future more utilities get added, but as of now it's mo
 
 The library therefore serves different parser implementation, so you can pick the one for your use cases and needs.
 
-Consult the benchmarks (run `./bin/benches.sh` on Linux/macOS or `./bin/benches.ps1` on PowerShell) for a synthetic overview. Use `--doc` (bash) or `-Doc` (PowerShell) to emit a BENCHMARK.md-ready output block.
+Run `just bench` for a synthetic overview. The command writes `benchmarks/<platform>.md`.
 
 ## Example
 
@@ -76,7 +76,8 @@ cloudfront-logs = { version = "0.10", default-features = false, features = ["chr
 
 ## Benchmark example
 
-See [BENCHMARK.md](BENCHMARK.md) for benchmark setup, sample output, and additional benchmark notes.
+Run `just bench`. The command writes `benchmarks/<platform>.md`.
+See [BENCHMARK.md](BENCHMARK.md) for benchmark configurations, platform results, and historical reference data.
 
 ## Safety
 

@@ -1,50 +1,29 @@
 param(
-    [switch]$Doc,
-    [string]$DocFile
+    [string]$OutputPath = "benchmarks/windows.md",
+    [ValidateSet("windows")]
+    [string]$TestPlatform
 )
 
 $ErrorActionPreference = "Stop"
+$platform = "windows"
+
+if (-not $IsWindows -and $TestPlatform -ne "windows")
+{
+    throw "Unsupported host platform. Use -TestPlatform windows only for tests."
+}
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
-# Temporarily disable LocationChangedAction around Set-Location because tools like
-# zoxide/starship/oh-my-posh register a buggy hook that throws when combined with
-# $ErrorActionPreference = "Stop". The hook is restored immediately after.
 $savedAction = $ExecutionContext.InvokeCommand.LocationChangedAction
 $ExecutionContext.InvokeCommand.LocationChangedAction = $null
 Set-Location -Path $repoRoot
 $ExecutionContext.InvokeCommand.LocationChangedAction = $savedAction
 
-# $env:RUST_BACKTRACE = "1"
 if (-not $env:RUSTFLAGS)
 {
     $env:RUSTFLAGS = "-Ctarget-cpu=native"
 }
 
-function Invoke-BenchCapture
-{
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$BenchName
-    )
-
-    $lines = [System.Collections.Generic.List[string]]::new()
-    $cmd = "cargo bench -q --all-features --bench $BenchName 2>&1"
-    & cmd /d /c $cmd | ForEach-Object {
-        $line = $_.ToString()
-        $lines.Add($line)
-        Write-Host $line
-    }
-
-    if ($LASTEXITCODE -ne 0)
-    {
-        throw "Benchmark '$BenchName' failed with exit code $LASTEXITCODE."
-    }
-
-    return ($lines -join [Environment]::NewLine)
-}
-
 $runDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss zzz"
-
 try
 {
     $os = (Get-CimInstance Win32_OperatingSystem -ErrorAction Stop).Caption
@@ -60,10 +39,7 @@ try
 {
     $cpu = $env:PROCESSOR_IDENTIFIER
 }
-if (-not $cpu)
-{
-    $cpu = "unknown"
-}
+if (-not $cpu) { $cpu = "unknown" }
 
 try
 {
@@ -75,99 +51,99 @@ try
 }
 
 $rustcVersion = (& rustc --version 2>$null)
-if (-not $rustcVersion)
-{
-    $rustcVersion = "rustc (not found)"
-}
-
+if (-not $rustcVersion) { $rustcVersion = "unknown" }
 $cargoVersion = (& cargo --version 2>$null)
-if (-not $cargoVersion)
-{
-    $cargoVersion = "cargo (not found)"
-}
-
+if (-not $cargoVersion) { $cargoVersion = "unknown" }
 $gitCommit = (& git rev-parse --short HEAD 2>$null)
-if (-not $gitCommit)
+if (-not $gitCommit) { $gitCommit = "unknown" }
+
+$configurations = @(
+    @{ Label = "no-features"; Features = @("--no-default-features") },
+    @{ Label = "jiff"; Features = @("--no-default-features", "--features", "jiff") },
+    @{ Label = "time"; Features = @("--no-default-features", "--features", "time") },
+    @{ Label = "chrono"; Features = @("--no-default-features", "--features", "chrono") },
+    @{ Label = "parquet"; Features = @("--no-default-features", "--features", "parquet") }
+)
+
+$outputDirectory = Split-Path -Parent $OutputPath
+if (-not $outputDirectory) { $outputDirectory = "." }
+New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
+$temporaryPath = Join-Path $outputDirectory (".benches." + [guid]::NewGuid())
+
+try
 {
-    $gitCommit = "unknown"
-}
-
-Write-Host "Benchmark run metadata:"
-Write-Host "  Run date: $runDate"
-Write-Host "  OS: $os"
-Write-Host "  CPU: $cpu"
-Write-Host "  RAM: $ram"
-Write-Host "  Toolchain: $rustcVersion"
-Write-Host "  Cargo: $cargoVersion"
-Write-Host "  Git commit: $gitCommit"
-Write-Host "  RUSTFLAGS: $env:RUSTFLAGS"
-Write-Host ""
-
-$brwvOutput = Invoke-BenchCapture -BenchName "brwv"
-$brwuOutput = Invoke-BenchCapture -BenchName "brwu"
-
-if ($Doc -or $DocFile)
-{
-    $docTemplate = @'
-# Benchmarks
-
-This document tracks the current benchmark targets defined in `Cargo.toml`:
-
-- `brwv` -> `benches/borrowed-real-world-validated.rs`
-- `brwu` -> `benches/borrowed-real-world-unvalidated.rs`
-
-## Benchmark environment
-
-- Run date: `{{RUN_DATE}}`
-- OS: `{{OS}}`
-- CPU: `{{CPU}}`
-- RAM: `{{RAM}}`
-- Toolchain: `{{RUSTC}}`
-- Cargo: `{{CARGO}}`
-- Git commit: `{{GIT_COMMIT}}`
-
-## Commands
-
-```powershell
-$env:RUSTFLAGS="-Ctarget-cpu=native"
-cargo bench -q --all-features --bench brwv
-cargo bench -q --all-features --bench brwu
-```
-
-## Results: `brwv` (validated parsers)
-
-```txt
-{{BRWV_OUTPUT}}
-```
-
-## Results: `brwu` (unvalidated parsers)
-
-```txt
-{{BRWU_OUTPUT}}
-```
-
-These numbers are synthetic and depend on hardware, toolchain version, and CPU frequency scaling.
-'@
-
-    $docText = $docTemplate
-    $docText = $docText.Replace('{{RUN_DATE}}', $runDate)
-    $docText = $docText.Replace('{{OS}}', $os)
-    $docText = $docText.Replace('{{CPU}}', $cpu)
-    $docText = $docText.Replace('{{RAM}}', $ram)
-    $docText = $docText.Replace('{{RUSTC}}', $rustcVersion)
-    $docText = $docText.Replace('{{CARGO}}', $cargoVersion)
-    $docText = $docText.Replace('{{GIT_COMMIT}}', $gitCommit)
-    $docText = $docText.Replace('{{BRWV_OUTPUT}}', $brwvOutput)
-    $docText = $docText.Replace('{{BRWU_OUTPUT}}', $brwuOutput)
-
-    if ($DocFile)
+    $writer = [System.IO.StreamWriter]::new($temporaryPath, $false, [System.Text.UTF8Encoding]::new($false))
+    try
     {
-        Set-Content -Path $DocFile -Value $docText -Encoding UTF8
-        Write-Host "Wrote markdown doc block to $DocFile"
+        $writer.WriteLine("# Benchmarks: $platform")
+        $writer.WriteLine()
+        $writer.WriteLine("## Benchmark environment")
+        $writer.WriteLine()
+        $writer.WriteLine('- Platform: `' + $platform + '`')
+        $writer.WriteLine('- Run date: `' + $runDate + '`')
+        $writer.WriteLine('- OS: `' + $os + '`')
+        $writer.WriteLine('- CPU: `' + $cpu + '`')
+        $writer.WriteLine('- RAM: `' + $ram + '`')
+        $writer.WriteLine('- Toolchain: `' + $rustcVersion + '`')
+        $writer.WriteLine('- Cargo: `' + $cargoVersion + '`')
+        $writer.WriteLine('- Git commit: `' + $gitCommit + '`')
+        $writer.WriteLine('- RUSTFLAGS: `' + $env:RUSTFLAGS + '`')
+
+        foreach ($configuration in $configurations)
+        {
+            $writer.WriteLine()
+            $writer.WriteLine("## Configuration: $($configuration.Label)")
+            foreach ($benchmark in @(
+                @{ Name = "brwv"; Description = "validated parsers" },
+                @{ Name = "brwu"; Description = "unvalidated parsers" }
+            ))
+            {
+                $writer.WriteLine()
+                $writer.WriteLine('### `' + $benchmark.Name + '` (' + $benchmark.Description + ')')
+                $writer.WriteLine()
+                $writer.WriteLine('```txt')
+                $arguments = @("bench", "-q") + $configuration.Features + @("--bench", $benchmark.Name)
+                $result = & cargo @arguments 2>&1
+                $exitCode = $LASTEXITCODE
+                $result | ForEach-Object {
+                    $line = $_.ToString()
+                    Write-Host $line
+                    $writer.WriteLine($line)
+                }
+                if ($exitCode -ne 0)
+                {
+                    throw "Configuration '$($configuration.Label)', benchmark target '$($benchmark.Name)' failed with exit code $exitCode."
+                }
+                $writer.WriteLine('```')
+            }
+        }
+    } finally
+    {
+        $writer.Dispose()
     }
 
-    if ($Doc)
+    if ([System.IO.File]::Exists($OutputPath))
     {
-        Write-Output $docText
+        $backupPath = Join-Path $outputDirectory (".benches-backup." + [guid]::NewGuid())
+        try
+        {
+            [System.IO.File]::Replace($temporaryPath, $OutputPath, $backupPath)
+        } finally
+        {
+            try
+            {
+                [System.IO.File]::Delete($backupPath)
+            } catch
+            {
+                Write-Warning "Could not remove benchmark backup '$backupPath': $($_.Exception.Message)"
+            }
+        }
+    } else
+    {
+        [System.IO.File]::Move($temporaryPath, $OutputPath)
     }
+    Write-Host "Wrote benchmark report to $OutputPath"
+} finally
+{
+    Remove-Item -Path $temporaryPath -Force -ErrorAction SilentlyContinue
 }

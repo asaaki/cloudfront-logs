@@ -39,14 +39,13 @@ alloc = []
 
 # use typed variants with time's date and time types
 time = ["alloc", "dep:time"]
-# use typed variants with chrono's date and time types;
-# also needed for parquet support as well
+# use typed variants with chrono's date and time types
 chrono = ["alloc", "dep:chrono"]
 # use typed variants with jiff's civil date and time types
 jiff = ["alloc", "dep:jiff"]
 
 # provides parquet (record writer) support
-parquet = ["dep:parquet", "dep:parquet_derive", "chrono"]
+parquet = ["alloc", "dep:parquet", "dep:parquet_derive", "dep:chrono"]
 
 [dependencies]
 memchr = "2.8.3"

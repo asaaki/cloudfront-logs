@@ -69,6 +69,14 @@ bump kind:
 # Format, lint at the strictest setting, and run every test and feature check.
 check: fmt-check lint test feature-check feature-check-invalid
 
+[unix]
+bench:
+    ./bin/benches.sh
+
+[windows]
+bench:
+    powershell -NoProfile -ExecutionPolicy Bypass -File bin/benches.ps1
+
 # Rewrite every file the way rustfmt wants it.
 fmt:
     cargo fmt --all

@@ -88,7 +88,7 @@ fn UnvalidatedParquetLogline(inputs: Inputs) -> usize {
     fn parse(line: &str) -> Option<usize> {
         UnvalidatedParquetLogline::try_from(line).ok().map(|item| {
             let result = &[
-                Data::D(item.date),
+                Data::PD(item.date),
                 Data::S0(item.time),
                 Data::S0(item.c_ip),
                 Data::M(item.c_port),

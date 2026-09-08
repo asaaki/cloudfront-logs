@@ -39,10 +39,10 @@ pub(crate) const TIME_DATE_FMT: &[time::format_description::FormatItem<'_>] =
 pub(crate) const TIME_TIME_FMT: &[time::format_description::FormatItem<'_>] =
     time::macros::format_description!("[hour]:[minute]:[second]");
 
-#[cfg(feature = "chrono")]
+#[cfg(any(feature = "chrono", feature = "parquet"))]
 pub(crate) const CHRONO_DATE_FMT: &str = "%Y-%m-%d";
 
-#[cfg(feature = "chrono")]
+#[cfg(any(feature = "chrono", feature = "parquet"))]
 pub(crate) const CHRONO_TIME_FMT: &str = "%H:%M:%S";
 
 #[cfg(feature = "parquet")]
