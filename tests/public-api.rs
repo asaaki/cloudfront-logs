@@ -4,5 +4,6 @@ fn backend_specific_and_deprecated_root_aliases_are_private() {
     cases.compile_fail("tests/ui/backend-specific-root-aliases.rs");
     cases.compile_fail("tests/ui/backend-specific-referential-aliases.rs");
     cases.compile_fail("tests/ui/deprecated-root-aliases.rs");
+    #[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
     cases.compile_fail("tests/ui/external-structured-line.rs");
 }
