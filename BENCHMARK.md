@@ -1,126 +1,45 @@
 # Benchmarks
 
-Run `just bench` to execute both benchmark targets for all five configurations:
+Current benchmark reports:
 
-- `no-features` (`--no-default-features`)
-- `jiff`
-- `time`
-- `chrono`
-- `parquet`
+- [Windows](benchmarks/windows.md)
+- [macOS](benchmarks/macos.md)
+- [WSL](benchmarks/wsl.md)
 
-The targets defined in `Cargo.toml` are:
+Each report includes the hardware, toolchain, Git commit, build flags, and results for every feature configuration.
 
-- `brwv` -> `benches/borrowed-real-world-validated.rs`
-- `brwu` -> `benches/borrowed-real-world-unvalidated.rs`
+## Findings from 2026-09-09
 
-The command writes the results to `benchmarks/<platform>.md`. These paths become result files after their corresponding platform benchmark has run:
+These findings use methodology v2 and median times for `Sample File (no comments)`. The median is the middle measured value. Each comparison uses results from the same platform:
 
-- Windows: `benchmarks/windows.md`
-- macOS: `benchmarks/macos.md`
-- WSL: `benchmarks/wsl.md`
-- Linux: `benchmarks/linux.md`
+- The default date/time library, `jiff`, takes the least time for validated typed parsing on all three platforms. `time` takes approximately 1% longer on Windows, 15% longer on WSL, and 3% longer on macOS.
+- Validation adds approximately 4–5% to the time for typed parsing with `jiff` on each platform. Other parsers differ, so removing validation does not always reduce time.
+- On the M1 Pro, typed parsing with `jiff` takes 26% longer than raw parsing in the same configuration. The increases are 81% on Windows and 48% on WSL. These percentages describe the additional cost of typed parsing, not absolute CPU speed.
+- Validated typed parsing with `chrono` takes approximately 29% longer than `jiff` on Windows, 71% longer on WSL, and 27% longer on macOS. On WSL, validated Chrono parsing also takes 15% longer than unvalidated Chrono parsing. The cause of this difference is unknown.
 
-## Historical reference results
+These results support `jiff` as the default for this workload. Each platform has one measurement session. Small differences require more measurements before a performance decision.
 
-These results remain as reference data until generated platform files replace them.
+## Running benchmarks
 
-## Benchmark environment
+Run `just bench` to execute both benchmark targets across five configurations: `no-features`, `jiff`, `time`, `chrono`, and `parquet`. Each configuration disables default features and enables only its named feature, if any.
 
-- Run date: `2026-02-13 13:43:07 +01:00`
-- OS: `Microsoft Windows 11 Pro`
-- CPU: `AMD Ryzen 9 7950X3D 16-Core Processor`
-- RAM: `63.7 GiB`
-- Toolchain: `rustc 1.93.1 (01f6ddf75 2026-02-11)`
-- Cargo: `cargo 1.93.1 (083ac5135 2025-12-15)`
+The targets defined in [Cargo.toml](Cargo.toml) are:
 
-## Commands
+- [`brwv`](benches/borrowed-real-world-validated.rs): validated parsers.
+- [`brwu`](benches/borrowed-real-world-unvalidated.rs): unvalidated parsers.
 
-```powershell
-$env:RUSTFLAGS='-Ctarget-cpu=native'
-cargo bench -q --no-default-features --features jiff,parquet --bench brwv
-cargo bench -q --no-default-features --features jiff,parquet --bench brwu
-```
+Both suites cover raw, simple, and typed parsing. Parquet benchmarks run in the `parquet` configuration.
 
-```bash
-RUSTFLAGS='-Ctarget-cpu=native' cargo bench -q --no-default-features --features jiff,parquet --bench brwv
-RUSTFLAGS='-Ctarget-cpu=native' cargo bench -q --no-default-features --features jiff,parquet --bench brwu
-```
+The command writes `benchmarks/<platform>.md`, detecting Windows, macOS, WSL, or Linux automatically. Windows requires PowerShell 7 (`pwsh`). Unless `RUSTFLAGS` is already set, the runner uses `-Ctarget-cpu=native`.
 
-The validated and unvalidated suites each include one raw, one simple, and one typed benchmark.
-Parquet benchmarks are included when the `parquet` feature is enabled.
+## Interpreting results
 
-The results that follow predate the parser consolidation. They remain as reference data until a new Windows run replaces them.
+Methodology v2 passes the seven extracted field values through `divan::black_box` so the optimizer must preserve them. Earlier reports consumed only the field count; rerun all platforms before comparing the revised benchmark. A change in timings across these methodologies is not evidence of a parser regression.
 
-## Previous results: `brwv` (validated parsers)
+Compare validated and unvalidated parsers using matching input labels. Both suites include `Line A`, `Line B`, `Lines A+B`, and `Sample File (no comments)` with the same six records. The validated suite additionally measures `Sample File (with comments)`, which includes two comment lines. Times are per benchmark invocation: one line, two lines, or the entire sample, respectively.
 
-```txt
-*** Comparing different parsers for AWS CloudFront logs ***
+The inputs are small, repeated, in-memory fixtures. These benchmarks measure parsing and field extraction, not file I/O, decompression, or Parquet encoding and writing.
 
-Parses lines and extracts a few fields, slightly unordered,
-this should simulate close to real-world usages.
-brwv                           fastest       │ slowest       │ median        │ mean          │ samples │ iters
-├─ 00 ValidatedRawLogline                    │               │               │               │         │
-Timer precision: 100 ns
-│  ├─ Line A                   124.1 ns      │ 192.4 ns      │ 128.4 ns      │ 130.5 ns      │ 1000    │ 1000000
-│  ├─ Line B                   126.7 ns      │ 163.3 ns      │ 130.9 ns      │ 131.5 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                249.2 ns      │ 369 ns        │ 255.4 ns      │ 257.3 ns      │ 1000    │ 1000000
-│  ╰─ Sample File              751.4 ns      │ 959.9 ns      │ 779.8 ns      │ 781.1 ns      │ 1000    │ 1000000
-├─ 01 ValidatedSimpleLogline                 │               │               │               │         │
-│  ├─ Line A                   168.4 ns      │ 221.2 ns      │ 174.3 ns      │ 174.9 ns      │ 1000    │ 1000000
-│  ├─ Line B                   173.2 ns      │ 224.1 ns      │ 180 ns        │ 181.3 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                337.1 ns      │ 398.2 ns      │ 351.2 ns      │ 351.9 ns      │ 1000    │ 1000000
-│  ╰─ Sample File              1.046 µs      │ 1.153 µs      │ 1.091 µs      │ 1.092 µs      │ 1000    │ 1000000
-├─ 02 ValidatedChronoLogline                 │               │               │               │         │
-│  ├─ Line A                   290.1 ns      │ 338.7 ns      │ 300.9 ns      │ 301.9 ns      │ 1000    │ 1000000
-│  ├─ Line B                   292.8 ns      │ 471.6 ns      │ 306.6 ns      │ 308.8 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                589.1 ns      │ 705.4 ns      │ 615.4 ns      │ 616.1 ns      │ 1000    │ 1000000
-│  ╰─ Sample File              1.766 µs      │ 3.009 µs      │ 1.868 µs      │ 1.866 µs      │ 1000    │ 1000000
-├─ 03 ValidatedTimeLogline                   │               │               │               │         │
-│  ├─ Line A                   224.4 ns      │ 341.4 ns      │ 229.4 ns      │ 231.7 ns      │ 1000    │ 1000000
-│  ├─ Line B                   225.1 ns      │ 336.2 ns      │ 234.1 ns      │ 235.8 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                445.4 ns      │ 849.2 ns      │ 465.9 ns      │ 473.4 ns      │ 1000    │ 1000000
-│  ╰─ Sample File              1.351 µs      │ 1.628 µs      │ 1.437 µs      │ 1.436 µs      │ 1000    │ 1000000
-╰─ 04 ValidatedParquetLogline                │               │               │               │         │
-   ├─ Line A                   274.7 ns      │ 490.4 ns      │ 282.1 ns      │ 283.6 ns      │ 1000    │ 1000000
-   ├─ Line B                   276.7 ns      │ 339 ns        │ 282.7 ns      │ 283.9 ns      │ 1000    │ 1000000
-   ├─ Lines A+B                553.4 ns      │ 668.7 ns      │ 570.8 ns      │ 572.1 ns      │ 1000    │ 1000000
-   ╰─ Sample File              1.622 µs      │ 3.32 µs       │ 1.722 µs      │ 1.743 µs      │ 1000    │ 1000000
-```
+For platform comparisons, use the same source revision, Rust toolchain, and build flags. Repeat runs on an otherwise idle machine and retain each report using the runner's output option (`--output` in `bin/benches.sh`, `-OutputPath` in `bin/benches.ps1`). Use medians and check whether differences persist across runs. CPU affinity and power settings are not controlled by the runner; keep them consistent and record any manual settings alongside results.
 
-## Previous results: `brwu` (unvalidated parsers)
-
-```txt
-*** Comparing different parsers for AWS CloudFront logs ***
-
-Parses lines and extracts a few fields, slightly unordered,
-this should simulate close to real-world usages.
-Timer precision: 100 ns
-brwu                             fastest       │ slowest       │ median        │ mean          │ samples │ iters
-├─ 00 UnvalidatedRawLogline                    │               │               │               │         │
-│  ├─ Line A                     119.5 ns      │ 187.4 ns      │ 122.7 ns      │ 126.8 ns      │ 1000    │ 1000000
-│  ├─ Line B                     130.8 ns      │ 149.5 ns      │ 134.5 ns      │ 135 ns        │ 1000    │ 1000000
-│  ├─ Lines A+B                  244.7 ns      │ 293.5 ns      │ 252.1 ns      │ 252.7 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  707.5 ns      │ 793.8 ns      │ 734.9 ns      │ 734.6 ns      │ 1000    │ 1000000
-├─ 01 UnvalidatedSimpleLogline                 │               │               │               │         │
-│  ├─ Line A                     164.3 ns      │ 214.9 ns      │ 171.1 ns      │ 172.2 ns      │ 1000    │ 1000000
-│  ├─ Line B                     164.2 ns      │ 224.2 ns      │ 171.9 ns      │ 172.8 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  318.6 ns      │ 378.3 ns      │ 333.2 ns      │ 334.2 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  947.3 ns      │ 1.667 µs      │ 1.01 µs       │ 1.013 µs      │ 1000    │ 1000000
-├─ 02 UnvalidatedChronoLogline                 │               │               │               │         │
-│  ├─ Line A                     279.4 ns      │ 346.7 ns      │ 295.8 ns      │ 295.8 ns      │ 1000    │ 1000000
-│  ├─ Line B                     295.1 ns      │ 358.7 ns      │ 305.3 ns      │ 306.5 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  575 ns        │ 947.9 ns      │ 603 ns        │ 604.1 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  1.718 µs      │ 3.785 µs      │ 1.82 µs       │ 1.85 µs       │ 1000    │ 1000000
-├─ 03 UnvalidatedTimeLogline                   │               │               │               │         │
-│  ├─ Line A                     215.3 ns      │ 277.1 ns      │ 223.7 ns      │ 224.9 ns      │ 1000    │ 1000000
-│  ├─ Line B                     216.7 ns      │ 284.4 ns      │ 225.3 ns      │ 226.4 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  415.5 ns      │ 579.4 ns      │ 442.2 ns      │ 442.2 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  1.277 µs      │ 2.629 µs      │ 1.361 µs      │ 1.37 µs       │ 1000    │ 1000000
-╰─ 04 UnvalidatedParquetLogline                │               │               │               │         │
-   ├─ Line A                     267 ns        │ 467.6 ns      │ 275.2 ns      │ 279.6 ns      │ 1000    │ 1000000
-   ├─ Line B                     261.2 ns      │ 379.8 ns      │ 273.9 ns      │ 275.1 ns      │ 1000    │ 1000000
-   ├─ Lines A+B                  517.8 ns      │ 666.1 ns      │ 546.9 ns      │ 548.6 ns      │ 1000    │ 1000000
-   ╰─ Sample File (no comments)  1.597 µs      │ 2.101 µs      │ 1.681 µs      │ 1.686 µs      │ 1000    │ 1000000
-```
-
-These numbers are synthetic. They depend on the hardware, toolchain, selected date/time backend, and CPU frequency scaling.
+These are synthetic benchmarks. Results depend on hardware, toolchain, feature configuration, and CPU frequency scaling. Check each report's environment before comparing results across platforms or runs.

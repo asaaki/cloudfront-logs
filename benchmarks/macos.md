@@ -3,13 +3,13 @@
 ## Benchmark environment
 
 - Platform: `macos`
-- Run date: `2026-09-08 17:49:25 +0200`
+- Run date: `2026-09-09 22:34:13 +0200`
 - OS: `Darwin 25.6.0 arm64`
 - CPU: `Apple M1 Pro`
 - RAM: `32.0 GiB`
 - Toolchain: `rustc 1.98.0 (88d9e12ae 2026-08-18)`
 - Cargo: `cargo 1.98.0 (797e8a9bc 2026-08-05)`
-- Git commit: `790c05c`
+- Git commit: `2e3795d`
 - RUSTFLAGS: `-Ctarget-cpu=native`
 
 ## Configuration: no-features
@@ -21,18 +21,21 @@
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
-brwv                          fastest       │ slowest       │ median        │ mean          │ samples │ iters
-├─ 00 ValidatedRawLogline                   │               │               │               │         │
-│  ├─ Line A                  326.3 ns      │ 403.9 ns      │ 327.6 ns      │ 328.4 ns      │ 1000    │ 1000000
-│  ├─ Line B                  319.3 ns      │ 354.6 ns      │ 319.6 ns      │ 321.2 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B               643.4 ns      │ 4.991 µs      │ 644.5 ns      │ 656 ns        │ 1000    │ 1000000
-│  ╰─ Sample File             1.968 µs      │ 2.176 µs      │ 1.983 µs      │ 1.989 µs      │ 1000    │ 1000000
-╰─ 01 ValidatedSimpleLogline                │               │               │               │         │
-   ├─ Line A                  349.8 ns      │ 450.6 ns      │ 350.3 ns      │ 351.9 ns      │ 1000    │ 1000000
-   ├─ Line B                  342.9 ns      │ 454.6 ns      │ 343.3 ns      │ 345.3 ns      │ 1000    │ 1000000
-   ├─ Lines A+B               691.3 ns      │ 807.7 ns      │ 691.8 ns      │ 694.1 ns      │ 1000    │ 1000000
-   ╰─ Sample File             2.117 µs      │ 4.268 µs      │ 2.129 µs      │ 2.144 µs      │ 1000    │ 1000000
+brwv                               fastest       │ slowest       │ median        │ mean          │ samples │ iters
+├─ 00 ValidatedRawLogline                        │               │               │               │         │
+│  ├─ Line A                       326.6 ns      │ 456.2 ns      │ 328.8 ns      │ 330.3 ns      │ 1000    │ 1000000
+│  ├─ Line B                       319.8 ns      │ 450 ns        │ 320.3 ns      │ 322.8 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                    643.5 ns      │ 786.4 ns      │ 643.8 ns      │ 648.4 ns      │ 1000    │ 1000000
+│  ├─ Sample File (no comments)    1.96 µs       │ 2.117 µs      │ 1.97 µs       │ 1.974 µs      │ 1000    │ 1000000
+│  ╰─ Sample File (with comments)  1.963 µs      │ 2.123 µs      │ 1.971 µs      │ 1.974 µs      │ 1000    │ 1000000
+╰─ 01 ValidatedSimpleLogline                     │               │               │               │         │
+   ├─ Line A                       349.9 ns      │ 457.8 ns      │ 350.3 ns      │ 351 ns        │ 1000    │ 1000000
+   ├─ Line B                       343.9 ns      │ 458.9 ns      │ 344.3 ns      │ 345.1 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                    690.9 ns      │ 810.1 ns      │ 691.8 ns      │ 693.3 ns      │ 1000    │ 1000000
+   ├─ Sample File (no comments)    2.111 µs      │ 2.242 µs      │ 2.123 µs      │ 2.126 µs      │ 1000    │ 1000000
+   ╰─ Sample File (with comments)  2.115 µs      │ 2.266 µs      │ 2.128 µs      │ 2.13 µs       │ 1000    │ 1000000
 
 ```
 
@@ -43,18 +46,19 @@ brwv                          fastest       │ slowest       │ median        
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
 brwu                             fastest       │ slowest       │ median        │ mean          │ samples │ iters
 ├─ 00 UnvalidatedRawLogline                    │               │               │               │         │
-│  ├─ Line A                     320 ns        │ 434 ns        │ 323.5 ns      │ 325.9 ns      │ 1000    │ 1000000
-│  ├─ Line B                     312.9 ns      │ 420.2 ns      │ 317.7 ns      │ 319.9 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  630.1 ns      │ 7.778 µs      │ 637.3 ns      │ 653.5 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  1.947 µs      │ 2.169 µs      │ 1.97 µs       │ 1.975 µs      │ 1000    │ 1000000
+│  ├─ Line A                     320 ns        │ 353.7 ns      │ 323.5 ns      │ 323.7 ns      │ 1000    │ 1000000
+│  ├─ Line B                     312.8 ns      │ 348.5 ns      │ 316.9 ns      │ 316.8 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                  629.9 ns      │ 741.3 ns      │ 636 ns        │ 637 ns        │ 1000    │ 1000000
+│  ╰─ Sample File (no comments)  1.951 µs      │ 2.084 µs      │ 1.966 µs      │ 1.969 µs      │ 1000    │ 1000000
 ╰─ 01 UnvalidatedSimpleLogline                 │               │               │               │         │
-   ├─ Line A                     339.2 ns      │ 437.7 ns      │ 341.2 ns      │ 342.5 ns      │ 1000    │ 1000000
-   ├─ Line B                     332.8 ns      │ 444.4 ns      │ 334.6 ns      │ 335.3 ns      │ 1000    │ 1000000
-   ├─ Lines A+B                  666.8 ns      │ 792.7 ns      │ 669.1 ns      │ 671.9 ns      │ 1000    │ 1000000
-   ╰─ Sample File (no comments)  2.062 µs      │ 4.599 µs      │ 2.077 µs      │ 2.09 µs       │ 1000    │ 1000000
+   ├─ Line A                     340.2 ns      │ 449.3 ns      │ 342.5 ns      │ 342.9 ns      │ 1000    │ 1000000
+   ├─ Line B                     333.9 ns      │ 427.7 ns      │ 334.7 ns      │ 335.5 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                  667.7 ns      │ 779.7 ns      │ 669.4 ns      │ 670.8 ns      │ 1000    │ 1000000
+   ╰─ Sample File (no comments)  2.066 µs      │ 59.51 µs      │ 2.08 µs       │ 2.228 µs      │ 1000    │ 1000000
 
 ```
 
@@ -67,23 +71,27 @@ brwu                             fastest       │ slowest       │ median     
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
-brwv                          fastest       │ slowest       │ median        │ mean          │ samples │ iters
-├─ 00 ValidatedRawLogline                   │               │               │               │         │
-│  ├─ Line A                  324.3 ns      │ 376 ns        │ 324.6 ns      │ 325.3 ns      │ 1000    │ 1000000
-│  ├─ Line B                  311.3 ns      │ 345 ns        │ 311.6 ns      │ 312.5 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B               633.2 ns      │ 745.1 ns      │ 633.8 ns      │ 636.2 ns      │ 1000    │ 1000000
-│  ╰─ Sample File             1.93 µs       │ 2.126 µs      │ 1.938 µs      │ 1.944 µs      │ 1000    │ 1000000
-├─ 01 ValidatedSimpleLogline                │               │               │               │         │
-│  ├─ Line A                  348.6 ns      │ 498.5 ns      │ 349 ns        │ 350.2 ns      │ 1000    │ 1000000
-│  ├─ Line B                  333.1 ns      │ 437.7 ns      │ 333.6 ns      │ 337.6 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B               680.2 ns      │ 2.304 µs      │ 680.8 ns      │ 692.1 ns      │ 1000    │ 1000000
-│  ╰─ Sample File             2.108 µs      │ 2.401 µs      │ 2.121 µs      │ 2.134 µs      │ 1000    │ 1000000
-╰─ 02 ValidatedTypedLogline                 │               │               │               │         │
-   ├─ Line A                  399.3 ns      │ 514.1 ns      │ 399.7 ns      │ 401.5 ns      │ 1000    │ 1000000
-   ├─ Line B                  382.5 ns      │ 464.8 ns      │ 382.9 ns      │ 384.4 ns      │ 1000    │ 1000000
-   ├─ Lines A+B               788.6 ns      │ 2.881 µs      │ 792.5 ns      │ 807.2 ns      │ 1000    │ 1000000
-   ╰─ Sample File             2.452 µs      │ 4.707 µs      │ 2.487 µs      │ 2.497 µs      │ 1000    │ 1000000
+brwv                               fastest       │ slowest       │ median        │ mean          │ samples │ iters
+├─ 00 ValidatedRawLogline                        │               │               │               │         │
+│  ├─ Line A                       328.8 ns      │ 426.6 ns      │ 329.2 ns      │ 330.6 ns      │ 1000    │ 1000000
+│  ├─ Line B                       314.5 ns      │ 414.9 ns      │ 314.9 ns      │ 315.8 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                    640.5 ns      │ 757.4 ns      │ 641.5 ns      │ 643.3 ns      │ 1000    │ 1000000
+│  ├─ Sample File (no comments)    1.954 µs      │ 2.113 µs      │ 1.964 µs      │ 1.967 µs      │ 1000    │ 1000000
+│  ╰─ Sample File (with comments)  1.96 µs       │ 2.121 µs      │ 1.969 µs      │ 1.974 µs      │ 1000    │ 1000000
+├─ 01 ValidatedSimpleLogline                     │               │               │               │         │
+│  ├─ Line A                       354.3 ns      │ 468.8 ns      │ 354.8 ns      │ 355.7 ns      │ 1000    │ 1000000
+│  ├─ Line B                       338.1 ns      │ 440.6 ns      │ 338.5 ns      │ 339.4 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                    691.3 ns      │ 807 ns        │ 691.9 ns      │ 692.6 ns      │ 1000    │ 1000000
+│  ├─ Sample File (no comments)    2.116 µs      │ 2.246 µs      │ 2.126 µs      │ 2.13 µs       │ 1000    │ 1000000
+│  ╰─ Sample File (with comments)  2.119 µs      │ 2.279 µs      │ 2.131 µs      │ 2.135 µs      │ 1000    │ 1000000
+╰─ 02 ValidatedTypedLogline                      │               │               │               │         │
+   ├─ Line A                       408 ns        │ 527.7 ns      │ 408.7 ns      │ 410.7 ns      │ 1000    │ 1000000
+   ├─ Line B                       391.3 ns      │ 503.4 ns      │ 392 ns        │ 393.1 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                    805.8 ns      │ 900.5 ns      │ 808.8 ns      │ 810.5 ns      │ 1000    │ 1000000
+   ├─ Sample File (no comments)    2.464 µs      │ 6.896 µs      │ 2.479 µs      │ 2.507 µs      │ 1000    │ 1000000
+   ╰─ Sample File (with comments)  2.467 µs      │ 2.627 µs      │ 2.483 µs      │ 2.488 µs      │ 1000    │ 1000000
 
 ```
 
@@ -94,23 +102,24 @@ brwv                          fastest       │ slowest       │ median        
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
 brwu                             fastest       │ slowest       │ median        │ mean          │ samples │ iters
 ├─ 00 UnvalidatedRawLogline                    │               │               │               │         │
-│  ├─ Line A                     312.4 ns      │ 414.4 ns      │ 313.7 ns      │ 315.7 ns      │ 1000    │ 1000000
-│  ├─ Line B                     306.3 ns      │ 414.1 ns      │ 307.9 ns      │ 308.9 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  613.9 ns      │ 726.6 ns      │ 615 ns        │ 617.3 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  1.867 µs      │ 2.062 µs      │ 1.889 µs      │ 1.898 µs      │ 1000    │ 1000000
+│  ├─ Line A                     317 ns        │ 431.7 ns      │ 320.4 ns      │ 321 ns        │ 1000    │ 1000000
+│  ├─ Line B                     310.8 ns      │ 427.2 ns      │ 314 ns        │ 314.4 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                  627.7 ns      │ 733.5 ns      │ 632.9 ns      │ 633.4 ns      │ 1000    │ 1000000
+│  ╰─ Sample File (no comments)  1.94 µs       │ 2.118 µs      │ 1.966 µs      │ 1.967 µs      │ 1000    │ 1000000
 ├─ 01 UnvalidatedSimpleLogline                 │               │               │               │         │
-│  ├─ Line A                     334.4 ns      │ 447.2 ns      │ 336.2 ns      │ 339.3 ns      │ 1000    │ 1000000
-│  ├─ Line B                     327.6 ns      │ 432.5 ns      │ 330.1 ns      │ 334.1 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  657.4 ns      │ 2.219 µs      │ 661.7 ns      │ 675.9 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  2.03 µs       │ 2.215 µs      │ 2.063 µs      │ 2.072 µs      │ 1000    │ 1000000
+│  ├─ Line A                     340.2 ns      │ 425.4 ns      │ 342.2 ns      │ 342.7 ns      │ 1000    │ 1000000
+│  ├─ Line B                     334.1 ns      │ 435.6 ns      │ 334.9 ns      │ 336.3 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                  667.4 ns      │ 861.7 ns      │ 670.4 ns      │ 671.8 ns      │ 1000    │ 1000000
+│  ╰─ Sample File (no comments)  2.057 µs      │ 2.211 µs      │ 2.07 µs       │ 2.076 µs      │ 1000    │ 1000000
 ╰─ 02 UnvalidatedTypedLogline                  │               │               │               │         │
-   ├─ Line A                     383 ns        │ 507.3 ns      │ 383.5 ns      │ 388.8 ns      │ 1000    │ 1000000
-   ├─ Line B                     375.9 ns      │ 508.1 ns      │ 376.4 ns      │ 381 ns        │ 1000    │ 1000000
-   ├─ Lines A+B                  762.4 ns      │ 4.396 µs      │ 768.6 ns      │ 787 ns        │ 1000    │ 1000000
-   ╰─ Sample File (no comments)  2.327 µs      │ 2.548 µs      │ 2.347 µs      │ 2.36 µs       │ 1000    │ 1000000
+   ├─ Line A                     388.1 ns      │ 488.2 ns      │ 388.6 ns      │ 390 ns        │ 1000    │ 1000000
+   ├─ Line B                     381 ns        │ 484.7 ns      │ 381.7 ns      │ 382.5 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                  772.9 ns      │ 895.2 ns      │ 778.3 ns      │ 780.5 ns      │ 1000    │ 1000000
+   ╰─ Sample File (no comments)  2.36 µs       │ 3.215 µs      │ 2.367 µs      │ 2.375 µs      │ 1000    │ 1000000
 
 ```
 
@@ -123,23 +132,27 @@ brwu                             fastest       │ slowest       │ median     
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
-brwv                          fastest       │ slowest       │ median        │ mean          │ samples │ iters
-├─ 00 ValidatedRawLogline                   │               │               │               │         │
-│  ├─ Line A                  325.2 ns      │ 448.9 ns      │ 325.5 ns      │ 328.8 ns      │ 1000    │ 1000000
-│  ├─ Line B                  311.5 ns      │ 2.221 µs      │ 311.8 ns      │ 322.8 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B               633.5 ns      │ 797.1 ns      │ 633.9 ns      │ 638.2 ns      │ 1000    │ 1000000
-│  ╰─ Sample File             1.931 µs      │ 2.108 µs      │ 1.945 µs      │ 1.952 µs      │ 1000    │ 1000000
-├─ 01 ValidatedSimpleLogline                │               │               │               │         │
-│  ├─ Line A                  348.8 ns      │ 467.1 ns      │ 349.2 ns      │ 352.9 ns      │ 1000    │ 1000000
-│  ├─ Line B                  333.3 ns      │ 436.8 ns      │ 333.7 ns      │ 337.6 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B               680.4 ns      │ 2.097 µs      │ 681.2 ns      │ 697.7 ns      │ 1000    │ 1000000
-│  ╰─ Sample File             2.11 µs       │ 3.139 µs      │ 2.132 µs      │ 2.142 µs      │ 1000    │ 1000000
-╰─ 02 ValidatedTypedLogline                 │               │               │               │         │
-   ├─ Line A                  414.2 ns      │ 541.2 ns      │ 416 ns        │ 421 ns        │ 1000    │ 1000000
-   ├─ Line B                  398.7 ns      │ 521.1 ns      │ 401 ns        │ 404.9 ns      │ 1000    │ 1000000
-   ├─ Lines A+B               820.6 ns      │ 2.369 µs      │ 829.5 ns      │ 843.1 ns      │ 1000    │ 1000000
-   ╰─ Sample File             2.563 µs      │ 2.855 µs      │ 2.606 µs      │ 2.614 µs      │ 1000    │ 1000000
+brwv                               fastest       │ slowest       │ median        │ mean          │ samples │ iters
+├─ 00 ValidatedRawLogline                        │               │               │               │         │
+│  ├─ Line A                       328.5 ns      │ 421.2 ns      │ 329 ns        │ 329.5 ns      │ 1000    │ 1000000
+│  ├─ Line B                       313.7 ns      │ 403.2 ns      │ 314.8 ns      │ 315.5 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                    640.5 ns      │ 746.5 ns      │ 641.5 ns      │ 642.5 ns      │ 1000    │ 1000000
+│  ├─ Sample File (no comments)    1.955 µs      │ 2.1 µs        │ 1.96 µs       │ 1.966 µs      │ 1000    │ 1000000
+│  ╰─ Sample File (with comments)  1.96 µs       │ 2.098 µs      │ 1.964 µs      │ 1.969 µs      │ 1000    │ 1000000
+├─ 01 ValidatedSimpleLogline                     │               │               │               │         │
+│  ├─ Line A                       354.3 ns      │ 414.7 ns      │ 354.7 ns      │ 355.2 ns      │ 1000    │ 1000000
+│  ├─ Line B                       339.3 ns      │ 427.5 ns      │ 339.7 ns      │ 340.3 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                    692 ns        │ 792.2 ns      │ 692.6 ns      │ 693.9 ns      │ 1000    │ 1000000
+│  ├─ Sample File (no comments)    2.118 µs      │ 2.382 µs      │ 2.131 µs      │ 2.134 µs      │ 1000    │ 1000000
+│  ╰─ Sample File (with comments)  2.121 µs      │ 2.278 µs      │ 2.132 µs      │ 2.137 µs      │ 1000    │ 1000000
+╰─ 02 ValidatedTypedLogline                      │               │               │               │         │
+   ├─ Line A                       419.8 ns      │ 508.2 ns      │ 421.7 ns      │ 422.1 ns      │ 1000    │ 1000000
+   ├─ Line B                       404.5 ns      │ 561.3 ns      │ 405.6 ns      │ 406.6 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                    831.1 ns      │ 961 ns        │ 837.8 ns      │ 839.5 ns      │ 1000    │ 1000000
+   ├─ Sample File (no comments)    2.548 µs      │ 2.713 µs      │ 2.563 µs      │ 2.567 µs      │ 1000    │ 1000000
+   ╰─ Sample File (with comments)  2.554 µs      │ 2.74 µs       │ 2.568 µs      │ 2.571 µs      │ 1000    │ 1000000
 
 ```
 
@@ -150,23 +163,24 @@ brwv                          fastest       │ slowest       │ median        
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
 brwu                             fastest       │ slowest       │ median        │ mean          │ samples │ iters
 ├─ 00 UnvalidatedRawLogline                    │               │               │               │         │
-│  ├─ Line A                     312.7 ns      │ 9.075 µs      │ 314.3 ns      │ 337.3 ns      │ 1000    │ 1000000
-│  ├─ Line B                     306.6 ns      │ 415.2 ns      │ 307.7 ns      │ 310.5 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  614.2 ns      │ 733.2 ns      │ 615.8 ns      │ 620.3 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  1.868 µs      │ 2.029 µs      │ 1.89 µs       │ 1.897 µs      │ 1000    │ 1000000
+│  ├─ Line A                     318 ns        │ 363.8 ns      │ 321.3 ns      │ 321.8 ns      │ 1000    │ 1000000
+│  ├─ Line B                     309.7 ns      │ 344.9 ns      │ 313.9 ns      │ 313.9 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                  627.7 ns      │ 787.9 ns      │ 633 ns        │ 634 ns        │ 1000    │ 1000000
+│  ╰─ Sample File (no comments)  1.94 µs       │ 2.096 µs      │ 1.961 µs      │ 1.965 µs      │ 1000    │ 1000000
 ├─ 01 UnvalidatedSimpleLogline                 │               │               │               │         │
-│  ├─ Line A                     334.5 ns      │ 445.6 ns      │ 336.3 ns      │ 338.5 ns      │ 1000    │ 1000000
-│  ├─ Line B                     327.6 ns      │ 415.2 ns      │ 328.1 ns      │ 330.2 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  657.5 ns      │ 1.533 µs      │ 660.6 ns      │ 671.2 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  2.033 µs      │ 3.648 µs      │ 2.058 µs      │ 2.068 µs      │ 1000    │ 1000000
+│  ├─ Line A                     339.9 ns      │ 442.2 ns      │ 341.8 ns      │ 342.4 ns      │ 1000    │ 1000000
+│  ├─ Line B                     333 ns        │ 375.9 ns      │ 333.8 ns      │ 335.2 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                  666.7 ns      │ 765.8 ns      │ 669.5 ns      │ 670.6 ns      │ 1000    │ 1000000
+│  ╰─ Sample File (no comments)  2.053 µs      │ 2.218 µs      │ 2.069 µs      │ 2.072 µs      │ 1000    │ 1000000
 ╰─ 02 UnvalidatedTypedLogline                  │               │               │               │         │
-   ├─ Line A                     398.6 ns      │ 508.1 ns      │ 400.8 ns      │ 404 ns        │ 1000    │ 1000000
-   ├─ Line B                     391.3 ns      │ 493.5 ns      │ 392.4 ns      │ 394.8 ns      │ 1000    │ 1000000
-   ├─ Lines A+B                  797.9 ns      │ 2.354 µs      │ 804.4 ns      │ 816.1 ns      │ 1000    │ 1000000
-   ╰─ Sample File (no comments)  2.439 µs      │ 2.684 µs      │ 2.453 µs      │ 2.462 µs      │ 1000    │ 1000000
+   ├─ Line A                     403.8 ns      │ 516.1 ns      │ 405.7 ns      │ 406.2 ns      │ 1000    │ 1000000
+   ├─ Line B                     396.9 ns      │ 550.8 ns      │ 398.3 ns      │ 399.2 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                  808.3 ns      │ 924.4 ns      │ 814.5 ns      │ 816.1 ns      │ 1000    │ 1000000
+   ╰─ Sample File (no comments)  2.465 µs      │ 2.608 µs      │ 2.48 µs       │ 2.483 µs      │ 1000    │ 1000000
 
 ```
 
@@ -179,23 +193,27 @@ brwu                             fastest       │ slowest       │ median     
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
-brwv                          fastest       │ slowest       │ median        │ mean          │ samples │ iters
-├─ 00 ValidatedRawLogline                   │               │               │               │         │
-│  ├─ Line A                  325.4 ns      │ 447.8 ns      │ 325.9 ns      │ 326.8 ns      │ 1000    │ 1000000
-│  ├─ Line B                  311.8 ns      │ 391.4 ns      │ 312.2 ns      │ 313.5 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B               633.7 ns      │ 717.1 ns      │ 634.2 ns      │ 636.1 ns      │ 1000    │ 1000000
-│  ╰─ Sample File             1.933 µs      │ 3.632 µs      │ 1.949 µs      │ 1.966 µs      │ 1000    │ 1000000
-├─ 01 ValidatedSimpleLogline                │               │               │               │         │
-│  ├─ Line A                  349 ns        │ 448.2 ns      │ 349.4 ns      │ 350.5 ns      │ 1000    │ 1000000
-│  ├─ Line B                  333.4 ns      │ 621.7 ns      │ 334 ns        │ 339.1 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B               680.7 ns      │ 797.5 ns      │ 681.7 ns      │ 687 ns        │ 1000    │ 1000000
-│  ╰─ Sample File             2.11 µs       │ 4.242 µs      │ 2.131 µs      │ 2.149 µs      │ 1000    │ 1000000
-╰─ 02 ValidatedTypedLogline                 │               │               │               │         │
-   ├─ Line A                  508.1 ns      │ 623.7 ns      │ 513.9 ns      │ 518 ns        │ 1000    │ 1000000
-   ├─ Line B                  487.4 ns      │ 611.7 ns      │ 498.4 ns      │ 503.1 ns      │ 1000    │ 1000000
-   ├─ Lines A+B               1.003 µs      │ 1.161 µs      │ 1.028 µs      │ 1.031 µs      │ 1000    │ 1000000
-   ╰─ Sample File             3.107 µs      │ 7.252 µs      │ 3.159 µs      │ 3.173 µs      │ 1000    │ 1000000
+brwv                               fastest       │ slowest       │ median        │ mean          │ samples │ iters
+├─ 00 ValidatedRawLogline                        │               │               │               │         │
+│  ├─ Line A                       328.6 ns      │ 447.5 ns      │ 329.1 ns      │ 329.7 ns      │ 1000    │ 1000000
+│  ├─ Line B                       313.8 ns      │ 357.6 ns      │ 314.9 ns      │ 315.3 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                    640.2 ns      │ 732.1 ns      │ 641 ns        │ 642.1 ns      │ 1000    │ 1000000
+│  ├─ Sample File (no comments)    1.953 µs      │ 2.074 µs      │ 1.962 µs      │ 1.967 µs      │ 1000    │ 1000000
+│  ╰─ Sample File (with comments)  1.959 µs      │ 2.107 µs      │ 1.967 µs      │ 1.972 µs      │ 1000    │ 1000000
+├─ 01 ValidatedSimpleLogline                     │               │               │               │         │
+│  ├─ Line A                       356 ns        │ 498 ns        │ 356.4 ns      │ 357.4 ns      │ 1000    │ 1000000
+│  ├─ Line B                       338 ns        │ 421.7 ns      │ 338.5 ns      │ 338.9 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                    692.8 ns      │ 799.5 ns      │ 693.7 ns      │ 694.8 ns      │ 1000    │ 1000000
+│  ├─ Sample File (no comments)    2.121 µs      │ 2.259 µs      │ 2.131 µs      │ 2.136 µs      │ 1000    │ 1000000
+│  ╰─ Sample File (with comments)  2.126 µs      │ 2.26 µs       │ 2.138 µs      │ 2.141 µs      │ 1000    │ 1000000
+╰─ 02 ValidatedTypedLogline                      │               │               │               │         │
+   ├─ Line A                       513.6 ns      │ 638 ns        │ 521.7 ns      │ 522.8 ns      │ 1000    │ 1000000
+   ├─ Line B                       494.8 ns      │ 579.3 ns      │ 503.7 ns      │ 504.7 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                    1.021 µs      │ 1.331 µs      │ 1.038 µs      │ 1.041 µs      │ 1000    │ 1000000
+   ├─ Sample File (no comments)    3.13 µs       │ 3.286 µs      │ 3.155 µs      │ 3.16 µs       │ 1000    │ 1000000
+   ╰─ Sample File (with comments)  3.14 µs       │ 3.352 µs      │ 3.175 µs      │ 3.176 µs      │ 1000    │ 1000000
 
 ```
 
@@ -206,23 +224,24 @@ brwv                          fastest       │ slowest       │ median        
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
 brwu                             fastest       │ slowest       │ median        │ mean          │ samples │ iters
 ├─ 00 UnvalidatedRawLogline                    │               │               │               │         │
-│  ├─ Line A                     313 ns        │ 5.68 µs       │ 314.3 ns      │ 323.4 ns      │ 1000    │ 1000000
-│  ├─ Line B                     306.9 ns      │ 397.7 ns      │ 307.9 ns      │ 311.3 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  615 ns        │ 798.8 ns      │ 616.6 ns      │ 618.5 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  1.867 µs      │ 2.075 µs      │ 1.883 µs      │ 1.888 µs      │ 1000    │ 1000000
+│  ├─ Line A                     318.3 ns      │ 418.9 ns      │ 321.6 ns      │ 322.3 ns      │ 1000    │ 1000000
+│  ├─ Line B                     310.5 ns      │ 424.1 ns      │ 314.3 ns      │ 315 ns        │ 1000    │ 1000000
+│  ├─ Lines A+B                  628.2 ns      │ 743.3 ns      │ 633.5 ns      │ 634.4 ns      │ 1000    │ 1000000
+│  ╰─ Sample File (no comments)  1.942 µs      │ 2.063 µs      │ 1.963 µs      │ 1.965 µs      │ 1000    │ 1000000
 ├─ 01 UnvalidatedSimpleLogline                 │               │               │               │         │
-│  ├─ Line A                     334.8 ns      │ 490.9 ns      │ 336.6 ns      │ 337.4 ns      │ 1000    │ 1000000
-│  ├─ Line B                     328.7 ns      │ 436.9 ns      │ 329.1 ns      │ 331.2 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  658.3 ns      │ 4.599 µs      │ 660.7 ns      │ 672.1 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  2.033 µs      │ 2.237 µs      │ 2.054 µs      │ 2.057 µs      │ 1000    │ 1000000
+│  ├─ Line A                     340.3 ns      │ 401.7 ns      │ 342.1 ns      │ 342.7 ns      │ 1000    │ 1000000
+│  ├─ Line B                     333.4 ns      │ 433.5 ns      │ 333.9 ns      │ 335.1 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                  667.2 ns      │ 785.6 ns      │ 670 ns        │ 671.2 ns      │ 1000    │ 1000000
+│  ╰─ Sample File (no comments)  2.057 µs      │ 2.293 µs      │ 2.073 µs      │ 2.077 µs      │ 1000    │ 1000000
 ╰─ 02 UnvalidatedTypedLogline                  │               │               │               │         │
-   ├─ Line A                     497 ns        │ 553.9 ns      │ 501.1 ns      │ 502.1 ns      │ 1000    │ 1000000
-   ├─ Line B                     481.3 ns      │ 600.9 ns      │ 494.8 ns      │ 495.8 ns      │ 1000    │ 1000000
-   ├─ Lines A+B                  978.7 ns      │ 3.128 µs      │ 1.006 µs      │ 1.013 µs      │ 1000    │ 1000000
-   ╰─ Sample File (no comments)  3.007 µs      │ 4.104 µs      │ 3.048 µs      │ 3.059 µs      │ 1000    │ 1000000
+   ├─ Line A                     507.5 ns      │ 653.7 ns      │ 515.2 ns      │ 516.5 ns      │ 1000    │ 1000000
+   ├─ Line B                     497.2 ns      │ 628.2 ns      │ 507.8 ns      │ 508.2 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                  1.021 µs      │ 1.152 µs      │ 1.033 µs      │ 1.036 µs      │ 1000    │ 1000000
+   ╰─ Sample File (no comments)  3.12 µs       │ 3.279 µs      │ 3.143 µs      │ 3.148 µs      │ 1000    │ 1000000
 
 ```
 
@@ -235,23 +254,27 @@ brwu                             fastest       │ slowest       │ median     
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
-brwv                           fastest       │ slowest       │ median        │ mean          │ samples │ iters
-├─ 00 ValidatedRawLogline                    │               │               │               │         │
-│  ├─ Line A                   324.2 ns      │ 425 ns        │ 324.6 ns      │ 326.3 ns      │ 1000    │ 1000000
-│  ├─ Line B                   311.2 ns      │ 432.3 ns      │ 311.5 ns      │ 312.5 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                633.3 ns      │ 730 ns        │ 633.8 ns      │ 635.9 ns      │ 1000    │ 1000000
-│  ╰─ Sample File              1.933 µs      │ 18.32 µs      │ 1.946 µs      │ 2.025 µs      │ 1000    │ 1000000
-├─ 01 ValidatedSimpleLogline                 │               │               │               │         │
-│  ├─ Line A                   349.3 ns      │ 651.9 ns      │ 350.2 ns      │ 361.5 ns      │ 1000    │ 1000000
-│  ├─ Line B                   333.2 ns      │ 521.1 ns      │ 334 ns        │ 344.6 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                680.8 ns      │ 844.7 ns      │ 681.8 ns      │ 690.6 ns      │ 1000    │ 1000000
-│  ╰─ Sample File              2.109 µs      │ 8.149 µs      │ 2.136 µs      │ 2.19 µs       │ 1000    │ 1000000
-╰─ 03 ValidatedParquetLogline                │               │               │               │         │
-   ├─ Line A                   499.6 ns      │ 2.395 µs      │ 511.6 ns      │ 525.5 ns      │ 1000    │ 1000000
-   ├─ Line B                   478.8 ns      │ 3.964 µs      │ 496.1 ns      │ 515.1 ns      │ 1000    │ 1000000
-   ├─ Lines A+B                982.2 ns      │ 15.49 µs      │ 1.021 µs      │ 1.061 µs      │ 1000    │ 1000000
-   ╰─ Sample File              3.071 µs      │ 8.139 µs      │ 3.144 µs      │ 3.196 µs      │ 1000    │ 1000000
+brwv                               fastest       │ slowest       │ median        │ mean          │ samples │ iters
+├─ 00 ValidatedRawLogline                        │               │               │               │         │
+│  ├─ Line A                       328.6 ns      │ 361.1 ns      │ 329 ns        │ 329.4 ns      │ 1000    │ 1000000
+│  ├─ Line B                       314 ns        │ 409.6 ns      │ 315.3 ns      │ 316 ns        │ 1000    │ 1000000
+│  ├─ Lines A+B                    640.5 ns      │ 765.5 ns      │ 641.6 ns      │ 642.8 ns      │ 1000    │ 1000000
+│  ├─ Sample File (no comments)    1.954 µs      │ 2.114 µs      │ 1.961 µs      │ 1.965 µs      │ 1000    │ 1000000
+│  ╰─ Sample File (with comments)  1.961 µs      │ 2.111 µs      │ 1.966 µs      │ 1.972 µs      │ 1000    │ 1000000
+├─ 01 ValidatedSimpleLogline                     │               │               │               │         │
+│  ├─ Line A                       354.2 ns      │ 450.2 ns      │ 354.7 ns      │ 355.5 ns      │ 1000    │ 1000000
+│  ├─ Line B                       338.1 ns      │ 368.6 ns      │ 338.5 ns      │ 338.9 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                    691.2 ns      │ 914.1 ns      │ 691.9 ns      │ 693.5 ns      │ 1000    │ 1000000
+│  ├─ Sample File (no comments)    2.121 µs      │ 2.246 µs      │ 2.129 µs      │ 2.133 µs      │ 1000    │ 1000000
+│  ╰─ Sample File (with comments)  2.121 µs      │ 2.268 µs      │ 2.138 µs      │ 2.141 µs      │ 1000    │ 1000000
+╰─ 03 ValidatedParquetLogline                    │               │               │               │         │
+   ├─ Line A                       502 ns        │ 612.8 ns      │ 515.6 ns      │ 516.4 ns      │ 1000    │ 1000000
+   ├─ Line B                       487.3 ns      │ 610.3 ns      │ 501.5 ns      │ 502.1 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                    1.01 µs       │ 1.189 µs      │ 1.026 µs      │ 1.027 µs      │ 1000    │ 1000000
+   ├─ Sample File (no comments)    3.083 µs      │ 6.977 µs      │ 3.144 µs      │ 3.159 µs      │ 1000    │ 1000000
+   ╰─ Sample File (with comments)  3.086 µs      │ 3.256 µs      │ 3.134 µs      │ 3.136 µs      │ 1000    │ 1000000
 
 ```
 
@@ -262,22 +285,23 @@ brwv                           fastest       │ slowest       │ median       
 
 Parses lines and extracts a few fields, slightly unordered,
 this should simulate close to real-world usages.
+Methodology v2: extracted values are black-boxed; compare matching input labels.
 Timer precision: 41 ns
 brwu                             fastest       │ slowest       │ median        │ mean          │ samples │ iters
 ├─ 00 UnvalidatedRawLogline                    │               │               │               │         │
-│  ├─ Line A                     313.4 ns      │ 478.5 ns      │ 314.8 ns      │ 318.7 ns      │ 1000    │ 1000000
-│  ├─ Line B                     308 ns        │ 443.5 ns      │ 308.9 ns      │ 311.3 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  615.8 ns      │ 771 ns        │ 617.5 ns      │ 621.9 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  1.868 µs      │ 10.31 µs      │ 1.913 µs      │ 1.994 µs      │ 1000    │ 1000000
+│  ├─ Line A                     317.2 ns      │ 416.7 ns      │ 321.1 ns      │ 321.4 ns      │ 1000    │ 1000000
+│  ├─ Line B                     309.9 ns      │ 396.5 ns      │ 313.8 ns      │ 313.9 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                  628.5 ns      │ 1.458 µs      │ 632.8 ns      │ 638 ns        │ 1000    │ 1000000
+│  ╰─ Sample File (no comments)  1.945 µs      │ 2.082 µs      │ 1.962 µs      │ 1.964 µs      │ 1000    │ 1000000
 ├─ 01 UnvalidatedSimpleLogline                 │               │               │               │         │
-│  ├─ Line A                     335.1 ns      │ 599.2 ns      │ 336.8 ns      │ 341.8 ns      │ 1000    │ 1000000
-│  ├─ Line B                     328.2 ns      │ 535.9 ns      │ 330.4 ns      │ 341.5 ns      │ 1000    │ 1000000
-│  ├─ Lines A+B                  658.1 ns      │ 849.1 ns      │ 663.1 ns      │ 680.1 ns      │ 1000    │ 1000000
-│  ╰─ Sample File (no comments)  2.031 µs      │ 6.422 µs      │ 2.07 µs       │ 2.104 µs      │ 1000    │ 1000000
+│  ├─ Line A                     340.5 ns      │ 386.4 ns      │ 341.9 ns      │ 342.6 ns      │ 1000    │ 1000000
+│  ├─ Line B                     333.6 ns      │ 417.7 ns      │ 334.2 ns      │ 335.3 ns      │ 1000    │ 1000000
+│  ├─ Lines A+B                  667.5 ns      │ 774.9 ns      │ 670.3 ns      │ 671.6 ns      │ 1000    │ 1000000
+│  ╰─ Sample File (no comments)  2.056 µs      │ 2.208 µs      │ 2.069 µs      │ 2.072 µs      │ 1000    │ 1000000
 ╰─ 03 UnvalidatedParquetLogline                │               │               │               │         │
-   ├─ Line A                     477.2 ns      │ 686 ns        │ 485.9 ns      │ 495.4 ns      │ 1000    │ 1000000
-   ├─ Line B                     470.4 ns      │ 718.4 ns      │ 480 ns        │ 490.4 ns      │ 1000    │ 1000000
-   ├─ Lines A+B                  963.5 ns      │ 1.203 µs      │ 993.9 ns      │ 1.011 µs      │ 1000    │ 1000000
-   ╰─ Sample File (no comments)  2.93 µs       │ 7.394 µs      │ 2.975 µs      │ 2.989 µs      │ 1000    │ 1000000
+   ├─ Line A                     486.3 ns      │ 566.5 ns      │ 489.5 ns      │ 490.4 ns      │ 1000    │ 1000000
+   ├─ Line B                     474.2 ns      │ 567.1 ns      │ 482.5 ns      │ 483.2 ns      │ 1000    │ 1000000
+   ├─ Lines A+B                  972.8 ns      │ 1.1 µs        │ 985 ns        │ 986.5 ns      │ 1000    │ 1000000
+   ╰─ Sample File (no comments)  2.931 µs      │ 3.181 µs      │ 2.985 µs      │ 2.991 µs      │ 1000    │ 1000000
 
 ```

@@ -81,17 +81,20 @@ impl ToString for Inputs {
             Inputs::A(_) => "Line A",
             Inputs::B(_) => "Line B",
             Inputs::AB(_) => "Lines A+B",
-            Inputs::F(_) => "Sample File",
+            Inputs::F(_) => "Sample File (with comments)",
             Inputs::FNC(_) => "Sample File (no comments)",
         }
         .to_string()
     }
 }
 
-pub const ARGS: [Inputs; 4] = [
+// Both suites use the same records for direct validation-cost comparisons.
+// Comment handling is an additional, validated-only workload.
+pub const ARGS: [Inputs; 5] = [
     Inputs::A([LOG_LINE_A]),
     Inputs::B([LOG_LINE_B]),
     Inputs::AB([LOG_LINE_A, LOG_LINE_B]),
+    Inputs::FNC(&AWS_DOCS_EXAMPLE_LINES_NO_COMMENTS),
     Inputs::F(&AWS_DOCS_EXAMPLE_LINES),
 ];
 

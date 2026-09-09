@@ -7,6 +7,7 @@ fn main() {
     println!("*** Comparing different parsers for AWS CloudFront logs ***\n");
     println!("Parses lines and extracts a few fields, slightly unordered,");
     println!("this should simulate close to real-world usages.");
+    println!("Methodology v2: extracted values are black-boxed; compare matching input labels.");
     divan::main();
 }
 
@@ -23,7 +24,7 @@ fn ValidatedRawLogline(inputs: Inputs) -> usize {
                 Data::S0(item.sc_content_len),
                 Data::S0(item.sc_bytes),
             ];
-            result.len()
+            divan::black_box(result).len()
         })
     }
 
@@ -47,7 +48,7 @@ fn ValidatedSimpleLogline(inputs: Inputs) -> usize {
                 Data::ON(item.sc_content_len),
                 Data::N(item.sc_bytes),
             ];
-            result.len()
+            divan::black_box(result).len()
         })
     }
 
@@ -72,7 +73,7 @@ fn ValidatedTypedLogline(inputs: Inputs) -> usize {
                 Data::ON(item.sc_content_len),
                 Data::N(item.sc_bytes),
             ];
-            result.len()
+            divan::black_box(result).len()
         })
     }
 
@@ -97,7 +98,7 @@ fn ValidatedParquetLogline(inputs: Inputs) -> usize {
                 Data::ON(item.sc_content_len),
                 Data::N(item.sc_bytes),
             ];
-            result.len()
+            divan::black_box(result).len()
         })
     }
 

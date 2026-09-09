@@ -1,4 +1,7 @@
 # Everything the project checks about itself, in one place.
+[windows]
+set shell := ["pwsh", "-NoProfile", "-Command"]
+
 default:
     @just --list
 
@@ -75,7 +78,7 @@ bench:
 
 [windows]
 bench:
-    powershell -NoProfile -ExecutionPolicy Bypass -File bin/benches.ps1
+    pwsh -NoProfile -ExecutionPolicy Bypass -File bin/benches.ps1
 
 # Rewrite every file the way rustfmt wants it.
 fmt:
