@@ -5,8 +5,8 @@ use crate::{borrowed::UnvalidatedRawLogline as BorrowedLine, shared::validate_li
 /// We use a [`Arc<str>`] over [`String`] to communicate its immutability and fixedness.
 /// (`Arc<str>`/`Box<str>`/`&str` don't carry any capacity data, only the length.)
 ///
-/// While `Box<str>` is also possible, the box is not thread safe and
-/// and both types have pretty similar performance characteristics.
+/// Both `Box<str>` and `Arc<str>` are `Send` and `Sync`. `Arc<str>` allows
+/// multiple owners to share the same input allocation.
 pub type LineStr = Arc<str>;
 
 self_cell::self_cell!(

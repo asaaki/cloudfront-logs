@@ -93,6 +93,12 @@ compile_error!("enable at most one date/time backend: time, chrono, or jiff");
 
 mod shared;
 
+#[cfg(any(feature = "chrono", feature = "parquet"))]
+mod chrono_datetime;
+
+#[cfg(any(feature = "jiff", feature = "time"))]
+mod selected_datetime;
+
 pub mod borrowed;
 pub mod consts;
 pub mod owned;

@@ -3,6 +3,7 @@ name = "cloudfront-logs"
 description = "AWS CloudFront log line parser"
 version = "0.10.1"
 edition = "2024"
+autobenches = false
 repository = "https://github.com/asaaki/cloudfront-logs"
 categories = [
   "parser-implementations",
@@ -36,6 +37,9 @@ default = ["alloc", "jiff"]
 
 # when you need owned versions of the structured log data; enabled by default
 alloc = []
+
+# Instrument benchmark allocations; never changes the library allocator.
+bench-alloc = []
 
 # use typed variants with time's date and time types
 time = ["alloc", "dep:time"]

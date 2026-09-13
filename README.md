@@ -83,6 +83,37 @@ See [BENCHMARK.md](BENCHMARK.md) for benchmark configurations, platform results,
 
 This crate uses ``#![forbid(unsafe_code)]`` to ensure everything is implemented in 100% Safe Rust.
 
+## Processing selected fields and streams
+
+Raw records expose named strings and fallible `parse_*` methods for selected fields:
+
+```rust
+fn error_response_bytes(line: &str) -> Result<u64, &'static str> {
+    let raw = cloudfront_logs::ValidatedRawLogline::try_from(line)?;
+    if raw.parse_sc_status()? >= 400 {
+        raw.parse_sc_bytes()
+    } else {
+        Ok(0)
+    }
+}
+```
+
+Raw validation checks record structure. Each accessor checks only its own value.
+Use full structured conversion when all typed fields need validation.
+Simple conversion leaves dates and times as strings. Typed conversion also parses dates and times.
+See [selected-fields.rs](examples/selected-fields.rs) for filtering and aggregation with error propagation.
+
+The [stream example](examples/stream.rs) processes borrowed records through a callback and reuses a bounded input buffer.
+It handles comments, CRLF, line numbers, errors, and early termination.
+The library still accepts individual lines and does not choose an input source or decompressor.
+See [the streaming report](docs/performance/task-8-streaming.md) for retention rules and memory limits.
+
+For repeated sharing, wrap a referential record in `Arc` to reuse its parsed values.
+See [shared-loglines.rs](examples/shared-loglines.rs) for ownership and input extraction.
+The default record remains unchanged because the extra `Arc` costs time and memory without clones in the measured workload.
+
+The [performance investigation results](docs/performance/RESULTS.md) describe measured improvements, rejected prototypes, and platform limits.
+
 ## License
 
 <sup>

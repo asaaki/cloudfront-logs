@@ -4,7 +4,9 @@ use crate::{shared::*, types::*};
 ///
 /// All fields are [`&str`] slices into the original log line.
 ///
-/// On construction it checks if the line can be parsed.
+/// On construction it checks that the line is nonempty, is not a comment, and has
+/// the correct field count. Empty field values are preserved, including the final
+/// field. This does not validate numeric, date, or other field values.
 /// This is useful if you cannot skip the comment lines or have reason to not trust the input for format correctness.
 /// The latter should be only an issue if you do not use this crate on CloudFront logs directly.
 ///
@@ -12,6 +14,10 @@ use crate::{shared::*, types::*};
 ///
 /// Technically the construction should never panic, because the input is validated before the line is sliced into fields.
 /// The fields are only view into the original full log line, no parsing errors can occur.
+///
+/// Fields are public and can be changed after construction. Converting from an
+/// unvalidated record also does not check field values; structured conversions
+/// still parse each value, regardless of the validation marker.
 ///
 /// # Examples
 ///
@@ -69,6 +75,31 @@ pub type UnvalidatedLogline<'a> = Logline<'a, Unvalidated>;
 /// The generic, raw log line type
 ///
 /// Do not use it directly, prefer [`ValidatedLogline`] or [`UnvalidatedLogline`] instead.
+///
+/// The `parse_*` methods convert individual fields using the same rules and errors
+/// as structured parsing. They read the current public field on every call and
+/// do not cache results or validate unobserved fields. Methods returning `Option`
+/// treat `"-"` as `None`; empty numeric fields are errors. Unknown result strings
+/// remain supported through their enums' `Other(String)` variants.
+/// Parsing forwarded addresses allocates their existing `Vec` representation;
+/// unknown result values allocate their existing `String` payloads. Scalar
+/// conversions do not allocate. Repeated calls repeat the conversion.
+///
+/// ```
+/// use cloudfront_logs::borrowed::ValidatedRawLogline;
+///
+/// fn response_bytes(lines: &[&str]) -> Result<u128, &'static str> {
+///     let mut bytes = 0;
+///     for line in lines {
+///         let raw = ValidatedRawLogline::try_from(*line)?;
+///         if raw.parse_sc_status()? >= 400 {
+///             bytes += u128::from(raw.parse_sc_bytes()?);
+///         }
+///     }
+///     Ok(bytes)
+/// }
+/// assert_eq!(response_bytes(&[]), Ok(0));
+/// ```
 #[must_use]
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Logline<'a, V> {
@@ -106,6 +137,41 @@ pub struct Logline<'a, V> {
     pub sc_range_start: &'a str,
     pub sc_range_end: &'a str,
     __marker: PhantomData<V>,
+}
+
+macro_rules! selected_accessors {
+    ($($method:ident, $field:ident, $result:ty;)*) => {
+        impl<V> Logline<'_, V> {
+            $(
+                #[doc = concat!("Parses only `", stringify!($field), "` into its structured field type.")]
+                #[doc = "\nReturns the same field-specific error as full structured parsing."]
+                pub fn $method(&self) -> Result<$result, &'static str> {
+                    $method(self.$field)
+                }
+            )*
+        }
+    };
+}
+
+selected_accessors! {
+    parse_sc_bytes, sc_bytes, u64;
+    parse_c_ip, c_ip, IpAddr;
+    parse_sc_status, sc_status, u16;
+    parse_x_edge_result_type, x_edge_result_type, EdgeResultType;
+    parse_cs_protocol, cs_protocol, CsProtocol;
+    parse_cs_bytes, cs_bytes, u64;
+    parse_time_taken, time_taken, Duration;
+    parse_x_forwarded_for, x_forwarded_for, Option<ForwardedForAddrs>;
+    parse_ssl_protocol, ssl_protocol, Option<SslProtocol>;
+    parse_x_edge_response_result_type, x_edge_response_result_type, EdgeResultType;
+    parse_cs_protocol_version, cs_protocol_version, CsProtocolVersion;
+    parse_fle_encrypted_fields, fle_encrypted_fields, Option<u64>;
+    parse_c_port, c_port, u16;
+    parse_time_to_first_byte, time_to_first_byte, Duration;
+    parse_x_edge_detailed_result_type, x_edge_detailed_result_type, DetailedEdgeResultType;
+    parse_sc_content_len, sc_content_len, Option<u64>;
+    parse_sc_range_start, sc_range_start, Option<i64>;
+    parse_sc_range_end, sc_range_end, Option<i64>;
 }
 
 impl<'a> TryFrom<&'a str> for Logline<'a, Validated> {

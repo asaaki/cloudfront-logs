@@ -1,4 +1,9 @@
 use crate::consts::{COMMENT_U8, TAB_U8, TABS};
+use crate::types::{
+    CsProtocol, CsProtocolVersion, DetailedEdgeResultType, EdgeResultType, ForwardedForAddrs,
+    SslProtocol,
+};
+use std::{net::IpAddr, time::Duration};
 
 /// Validates a log line
 ///
@@ -6,6 +11,8 @@ use crate::consts::{COMMENT_U8, TAB_U8, TABS};
 /// * the line is not empty,
 /// * not a comment line
 /// * and has the correct number of fields.
+///
+/// Empty fields count as fields. This checks structure, not field values.
 ///
 /// # Examples
 ///
@@ -47,19 +54,18 @@ pub(crate) fn split(line: &str) -> MemchrTabSplitter<'_> {
 pub(crate) struct MemchrTabSplitter<'a> {
     pub(crate) data: &'a str,
     pub(crate) prev: usize,
-    pub(crate) end: usize,
+    pub(crate) finished: bool,
     pub(crate) iter: memchr::Memchr<'a>,
 }
 
 impl<'a> MemchrTabSplitter<'a> {
     pub(crate) fn new(data: &'a str) -> Self {
         let prev = 0;
-        let end = data.len();
         let iter = memchr::memchr_iter(TAB_U8, data.as_bytes());
         Self {
             data,
             prev,
-            end,
+            finished: false,
             iter,
         }
     }
@@ -71,17 +77,15 @@ impl<'a> Iterator for MemchrTabSplitter<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         let current_tab = self.iter.next();
         if let Some(tab_idx) = current_tab {
-            assert!(tab_idx > 0, "Found tab stop at index 0 (invalid log line)");
-
             let from = self.prev;
             let to = tab_idx;
             self.prev = to + 1;
             Some(&self.data[from..to])
         } else {
             // get field after the last tab stop
-            if self.prev < self.end {
+            if !self.finished {
                 let from = self.prev;
-                self.prev = self.end;
+                self.finished = true;
                 Some(&self.data[from..])
             } else {
                 None
@@ -89,6 +93,100 @@ impl<'a> Iterator for MemchrTabSplitter<'a> {
         }
     }
 }
+
+// Keep the standard float-to-duration rounding, but report out-of-range values.
+pub(crate) fn parse_duration(s: &str) -> Result<std::time::Duration, ()> {
+    let seconds = s.parse::<f64>().map_err(|_error| ())?;
+    std::time::Duration::try_from_secs_f64(seconds).map_err(|_error| ())
+}
+
+// One conversion and error mapping for selected and complete borrowed parsing.
+macro_rules! field_parser {
+    ($name:ident, $field:ident, $result:ty, $parse:path) => {
+        pub(crate) fn $name(value: &str) -> Result<$result, &'static str> {
+            $parse(value).map_err(|_error| concat!(stringify!($field), " invalid"))
+        }
+    };
+}
+
+field_parser!(parse_sc_bytes, sc_bytes, u64, str::parse::<u64>);
+field_parser!(parse_c_ip, c_ip, IpAddr, str::parse::<IpAddr>);
+field_parser!(parse_sc_status, sc_status, u16, str::parse::<u16>);
+field_parser!(
+    parse_x_edge_result_type,
+    x_edge_result_type,
+    EdgeResultType,
+    str::parse::<EdgeResultType>
+);
+field_parser!(
+    parse_cs_protocol,
+    cs_protocol,
+    CsProtocol,
+    str::parse::<CsProtocol>
+);
+field_parser!(parse_cs_bytes, cs_bytes, u64, str::parse::<u64>);
+field_parser!(parse_time_taken, time_taken, Duration, parse_duration);
+field_parser!(
+    parse_x_forwarded_for,
+    x_forwarded_for,
+    Option<ForwardedForAddrs>,
+    parse_as_option::<ForwardedForAddrs>
+);
+field_parser!(
+    parse_ssl_protocol,
+    ssl_protocol,
+    Option<SslProtocol>,
+    parse_as_option::<SslProtocol>
+);
+field_parser!(
+    parse_x_edge_response_result_type,
+    x_edge_response_result_type,
+    EdgeResultType,
+    str::parse::<EdgeResultType>
+);
+field_parser!(
+    parse_cs_protocol_version,
+    cs_protocol_version,
+    CsProtocolVersion,
+    str::parse::<CsProtocolVersion>
+);
+field_parser!(
+    parse_fle_encrypted_fields,
+    fle_encrypted_fields,
+    Option<u64>,
+    parse_as_option::<u64>
+);
+field_parser!(parse_c_port, c_port, u16, str::parse::<u16>);
+field_parser!(
+    parse_time_to_first_byte,
+    time_to_first_byte,
+    Duration,
+    parse_duration
+);
+field_parser!(
+    parse_x_edge_detailed_result_type,
+    x_edge_detailed_result_type,
+    DetailedEdgeResultType,
+    str::parse::<DetailedEdgeResultType>
+);
+field_parser!(
+    parse_sc_content_len,
+    sc_content_len,
+    Option<u64>,
+    parse_as_option::<u64>
+);
+field_parser!(
+    parse_sc_range_start,
+    sc_range_start,
+    Option<i64>,
+    parse_as_option::<i64>
+);
+field_parser!(
+    parse_sc_range_end,
+    sc_range_end,
+    Option<i64>,
+    parse_as_option::<i64>
+);
 
 // if the input is "-", return Ok(None), otherwise parse the input as T;
 // -> parse_as_option(iter.next().unwrap()).map_err(|_e| "…")?

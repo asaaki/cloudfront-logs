@@ -111,12 +111,7 @@ fn new_log_line<V>(line: &str) -> Result<Logline<V>, &'static str> {
             .unwrap()
             .parse::<u64>()
             .map_err(|_e| "cs_bytes invalid")?,
-        time_taken: iter
-            .next()
-            .unwrap()
-            .parse::<f64>()
-            .map(Duration::from_secs_f64)
-            .map_err(|_e| "time_taken invalid")?,
+        time_taken: parse_duration(iter.next().unwrap()).map_err(|_e| "time_taken invalid")?,
         x_forwarded_for: iter
             .next()
             .and_then(as_optional_t)
@@ -149,11 +144,7 @@ fn new_log_line<V>(line: &str) -> Result<Logline<V>, &'static str> {
             .unwrap()
             .parse::<u16>()
             .map_err(|_e| "c_port invalid")?,
-        time_to_first_byte: iter
-            .next()
-            .unwrap()
-            .parse::<f64>()
-            .map(Duration::from_secs_f64)
+        time_to_first_byte: parse_duration(iter.next().unwrap())
             .map_err(|_e| "time_to_first_byte invalid")?,
         x_edge_detailed_result_type: iter
             .next()
@@ -235,11 +226,7 @@ impl TryFrom<ValidatedRaw<'_>> for Logline<Validated> {
                 .cs_bytes
                 .parse::<u64>()
                 .map_err(|_e| "cs_bytes invalid")?,
-            time_taken: raw
-                .time_taken
-                .parse::<f64>()
-                .map(Duration::from_secs_f64)
-                .map_err(|_e| "time_taken invalid")?,
+            time_taken: parse_duration(raw.time_taken).map_err(|_e| "time_taken invalid")?,
             x_forwarded_for: parse_as_option(raw.x_forwarded_for)
                 .map_err(|_e| "x_forwarded_for invalid")?,
             ssl_protocol: parse_as_option(raw.ssl_protocol).map_err(|_e| "ssl_protocol invalid")?,
@@ -256,10 +243,7 @@ impl TryFrom<ValidatedRaw<'_>> for Logline<Validated> {
             fle_encrypted_fields: parse_as_option(raw.fle_encrypted_fields)
                 .map_err(|_e| "fle_encrypted_fields invalid")?,
             c_port: raw.c_port.parse::<u16>().map_err(|_e| "c_port invalid")?,
-            time_to_first_byte: raw
-                .time_to_first_byte
-                .parse::<f64>()
-                .map(Duration::from_secs_f64)
+            time_to_first_byte: parse_duration(raw.time_to_first_byte)
                 .map_err(|_e| "time_to_first_byte invalid")?,
             x_edge_detailed_result_type: raw
                 .x_edge_detailed_result_type
@@ -317,11 +301,7 @@ impl TryFrom<UnvalidatedRaw<'_>> for Logline<Unvalidated> {
                 .cs_bytes
                 .parse::<u64>()
                 .map_err(|_e| "cs_bytes invalid")?,
-            time_taken: raw
-                .time_taken
-                .parse::<f64>()
-                .map(Duration::from_secs_f64)
-                .map_err(|_e| "time_taken invalid")?,
+            time_taken: parse_duration(raw.time_taken).map_err(|_e| "time_taken invalid")?,
             x_forwarded_for: parse_as_option(raw.x_forwarded_for)
                 .map_err(|_e| "x_forwarded_for invalid")?,
             ssl_protocol: parse_as_option(raw.ssl_protocol).map_err(|_e| "ssl_protocol invalid")?,
@@ -338,10 +318,7 @@ impl TryFrom<UnvalidatedRaw<'_>> for Logline<Unvalidated> {
             fle_encrypted_fields: parse_as_option(raw.fle_encrypted_fields)
                 .map_err(|_e| "fle_encrypted_fields invalid")?,
             c_port: raw.c_port.parse::<u16>().map_err(|_e| "c_port invalid")?,
-            time_to_first_byte: raw
-                .time_to_first_byte
-                .parse::<f64>()
-                .map(Duration::from_secs_f64)
+            time_to_first_byte: parse_duration(raw.time_to_first_byte)
                 .map_err(|_e| "time_to_first_byte invalid")?,
             x_edge_detailed_result_type: raw
                 .x_edge_detailed_result_type

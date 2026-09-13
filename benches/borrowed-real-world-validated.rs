@@ -1,4 +1,29 @@
 #![allow(non_snake_case)]
+#![forbid(unsafe_code)]
+
+mod corpus;
+mod representative;
+
+#[cfg(feature = "parquet")]
+use cloudfront_logs::{
+    ValidatedParquetLogline as CorpusParquet, owned::ValidatedParquetLogline as CorpusOwnedParquet,
+    referential::ValidatedParquetLogline as CorpusReferentialParquet,
+};
+use cloudfront_logs::{
+    ValidatedRawLogline as CorpusRaw, ValidatedSimpleLogline as CorpusSimple,
+    owned::ValidatedSimpleLogline as CorpusOwned,
+    referential::ValidatedRawLogline as CorpusReferentialRaw,
+    referential::ValidatedSimpleLogline as CorpusReferential,
+};
+#[cfg(any(feature = "time", feature = "chrono", feature = "jiff"))]
+use cloudfront_logs::{
+    ValidatedTypedLogline as CorpusTyped,
+    referential::ValidatedTypedLogline as CorpusReferentialTyped,
+};
+
+#[cfg(feature = "bench-alloc")]
+#[global_allocator]
+static ALLOC: divan::AllocProfiler = divan::AllocProfiler::system();
 
 mod utilities;
 use utilities::*;
@@ -8,6 +33,7 @@ fn main() {
     println!("Parses lines and extracts a few fields, slightly unordered,");
     println!("this should simulate close to real-world usages.");
     println!("Methodology v2: extracted values are black-boxed; compare matching input labels.");
+    representative::describe();
     divan::main();
 }
 

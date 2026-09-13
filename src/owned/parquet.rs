@@ -1,10 +1,10 @@
 use crate::{
     borrowed::raw::{UnvalidatedLogline as UnvalidatedRaw, ValidatedLogline as ValidatedRaw},
-    consts::{CHRONO_DATE_FMT, CHRONO_TIME_FMT},
+    chrono_datetime::{parse_date, parse_time},
     shared::*,
 };
 pub use chrono::{Datelike, Timelike};
-use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
+use chrono::{NaiveDate, NaiveDateTime};
 
 /// The validated log line for [`parquet`] usage
 ///
@@ -18,9 +18,9 @@ use chrono::{NaiveDate, NaiveDateTime, NaiveTime};
 /// This is useful if you cannot skip the comment lines or have reason to not trust the input for format correctness.
 /// The latter should be only an issue if you do not use this crate on CloudFront logs directly.
 ///
-/// # Panics
+/// # Errors
 ///
-/// Construction can panic if the input is not a valid log line!
+/// Construction returns an error for an invalid field count or an invalid typed field.
 ///
 /// # Examples
 ///
@@ -96,11 +96,9 @@ impl TryFrom<&str> for ValidatedLogline {
         validate_line(line)?;
         let mut iter = MemchrTabSplitter::new(line);
 
-        let date = NaiveDate::parse_from_str(iter.next().unwrap(), CHRONO_DATE_FMT)
-            .map_err(|_e| "date invalid")?;
+        let date = parse_date(iter.next().unwrap())?;
         let raw_time = iter.next().unwrap();
-        let time =
-            NaiveTime::parse_from_str(raw_time, CHRONO_TIME_FMT).map_err(|_e| "time invalid")?;
+        let time = parse_time(raw_time)?;
         let datetime = NaiveDateTime::new(date, time);
 
         let line = Self {
@@ -187,10 +185,8 @@ impl TryFrom<ValidatedRaw<'_>> for ValidatedLogline {
     type Error = &'static str;
 
     fn try_from(raw: ValidatedRaw<'_>) -> Result<Self, Self::Error> {
-        let date =
-            NaiveDate::parse_from_str(raw.date, CHRONO_DATE_FMT).map_err(|_e| "date invalid")?;
-        let time =
-            NaiveTime::parse_from_str(raw.time, CHRONO_TIME_FMT).map_err(|_e| "time invalid")?;
+        let date = parse_date(raw.date)?;
+        let time = parse_time(raw.time)?;
         let datetime = NaiveDateTime::new(date, time);
 
         let line = Self {
@@ -339,10 +335,9 @@ impl TryFrom<&str> for UnvalidatedLogline {
     fn try_from(line: &str) -> Result<Self, Self::Error> {
         let mut iter = MemchrTabSplitter::new(line);
 
-        let date = NaiveDate::parse_from_str(iter.next().unwrap(), "%Y-%m-%d")
-            .map_err(|_e| "date invalid")?;
+        let date = parse_date(iter.next().unwrap())?;
         let raw_time = iter.next().unwrap();
-        let time = NaiveTime::parse_from_str(raw_time, "%H:%M:%S").map_err(|_e| "time invalid")?;
+        let time = parse_time(raw_time)?;
         let datetime = NaiveDateTime::new(date, time);
 
         let line = Self {
@@ -429,10 +424,8 @@ impl TryFrom<UnvalidatedRaw<'_>> for UnvalidatedLogline {
     type Error = &'static str;
 
     fn try_from(raw: UnvalidatedRaw<'_>) -> Result<Self, Self::Error> {
-        let date =
-            NaiveDate::parse_from_str(raw.date, CHRONO_DATE_FMT).map_err(|_e| "date invalid")?;
-        let time =
-            NaiveTime::parse_from_str(raw.time, CHRONO_TIME_FMT).map_err(|_e| "time invalid")?;
+        let date = parse_date(raw.date)?;
+        let time = parse_time(raw.time)?;
         let datetime = NaiveDateTime::new(date, time);
 
         let line = Self {
@@ -497,10 +490,8 @@ impl TryFrom<ValidatedRaw<'_>> for UnvalidatedLogline {
     type Error = &'static str;
 
     fn try_from(raw: ValidatedRaw<'_>) -> Result<Self, Self::Error> {
-        let date =
-            NaiveDate::parse_from_str(raw.date, CHRONO_DATE_FMT).map_err(|_e| "date invalid")?;
-        let time =
-            NaiveTime::parse_from_str(raw.time, CHRONO_TIME_FMT).map_err(|_e| "time invalid")?;
+        let date = parse_date(raw.date)?;
+        let time = parse_time(raw.time)?;
         let datetime = NaiveDateTime::new(date, time);
 
         let line = Self {

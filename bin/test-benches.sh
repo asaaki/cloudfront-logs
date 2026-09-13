@@ -69,6 +69,68 @@ test "$(cat "$output")" = 'existing content'
 grep -Fq 'configuration chrono' "$TMP/failure.txt"
 grep -Fq "benchmark target 'brwu'" "$TMP/failure.txt"
 
+CARGO_ARGUMENTS_FILE="$TMP/series-arguments.txt"
+export CARGO_ARGUMENTS_FILE
+"$ROOT/bin/benches.sh" --test-platform linux --output "$TMP/series.md" --repetitions 2 --config-order chrono,no-features --alloc -- --sample-count 2 --sample-size 1
+for repetition in 001 002; do
+    report="$TMP/series.run-$repetition.md"
+    test -f "$report"
+    grep -Fq 'Configuration order: `chrono,no-features`' "$report"
+    grep -Fq 'bench-alloc' "$report"
+done
+test "$(wc -l <"$CARGO_ARGUMENTS_FILE" | tr -d ' ')" -eq 8
+test "$(head -n 1 "$CARGO_ARGUMENTS_FILE")" = 'bench -q --no-default-features --features chrono,bench-alloc --bench brwv -- --sample-count 2 --sample-size 1'
+if "$ROOT/bin/benches.sh" --test-platform linux --output "$TMP/series.md" --repetitions 2 2>"$TMP/collision.txt"; then
+    printf '%s\n' 'expected repetition collision failure' >&2
+    exit 1
+fi
+grep -Fq 'already exists' "$TMP/collision.txt"
+test "$(wc -l <"$CARGO_ARGUMENTS_FILE" | tr -d ' ')" -eq 8
+
+CARGO_ARGUMENTS_FILE="$TMP/partial-arguments.txt"
+export CARGO_ARGUMENTS_FILE
+if FAIL_CARGO_AT=6 "$ROOT/bin/benches.sh" --test-platform linux --output "$TMP/partial.md" --repetitions 2 --config-order no-features,jiff 2>"$TMP/partial.txt"; then
+    printf '%s\n' 'expected later repetition failure' >&2
+    exit 1
+fi
+test -f "$TMP/partial.run-001.md"
+test ! -e "$TMP/partial.run-002.md"
+
+for invalid_order in 'jiff,jiff' 'unknown' 'jiff,,time' ' ' 'jiff time'; do
+    if "$ROOT/bin/benches.sh" --test-platform linux --output "$TMP/invalid.md" --config-order "$invalid_order" 2>"$TMP/invalid.txt"; then
+        printf '%s\n' 'expected configuration validation failure' >&2
+        exit 1
+    fi
+    test ! -e "$TMP/invalid.md"
+done
+if "$ROOT/bin/benches.sh" --test-platform linux -- --sample-count 2 2>"$TMP/no-output.txt"; then
+    printf '%s\n' 'expected explicit smoke output requirement' >&2
+    exit 1
+fi
+grep -Fq 'require --output' "$TMP/no-output.txt"
+
+# Fail the first fake benchmark if protection is absent, preserving real reports.
+CARGO_ARGUMENTS_FILE="$TMP/subset-arguments.txt"
+export CARGO_ARGUMENTS_FILE
+if FAIL_CARGO_AT=1 "$ROOT/bin/benches.sh" --test-platform linux --config-order jiff 2>"$TMP/subset.txt"; then
+    printf '%s\n' 'expected explicit subset output requirement' >&2
+    exit 1
+fi
+grep -Fq 'require --output' "$TMP/subset.txt"
+test ! -e "$CARGO_ARGUMENTS_FILE"
+
+for name in DIVAN_MIN_TIME DIVAN_MAX_TIME DIVAN_SKIP_EXT_TIME; do
+    if env "$name=1" FAIL_CARGO_AT=1 "$ROOT/bin/benches.sh" --test-platform linux 2>"$TMP/override.txt"; then
+        printf '%s\n' 'expected explicit environment override output requirement' >&2
+        exit 1
+    fi
+    grep -Fq 'require --output' "$TMP/override.txt"
+    test ! -e "$CARGO_ARGUMENTS_FILE"
+    env "$name=1" "$ROOT/bin/benches.sh" --test-platform linux --output "$TMP/$name.md" --config-order jiff
+    grep -Fq -- "- $name: \`1\`" "$TMP/$name.md"
+    rm "$CARGO_ARGUMENTS_FILE"
+done
+
 unsupported_output="$TMP/windows.md"
 if "$ROOT/bin/benches.sh" --test-platform windows --output "$unsupported_output" 2>"$TMP/unsupported.txt"; then
     printf '%s\n' 'expected unsupported platform failure' >&2

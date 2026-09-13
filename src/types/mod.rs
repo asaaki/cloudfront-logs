@@ -154,19 +154,11 @@ impl TryFrom<&str> for Addressable {
             return Ok(Self::IpAddr(ip));
         } else {
             // special case: leading zeros (0123.045.067.089)
-            if input.starts_with('0') && input.contains('.') {
-                let octets = input
-                    .splitn(4, '.')
-                    .filter_map(|s| s.parse::<u8>().ok())
-                    .collect::<Vec<u8>>();
-                if octets.len() == 4 {
-                    return Ok(Self::IpAddr(IpAddr::V4(Ipv4Addr::new(
-                        octets.first().copied().unwrap_or(0),
-                        octets.get(1).copied().unwrap_or(0),
-                        octets.get(2).copied().unwrap_or(0),
-                        octets.get(3).copied().unwrap_or(0),
-                    ))));
-                }
+            if input.starts_with('0')
+                && input.contains('.')
+                && let Some(ip) = leading_zero_ipv4(input)
+            {
+                return Ok(Self::IpAddr(IpAddr::V4(ip)));
             }
         }
         input
@@ -174,6 +166,15 @@ impl TryFrom<&str> for Addressable {
             .map(Self::Socket)
             .map_err(|_e| "invalid X-Forwarded-For IP/socket address")
     }
+}
+
+fn leading_zero_ipv4(input: &str) -> Option<Ipv4Addr> {
+    let mut pieces = input.splitn(4, '.');
+    let mut octets = [0; 4];
+    for octet in &mut octets {
+        *octet = pieces.next()?.parse().ok()?;
+    }
+    Some(Ipv4Addr::from(octets))
 }
 
 impl FromStr for Addressable {
@@ -190,30 +191,44 @@ impl FromStr for Addressable {
 #[derive(Debug, Clone, PartialEq)]
 pub struct ForwardedForAddrs(pub Vec<Addressable>);
 
+impl ForwardedForAddrs {
+    /// Parse a borrowed address list one address at a time, without allocating a vector.
+    ///
+    /// Each item uses the same rules and errors as [`Self::try_from`]. An error
+    /// applies to that address; callers may stop or continue consuming the iterator.
+    /// Reading only some items does not validate the rest of the list.
+    /// The missing-field marker `-` must be handled by the caller, just as when
+    /// converting a header directly to [`ForwardedForAddrs`].
+    ///
+    /// ```
+    /// use cloudfront_logs::{Addressable, ForwardedForAddrs};
+    /// let input = "192.0.2.1,\\x20unknown";
+    /// let addresses = ForwardedForAddrs::iter_str(input).collect::<Result<Vec<_>, _>>()?;
+    /// assert_eq!(addresses.len(), 2);
+    /// assert_eq!(addresses.last(), Some(&Addressable::Unknown));
+    /// # Ok::<(), &'static str>(())
+    /// ```
+    pub fn iter_str(
+        input: &str,
+    ) -> impl Iterator<Item = Result<Addressable, &'static str>> + Clone + '_ {
+        input.split(',').map(|address| {
+            let trimmed = address.trim();
+            let address = trimmed.strip_prefix("\\x20").unwrap_or(trimmed);
+            address
+                .parse()
+                .map_err(|_e| "invalid X-Forwarded-For IP(s)")
+        })
+    }
+}
+
 impl TryFrom<&str> for ForwardedForAddrs {
     type Error = &'static str;
 
     #[inline]
     fn try_from(input: &str) -> Result<Self, Self::Error> {
-        const ESCAPED_SPACE: &str = "\\x20";
-        const ESCAPED_SPACE_LEN: usize = ESCAPED_SPACE.len();
-
-        let addresses: Vec<Addressable> = input
-            .split(',')
-            .map(|address| {
-                // Note: CloudFront logs use escaped strings for X-Forwarded-For IP lists
-                let trimmed = address.trim();
-                if trimmed.starts_with(ESCAPED_SPACE) {
-                    &trimmed[ESCAPED_SPACE_LEN..]
-                } else {
-                    trimmed
-                }
-            })
-            // .filter(|address| !address.is_empty())
-            .map(str::parse)
-            .collect::<Result<Vec<Addressable>, _>>()
-            .map_err(|_e| "invalid X-Forwarded-For IP(s)")?;
-        Ok(Self(addresses))
+        Self::iter_str(input)
+            .collect::<Result<Vec<_>, _>>()
+            .map(Self)
     }
 }
 
