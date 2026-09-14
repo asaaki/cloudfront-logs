@@ -88,6 +88,6 @@ jobs:
         with:
           cache-all-crates: true
 
-      - uses: extractions/setup-just@v3
+      - uses: extractions/setup-just@v4
 
       - run: just feature-check-invalid
