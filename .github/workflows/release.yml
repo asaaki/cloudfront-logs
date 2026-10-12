@@ -71,7 +71,7 @@ jobs:
           sha256sum "${NAME}-${VERSION}.crate" > "${NAME}-${VERSION}.crate.sha256"
 
       - name: Upload packaged crate
-        uses: actions/upload-artifact@v7.0.1
+        uses: actions/upload-artifact@v7.0.2
         with:
           name: crate
           path: |
