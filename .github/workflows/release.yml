@@ -139,7 +139,7 @@ jobs:
       contents: write
     steps:
       - name: Download packaged crate
-        uses: actions/download-artifact@v8.0.1
+        uses: actions/download-artifact@v8.0.2
         with:
           name: crate
           path: dist
