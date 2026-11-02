@@ -718,9 +718,9 @@ dependencies = [
 
 [[package]]
 name = "parquet_derive"
-version = "59.3.0"
+version = "60.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "de536adba5b383d89c6dbb51212ff8394089e57255f88c058ce6e8756234f531"
+checksum = "2c6a0cc5516d0c382595f124ba4f88fdfff723adec2adf58c7d34730d0c30b53"
 dependencies = [
  "proc-macro2",
  "quote",
